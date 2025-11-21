@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { getAllMarkets } from "./Admin/Market/marketapi";
+import { API_URL } from "../config";
 
-const API_BASE = "http://127.0.0.1:8000/chart";
+const API_BASE = `${API_URL}/chart`;
 
 // 🟩 Safe converter for panna → chart row
 const convertResultToNumbers = (r) => {

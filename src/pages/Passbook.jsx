@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import moment from "moment";
+import { API_URL } from "../config";
 
-// Dummy implementation for the sake of completion.
-// Replace with your actual authentication context or hook to get the API URL.
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = API_URL;
 
 /**
  * Helper function to determine the color and icon for the transaction type/status

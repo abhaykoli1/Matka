@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, BarChart2 } from "lucide-react";
+import { API_URL } from "../../config";
 
-const API_BASE = "http://127.0.0.1:8000/starline_jackpot";
+const API_BASE = `${API_URL}/starline_jackpot`;
 
 export default function StarlineGamePannaBed() {
   const { marketId, gameId } = useParams();

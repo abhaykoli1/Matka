@@ -6,8 +6,9 @@ import {
   XCircle,
   Image as ImageIcon,
 } from "lucide-react";
+import { API_URL } from "../../config";
 
-const API_BASE = "http://127.0.0.1:8000/deposit-qr";
+const API_BASE = `${API_URL}/deposit-qr`;
 
 const getToken = () => localStorage.getItem("accessToken");
 
@@ -43,13 +44,10 @@ export default function AdminDepositRequests() {
   // ------------------------------
   const viewScreenshot = async (user_id) => {
     try {
-      const res = await axios.get(
-        `http://127.0.0.1:8000/deposit-qr/image/${user_id}`,
-        {
-          headers: { Authorization: `Bearer ${getToken()}` },
-          responseType: "blob",
-        }
-      );
+      const res = await axios.get(`${API_URL}/deposit-qr/image/${user_id}`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+        responseType: "blob",
+      });
 
       const imageURL = URL.createObjectURL(res.data);
       window.open(imageURL, "_blank");

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ArrowLeft, BarChart2, Play } from "lucide-react";
+import { API_URL } from "../config";
 
 // --- API Configuration (Adjust this URL to match your backend) ---
-const API_BASE = "http://127.0.0.1:8000/starline_jackpot";
+const API_BASE = `${API_URL}/starline_jackpot`;
 
 // Mock data structures for Starline Game (kept for structure reference, but will be replaced by API data)
 const starlineRates = [

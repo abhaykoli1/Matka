@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { API_URL } from "../config";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = API_URL;
 const getToken = () => localStorage.getItem("accessToken");
 
 export default function WinHistory() {

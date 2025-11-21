@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; // Import axios
+import { API_URL } from "../../../config";
 
 // Verify this URL is correct based on your backend routing structure!
-const API_BASE = "http://127.0.0.1:8000/starline_jackpot";
+const API_BASE = `${API_URL}/starline_jackpot`;
 
 const AdminStartline = () => {
   // --- State Management ---

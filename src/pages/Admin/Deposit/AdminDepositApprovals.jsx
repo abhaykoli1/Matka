@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../config";
 
 // Backend Route Prefix => /user
 // Routes:
@@ -7,7 +8,7 @@ import axios from "axios";
 // POST   /user/approve-deposit-normal
 // POST   /user/failed-deposit-normal   <-- Reject API
 
-const API_BASE = "http://127.0.0.1:8000/user";
+const API_BASE = `${API_URL}/user`;
 const getAuthToken = () => localStorage.getItem("accessToken");
 
 export default function AdminDepositApprovals() {

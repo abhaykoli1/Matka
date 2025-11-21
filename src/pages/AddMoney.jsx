@@ -3,8 +3,9 @@ import { ArrowLeft, Wallet, Copy, MessageCircle, Loader2 } from "lucide-react";
 import AddMoneyQrTab from "./Admin/Qr/AddMoneyQrTab";
 import axios from "axios";
 import DepositeByOwn from "./DepositeByOwn";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://127.0.0.1:8000"; // Example: Replace with your actual base URL
+const API_BASE_URL = API_URL; // Example: Replace with your actual base URL
 
 // Placeholder for a generic UPI ID or payment instruction
 const MERCHANT_UPI_ID = "your_merchant_upi_id@bank";

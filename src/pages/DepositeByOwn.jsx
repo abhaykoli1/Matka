@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { API_URL } from "../config";
 
-const API_BASE = "http://127.0.0.1:8000/user";
+const API_BASE = `${API_URL}/user`;
 
 const getToken = () => localStorage.getItem("accessToken");
 

@@ -1,5 +1,7 @@
+import { API_URL } from "../../../config";
+
 // src/api.js
-const API_BASE_URL = "http://127.0.0.1:8000/market";
+const API_BASE_URL = `${API_URL}/market`;
 
 export const getAllMarkets = async () => {
   const response = await fetch(API_BASE_URL);

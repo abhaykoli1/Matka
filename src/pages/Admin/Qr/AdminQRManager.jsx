@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../../config";
 
-const API_BASE = "http://127.0.0.1:8000"; // change for production
+const API_BASE = API_URL; // change for production
 
 export default function AdminQRManager() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [replaceMode, setReplaceMode] = useState(false);
-  
+
   const [currentQR, setCurrentQR] = useState(null);
   useEffect(() => {
     fetchCurrentQR();

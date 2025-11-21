@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Loader2, DollarSign, User2, History } from "lucide-react";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://127.0.0.1:8000"; // Replace with your actual base URL
+const API_BASE_URL = API_URL; // Replace with your actual base URL
 
 const getAuthToken = () => localStorage.getItem("accessToken");
 

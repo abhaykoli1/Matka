@@ -1,9 +1,10 @@
 // AppHeader.jsx
 import React, { useState, useEffect } from "react";
 import { Menu, Wallet2Icon } from "lucide-react";
+import { API_URL } from "../../config";
 
 // IMPORTANT: Replace with your actual base URL
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = API_URL;
 
 // Utility function to get the token (assumes JWT is stored in localStorage)
 const getAuthToken = () => {

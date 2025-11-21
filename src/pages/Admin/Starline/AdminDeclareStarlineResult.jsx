@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { API_URL } from "../../../config";
 
-const API_BASE = "http://127.0.0.1:8000/starline_jackpot";
+const API_BASE = `${API_URL}/starline_jackpot`;
 
 export default function AdminDeclareStarlineResult() {
   const [slots, setSlots] = useState([]);

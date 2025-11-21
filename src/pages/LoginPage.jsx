@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { LogIn, User, Power, Loader2, Smartphone, Lock } from "lucide-react";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = API_URL;
 
 // Helper component for loading spinner
 const LoadingSpinner = () => <Loader2 className="animate-spin h-5 w-5 mr-2" />;

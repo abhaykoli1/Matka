@@ -7,8 +7,9 @@ import {
   DollarSign,
   Info,
 } from "lucide-react";
+import { API_URL } from "../config";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = API_URL;
 
 const getAuthToken = () => localStorage.getItem("accessToken");
 

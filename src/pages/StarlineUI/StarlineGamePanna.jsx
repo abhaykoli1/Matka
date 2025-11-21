@@ -2,8 +2,9 @@ import { CardSim, Diamond, Dice1 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../../config";
 
-const API_BASE = "http://127.0.0.1:8000/starline_jackpot";
+const API_BASE = `${API_URL}/starline_jackpot`;
 
 export default function StarlineGames() {
   const { marketId } = useParams();

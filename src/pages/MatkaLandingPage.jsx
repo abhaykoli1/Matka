@@ -162,9 +162,10 @@ import {
   PlayIcon,
 } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
+import { API_URL } from "../config";
 
 // 1. API Call Function
-const API_BASE_URL = "http://127.0.0.1:8000/market"; // **Adjust the port if necessary**
+const API_BASE_URL = `${API_URL}/market`; // **Adjust the port if necessary**
 
 export const getAllMarkets = async () => {
   // The previous API was /market/, but assuming the data fetching logic is the same:

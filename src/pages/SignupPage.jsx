@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { API_URL } from "../config";
 
 // Define the API URL. Note: For this code to work, your FastAPI server
-// must be running at this address (http://127.0.0.1:8000) and must have
 // **CORS enabled** to allow requests from the browser's origin.
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = API_URL;
 
 export default function SignupPage() {
   const [username, setUsername] = useState("abhay");
