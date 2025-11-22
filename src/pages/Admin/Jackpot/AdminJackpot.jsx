@@ -3,22 +3,23 @@ import axios from "axios";
 import { API_URL } from "../../../config";
 
 const API_BASE = `${API_URL}/starline_jackpot`;
-const API_DECLARE = `${API_URL}/starline_jackpot/starline/result/declare`;
 
-const AdminStartline = () => {
+const AdminJackpot = () => {
   const [slots, setSlots] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // ====== Declare Result Modal State ======
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [panna, setPanna] = useState("");
   const [declaring, setDeclaring] = useState(false);
+
   const token = localStorage.getItem("accessToken");
 
-  // Add Slot Form State
+  // FULL AM/PM TIME DATA
   const [formData, setFormData] = useState({
     name: "",
     start_hour: "01",
@@ -33,7 +34,7 @@ const AdminStartline = () => {
   const fetchSlots = async () => {
     setLoadingList(true);
     try {
-      const response = await axios.get(`${API_BASE}/starline/list`);
+      const response = await axios.get(`${API_BASE}/jackpot/list`);
       setSlots(response.data);
     } catch (error) {
       setMessage("❌ Could not load slots.");
@@ -46,13 +47,13 @@ const AdminStartline = () => {
     fetchSlots();
   }, [refreshTrigger]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const formatTime = (hour, minute, meridian) =>
     `${hour}:${minute} ${meridian}`;
 
+  // Submit Time With AM/PM to Backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -77,9 +78,8 @@ const AdminStartline = () => {
     };
 
     try {
-      await axios.post(`${API_BASE}/starline/add`, slotData);
+      await axios.post(`${API_BASE}/jackpot/add`, slotData);
       setMessage(`✅ Slot Added Successfully`);
-
       setFormData({
         name: "",
         start_hour: "01",
@@ -90,7 +90,7 @@ const AdminStartline = () => {
         end_meridian: "AM",
       });
 
-      setRefreshTrigger((prev) => prev + 1);
+      setRefreshTrigger((p) => p + 1);
     } catch (error) {
       setMessage("❌ Failed to add slot.");
     } finally {
@@ -98,14 +98,16 @@ const AdminStartline = () => {
     }
   };
 
-  // OPEN DECLARE MODAL
+  const handleRefresh = () => setRefreshTrigger((p) => p + 1);
+
+  // ====== OPEN DECLARE RESULT MODAL ======
   const openDeclareModal = (slot) => {
     setSelectedSlot(slot);
     setPanna("");
     setShowModal(true);
   };
 
-  // DECLARE RESULT (JSON — FIXED)
+  // ====== DECLARE RESULT (Correct JSON API) ======
   const declareResult = async () => {
     if (!panna || panna.length !== 3) {
       alert("Panna must be exactly 3 digits!");
@@ -115,8 +117,8 @@ const AdminStartline = () => {
     setDeclaring(true);
 
     try {
-      const res = await axios.post(
-        `${API_BASE}/starline/result/declare`,
+      await axios.post(
+        `${API_BASE}/jackpot/result/declare`,
         {
           slot_id: selectedSlot.id,
           panna: panna,
@@ -129,24 +131,24 @@ const AdminStartline = () => {
         }
       );
 
-      alert("⭐ Starline Result Declared Successfully!");
+      alert("🎉 Jackpot Result Declared Successfully!");
 
       setShowModal(false);
-      setRefreshTrigger((prev) => prev + 1);
+      setRefreshTrigger((p) => p + 1);
     } catch (error) {
       console.log(error);
-      alert(error.response?.data?.detail || "Error while declaring result.");
+      alert(
+        error.response?.data?.detail || "Failed to declare Jackpot result."
+      );
     } finally {
       setDeclaring(false);
     }
   };
 
-  const handleRefresh = () => setRefreshTrigger((prev) => prev + 1);
-
   return (
-    <div className="p-6 min-h-screen text-white">
-      <h1 className="text-xl font-bold mb-6 border-b pb-2">
-        ⭐ Starline Slot Management
+    <div className="p-6 min-h-screen">
+      <h1 className="text-xl font-bold text-white mb-6 border-b pb-2">
+        💥 Jackpot Slot Management
       </h1>
 
       {message && (
@@ -164,41 +166,44 @@ const AdminStartline = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ADD SLOT */}
         <div>
-          <h2 className="text-xl mb-4">➕ Add New Slot</h2>
+          <h2 className="text-white text-xl mb-4">➕ Add New Slot</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
             <div>
-              <label className="text-sm">Slot Name</label>
+              <label className="text-white text-sm">Slot Name</label>
               <input
                 type="text"
                 name="name"
-                className="w-full p-2 mt-1 border rounded-md text-white"
+                className="w-full p-2 mt-1 border rounded-md"
                 value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            {/* Times */}
+            {/* START TIME */}
             <div>
-              <label className="text-sm">Start Time</label>
+              <label className="text-white text-sm">Start Time</label>
               <div className="flex gap-2 mt-1">
                 <select
                   name="start_hour"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.start_hour}
                   onChange={handleChange}
                 >
                   {Array.from({ length: 12 }, (_, i) => {
                     const hr = String(i + 1).padStart(2, "0");
-                    return <option key={hr}>{hr}</option>;
+                    return (
+                      <option key={hr} value={hr}>
+                        {hr}
+                      </option>
+                    );
                   })}
                 </select>
 
                 <select
                   name="start_minute"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.start_minute}
                   onChange={handleChange}
                 >
@@ -209,7 +214,7 @@ const AdminStartline = () => {
 
                 <select
                   name="start_meridian"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.start_meridian}
                   onChange={handleChange}
                 >
@@ -221,23 +226,27 @@ const AdminStartline = () => {
 
             {/* END TIME */}
             <div>
-              <label className="text-sm">End Time</label>
+              <label className="text-white text-sm">End Time</label>
               <div className="flex gap-2 mt-1">
                 <select
                   name="end_hour"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.end_hour}
                   onChange={handleChange}
                 >
                   {Array.from({ length: 12 }, (_, i) => {
                     const hr = String(i + 1).padStart(2, "0");
-                    return <option key={hr}>{hr}</option>;
+                    return (
+                      <option key={hr} value={hr}>
+                        {hr}
+                      </option>
+                    );
                   })}
                 </select>
 
                 <select
                   name="end_minute"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.end_minute}
                   onChange={handleChange}
                 >
@@ -248,7 +257,7 @@ const AdminStartline = () => {
 
                 <select
                   name="end_meridian"
-                  className="p-2 border rounded-md text-white"
+                  className="p-2 border rounded-md"
                   value={formData.end_meridian}
                   onChange={handleChange}
                 >
@@ -260,8 +269,8 @@ const AdminStartline = () => {
 
             <button
               type="submit"
-              className="w-full p-2 bg-purple-800 text-white rounded-md"
               disabled={isSubmitting}
+              className="w-full p-2 bg-indigo-600 text-white rounded-md"
             >
               {isSubmitting ? "Adding..." : "Add Slot"}
             </button>
@@ -271,30 +280,36 @@ const AdminStartline = () => {
         {/* SLOT LIST */}
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl">📋 Existing Slots</h2>
+            <h2 className="text-white text-xl ">📋 Existing Slots</h2>
             <button
               onClick={handleRefresh}
               disabled={loadingList}
-              className="px-4 py-2 bg-green-600 text-white rounded-md"
+              className=" px-4 py-2 bg-green-600 text-white rounded-md"
             >
               {loadingList ? "Refreshing..." : "Refresh List"}
             </button>
           </div>
 
           {loadingList ? (
-            <p className="text-gray-400 text-center">Loading slots...</p>
+            <p className="text-gray-500 text-center">Loading slots...</p>
+          ) : slots.length === 0 ? (
+            <p className="text-gray-500 text-center">
+              No slots found. Please add a slot.
+            </p>
           ) : (
             <div className="overflow-x-auto border rounded-lg">
               <table className="min-w-full divide-y divide-gray-700">
                 <thead className="bg-gray-800 text-white">
                   <tr>
                     <th className="px-6 py-3">Name</th>
-                    <th className="px-6 py-3">Start</th>
-                    <th className="px-6 py-3">End</th>
+                    <th className="px-6 py-3">Start Time</th>
+                    <th className="px-6 py-3">End Time</th>
                     <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Action</th>
+                    {/* <th className="px-6 py-3">Games Allowed</th> */}
+                    <th className="px-6 py-3">Declare</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-gray-800 text-white">
                   {slots.map((slot) => (
                     <tr key={slot.id}>
@@ -310,11 +325,20 @@ const AdminStartline = () => {
                       >
                         {slot.status}
                       </td>
-
-                      <td className="px-6 py-3">
+                      {/* <td className="px-6 py-3">
+                        {slot.games.map((g) => (
+                          <span
+                            key={g}
+                            className="px-2 py-1 bg-indigo-700 text-white rounded mr-2 text-xs"
+                          >
+                            {g}
+                          </span>
+                        ))}
+                      </td> */}
+                      <td className="px-6 py-3 text-center">
                         <button
-                          className="px-3 py-1 bg-purple-800 rounded-md text-white"
                           onClick={() => openDeclareModal(slot)}
+                          className="px-4 py-2 bg-purple-600 rounded text-white"
                         >
                           Declare
                         </button>
@@ -328,12 +352,12 @@ const AdminStartline = () => {
         </div>
       </div>
 
-      {/* DECLARE MODAL */}
+      {/* ===== DECLARE RESULT MODAL ===== */}
       {showModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-gray-900 p-6 rounded-xl w-80 text-white shadow-xl border border-gray-700">
             <h2 className="text-lg font-bold text-center">
-              Declare Starline Result
+              Declare Jackpot Result
             </h2>
             <p className="text-center text-sm text-purple-300 mt-1">
               Slot: {selectedSlot?.name}
@@ -370,4 +394,4 @@ const AdminStartline = () => {
   );
 };
 
-export default AdminStartline;
+export default AdminJackpot;

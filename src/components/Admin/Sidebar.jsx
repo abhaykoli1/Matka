@@ -18,7 +18,7 @@ import { SiMarketo } from "react-icons/si";
 
 const Sidebar = ({ open }) => {
   const menuItems = [
-    { name: "Dashboard", icon: <Home size={18} /> },
+    { name: "Dashboard", link: "/admin", icon: <Home size={18} /> },
     {
       name: "User Management",
       link: "/admin/users",
@@ -36,8 +36,18 @@ const Sidebar = ({ open }) => {
       icon: <MdMoney size={18} />,
     },
     {
+      name: "Withdrawal Requests",
+      link: "/admin/withdrawal-requests",
+      icon: <MdMoney size={18} />,
+    },
+    {
       name: "Starline Management",
       link: "/admin/starline",
+      icon: <Star size={18} />,
+    },
+    {
+      name: "Jackpot Management",
+      link: "/admin/jackpot",
       icon: <Star size={18} />,
     },
     {
@@ -45,10 +55,9 @@ const Sidebar = ({ open }) => {
       link: "/admin/markets",
       icon: <SiMarketo size={18} />,
     },
-    { name: "Declare Result", icon: <Target size={18} /> },
-    { name: "Winning Prediction", icon: <FileText size={18} /> },
-    // { name: "Report Management", icon: <Layers size={18} />, dropdown: true },
-    { name: "Wallet Management", icon: <Wallet size={18} />, dropdown: true },
+    // { name: "Declare Result", icon: <Target size={18} /> },
+    // { name: "Winning Prediction", icon: <FileText size={18} /> },
+    // { name: "Wallet Management", icon: <Wallet size={18} />, dropdown: true },
     // { name: "Games Management", icon: <Target size={18} />, dropdown: true },
     // { name: "Settings", icon: <Settings size={18} />, dropdown: true },
     // { name: "Notice Management", icon: <Bell size={18} />, dropdown: true },

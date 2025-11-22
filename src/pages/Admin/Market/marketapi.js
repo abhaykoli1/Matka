@@ -1,10 +1,12 @@
+import axios from "axios";
 import { API_URL } from "../../../config";
 
 // src/api.js
 const API_BASE_URL = `${API_URL}/market`;
 
 export const getAllMarkets = async () => {
-  const response = await fetch(API_BASE_URL);
+  const response = await axios.get(API_BASE_URL);
+  console.log(response);
   if (!response.ok) {
     throw new Error("Failed to fetch markets");
   }

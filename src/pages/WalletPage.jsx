@@ -11,6 +11,7 @@ export default function WalletPage() {
   const walletOptions = [
     {
       id: 1,
+      link: "/wallet-history",
       title: "Wallet History",
       desc: "you can check your wallet history",
       color: "bg-purple-600",
@@ -34,6 +35,7 @@ export default function WalletPage() {
     },
     {
       id: 4,
+      link: "/deposit-history",
       title: "Deposit History",
       desc: "View your deposit transaction history",
       color: "bg-cyan-500",

@@ -1,155 +1,148 @@
-import React, { useState } from "react";
-import { Search, Eye, Download, PhoneCall } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Search, Eye, PhoneCall } from "lucide-react";
+import { API_URL } from "../../config";
 
 export default function UserManagement() {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = [
-    {
-      name: "Mohsin Sh",
-      mobile: "7020571058",
-      date: "09 Nov 2025",
-      balance: 5,
-      bet: "Yes",
-      status: "Yes",
-    },
-    {
-      name: "Samjeet M",
-      mobile: "8780917519",
-      date: "08 Nov 2025",
-      balance: 5,
-      bet: "Yes",
-      status: "Yes",
-    },
-    {
-      name: "Rathod GH",
-      mobile: "9723433902",
-      date: "06 Nov 2025",
-      balance: 5,
-      bet: "Yes",
-      status: "Yes",
-    },
-    {
-      name: "Sarwar",
-      mobile: "9579177118",
-      date: "06 Nov 2025",
-      balance: 5,
-      bet: "Yes",
-      status: "Yes",
-    },
-    {
-      name: "Rahul",
-      mobile: "6377626686",
-      date: "04 Nov 2025",
-      balance: 0,
-      bet: "Yes",
-      status: "Yes",
-    },
-  ];
+  const token = localStorage.getItem("accessToken");
 
-  const filteredUsers = users.filter((u) =>
-    u.name.toLowerCase().includes(search.toLowerCase())
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/user/all-users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const formatted = res.data.map((u) => ({
+        id: u.user_id,
+        username: u.username,
+        mobile: u.mobile,
+        role: u.role,
+        date: new Date(u.created_at).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+      }));
+
+      setUsers(formatted);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.username.toLowerCase().includes(search.toLowerCase()) ||
+      u.mobile.includes(search)
   );
 
   return (
-    <div className="p-4 bg-[#f7f8fc min-h-screen">
-      {/* Header Section */}
+    <div className="p-4  min-h-screen text-white">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-200">USER LIST</h2>
-        </div>
-        {/* <button className="border text-white px-4 py-2 text-sm rounded-md hover:bg-blue-700 flex items-center gap-2">
-          <Download size={16} />
-          Download Excel
-        </button> */}
+        <h2 className="text-xl font-bold">USER LIST</h2>
       </div>
 
-      {/* Search Section */}
-      <div className="bg- rounded-xl shadow mb-6">
-        <div className="flex flex-co sm: flex-row gap-3 items-center">
+      {/* Search Box */}
+      <div className="bg-white/5 rounded-xl p-4 mb-6 backdrop-blur">
+        <div className="flex flex-col sm:flex-row gap-3 items-center">
           <input
             type="text"
-            placeholder="Search By Name"
+            placeholder="Search By Name or Mobile"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="border md: !w-full rounded-md px-3 py-2   sm:w-1/3 text-sm !outline-1 focus:ring-1 focus:ring-blue-500"
+            className="border bg-black/30 text-white border-gray-600 rounded-md px-3 py-2 w-full sm:w-1/3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
           />
-          <button className="border-2 text-white px-2 py-2 text-sm rounded-md hover:bg-blue-700 flex items-center gap-2">
-            <Search size={16} />{" "}
-            <span className="md:flex sm:flex hidden text-medium  text-md">
-              Submit
-            </span>
+          <button className="border-2 px-3 py-2 text-sm rounded-md flex items-center gap-2">
+            <Search size={16} />
+            <span className="hidden sm:flex">Submit</span>
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="min-w-full border-collapse text-sm text-gray-700">
+      <div className="bg-white/5 rounded-xl shadow backdrop-blur overflow-x-auto">
+        <table className="min-w-full text-sm text-gray-200">
           <thead>
-            <tr className="bg-gray-100 text-gray-600">
-              <th className="p-3 text-left">User Name</th>
+            <tr className="bg-white/10 text-gray-300 border-b border-gray-700">
+              <th className="p-3 text-left">Name</th>
               <th className="p-3 text-left">Mobile</th>
-              <th className="p-3 text-left">Date</th>
-              <th className="p-3 text-left">Balance</th>
-              {/* <th className="p-3 text-center">Bet</th> */}
-              <th className="p-3 text-center">Status</th>
-              <th className="p-3 text-center">Action</th>
+              <th className="p-3 text-left">Role</th>
+              <th className="p-3 text-left">Created</th>
+              {/* <th className="p-3 text-center">Action</th> */}
             </tr>
           </thead>
 
           <tbody>
-            {filteredUsers.map((user, index) => (
-              <tr
-                key={index}
-                className="border-b last:border-none hover:bg-gray-50 transition"
-              >
-                <td className="p-3 text-blue-600 font-medium cursor-pointer">
-                  {user.name}
-                </td>
-
-                <td className="p-3 flex items-center gap-2">
-                  <a
-                    href={`https://wa.me/91${user.mobile}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-800 underline"
-                  >
-                    {user.mobile}
-                  </a>
-                  <PhoneCall size={16} className="text-green-500" />
-                </td>
-
-                <td className="p-3">{user.date}</td>
-                <td className="p-3">{user.balance}</td>
-
-                {/* <td className="p-3 text-center">
-                  <span className="px-3 py-1 text-xs border border-green-500 text-green-600 rounded-md">
-                    {user.bet}
-                  </span>
-                </td> */}
-
-                <td className="p-3 text-center">
-                  <span className="px-3 py-1 text-xs border border-green-500 text-green-600 rounded-md">
-                    {user.status}
-                  </span>
-                </td>
-
-                <td className="p-3 text-center">
-                  <button className="text-blue-600 hover:text-blue-800">
-                    <Eye size={18} />
-                  </button>
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="text-center py-6 text-gray-400">
+                  Loading users...
                 </td>
               </tr>
-            ))}
+            ) : filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center py-6 text-gray-500">
+                  No users found
+                </td>
+              </tr>
+            ) : (
+              filteredUsers.map((u) => (
+                <tr
+                  key={u.id}
+                  className="border-b border-gray-700 hover:bg-white/10 transition"
+                >
+                  <td className="p-3 text-blue-400 font-medium">
+                    {u.username}
+                  </td>
+
+                  <td className="p-3 flex items-center gap-2">
+                    <a
+                      href={`https://wa.me/91${u.mobile}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-200 underline"
+                    >
+                      {u.mobile}
+                    </a>
+                    <PhoneCall size={16} className="text-green-500" />
+                  </td>
+
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 rounded-md text-xs ${
+                        u.role === "admin"
+                          ? "bg-red-600/40 text-red-300 border border-red-500"
+                          : "bg-blue-600/40 text-blue-300 border border-blue-500"
+                      }`}
+                    >
+                      {u.role.toUpperCase()}
+                    </span>
+                  </td>
+
+                  <td className="p-3">{u.date}</td>
+
+                  {/* <td className="p-3 text-center">
+                    <button className="text-blue-400 hover:text-blue-500">
+                      <Eye size={18} />
+                    </button>
+                  </td> */}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-
-        {filteredUsers.length === 0 && (
-          <div className="text-center text-gray-500 py-6 text-sm">
-            No users found
-          </div>
-        )}
       </div>
     </div>
   );

@@ -1,42 +1,41 @@
-import { ArrowLeft, CardSim, Coins, Diamond, Dice1, Dice2 } from "lucide-react";
+import { CardSim, Coins, Diamond, Dice1, Dice2 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getMarketById } from "./Admin/Market/marketapi";
-// FIXED: Changed path from "./Admin/Market/marketapi" to "./marketapi"
-// assuming the helper file is in the same directory or accessible at the root level.
+import axios from "axios";
+import { API_URL } from "../config";
+
+const API_BASE = `${API_URL}/market`;
 
 export default function Games() {
   const { marketId } = useParams();
 
-  // --- STATE FOR MARKET DETAILS ---
+  // --- STATE FOR MARKET ---
   const [market, setMarket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Helper function to create a URL-friendly slug from the game name
-  const createSlug = (name) => {
-    // Ensuring the slug is URL-safe for use as a path parameter
-    return name.toLowerCase().replace(/\s+/g, "-");
-  };
+  // Convert name → slug
+  const createSlug = (name) => name.toLowerCase().replace(/\s+/g, "-");
 
-  // Function to fetch market data
+  // ============================
+  // FETCH MARKET DETAILS
+  // ============================
   const fetchMarketDetails = useCallback(async () => {
     if (!marketId) {
-      setError("Market ID is missing.");
+      setError("Market ID missing");
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
     try {
-      const data = await getMarketById(marketId);
-      setMarket(data);
+      setIsLoading(true);
+
+      const res = await axios.get(`${API_BASE}/${marketId}`);
+
+      setMarket(res.data);
     } catch (err) {
-      console.error("Fetch market details error:", err);
-      setError(
-        "Failed to load market details. Please check your API connection."
-      );
+      console.log(err);
+      setError("Failed to load market details.");
     } finally {
       setIsLoading(false);
     }
@@ -46,66 +45,62 @@ export default function Games() {
     fetchMarketDetails();
   }, [fetchMarketDetails]);
 
-  // --- Game Definitions ---
-  // Combine all games into a single array for easier mapping
+  // ============================
+  // GAME CARDS
+  // ============================
   const allGames = [
     {
       name: "Single Digit",
       icon: <Dice1 size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "Jodi Digit",
       icon: <Dice2 size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "Single Panna",
       icon: <CardSim size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "Double Panna",
       icon: <CardSim size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "Triple Panna",
       icon: <Diamond size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "SP, DP ,TP",
       icon: <Coins size={30} className="text-yellow-500" />,
-      type: "regular",
     },
     {
       name: "Half Sangam",
       icon: (
         <img
-          src="https://placehold.co/60x60/fde047/1f2937?text=H" // Placeholder using the icon's color
-          alt="Half Sangam"
+          src="https://placehold.co/60x60/fde047/1f2937?text=H"
+          alt=""
           className="w-14 h-14 object-contain"
         />
       ),
-      type: "sangam",
     },
     {
       name: "Full Sangam",
       icon: (
         <img
-          src="https://placehold.co/60x60/fde047/1f2937?text=F" // Placeholder using the icon's color
-          alt="Full Sangam"
+          src="https://placehold.co/60x60/fde047/1f2937?text=F"
+          alt=""
           className="w-14 h-14 object-contain"
         />
       ),
-      type: "sangam",
     },
   ];
 
+  // ============================
+  // LOADING
+  // ============================
   if (isLoading) {
     return (
-      <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen bg-gray-900">
+      <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen">
         <h1 className="text-xl font-semibold animate-pulse">
           Loading Market...
         </h1>
@@ -113,9 +108,12 @@ export default function Games() {
     );
   }
 
+  // ============================
+  // ERROR
+  // ============================
   if (error) {
     return (
-      <div className="text-center py-10 max-w-md mx-auto min-h-screen bg-red-900/50 text-red-300 p-4">
+      <div className="text-center py-10 max-w-md mx-auto min-h-screen bg-red-800/30 text-red-300 p-4">
         <h1 className="text-xl font-semibold mb-2">Error</h1>
         <p>{error}</p>
       </div>
@@ -124,21 +122,23 @@ export default function Games() {
 
   if (!market) {
     return (
-      <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen bg-gray-900">
-        <h1 className="text-xl font-semibold">Market Not Found.</h1>
+      <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen">
+        <h1 className="text-xl font-semibold">Market Not Found</h1>
       </div>
     );
   }
 
   return (
-    <div className=" max-w-md mx-auto flex flex-col font-sans  ">
-      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center relative ">
-        <h1 className="text-lg font-semibold uppercase tracking-widest text-[#fff]">
+    <div className="max-w-md mx-auto flex flex-col font-sans text-white">
+      {/* HEADER */}
+      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
+        <h1 className="text-lg font-semibold uppercase tracking-widest">
           {market.name}
         </h1>
       </div>
 
-      <div className="bg-gradient-tot from bg-[#5a0572] to-black/0 text-xs py-2 px-4 flex justify-around text-gray-300  mb-4 border-b-2 border-[#5a0572]">
+      {/* MARKET DETAILS */}
+      <div className="bg-[#5a0572] text-xs py-2 px-4 flex justify-around text-gray-300 mb-4 border-b-2 border-[#5a0572]">
         <p>
           Open:{" "}
           <span className="text-white font-medium">{market.open_time}</span>
@@ -151,27 +151,25 @@ export default function Games() {
 
         <span
           className={`font-bold py-0.5 px-2 rounded-full text-xs ${
-            market.is_active
-              ? "bg-green-600 text-white"
-              : "bg-red-600 text-white"
+            market.status === "Market Running" ? "bg-green-600" : "bg-red-600"
           }`}
         >
-          {market.is_active ? "LIVE" : "CLOSED"}
+          {market.status === "Market Running" ? "LIVE" : "CLOSED"}
         </span>
       </div>
 
-      {/* Game Grid */}
+      {/* GAME GRID */}
       <div className="grid grid-cols-2 gap-4 p-3 pb-20">
         {allGames.map((game, index) => (
           <a
-            key={`game-${index}`}
+            key={index}
             href={`/game/${marketId}/${createSlug(game.name)}`}
-            className="flex flex-col justify-center items-center bg-gray-800/80 rounded-xl py-6 shadow-2xl hover:bg-cyan-700/50 cursor-pointer transition-all duration-200 hover:scale-[1.03] border border-gray-700 hover:border-cyan-500"
+            className="flex flex-col justify-center items-center bg-gray-800/80 rounded-xl py-6 shadow-2xl hover:bg-cyan-700/50 transition-all duration-200 hover:scale-[1.03] border border-gray-700 hover:border-cyan-500"
           >
             <div className="bg-[#5a0572] rounded-full p-4 mb-3 shadow-lg shadow-[#5a0572]/50">
               {game.icon}
             </div>
-            <p className="text-gray-100 text-sm font-bold text-center mt-1 tracking-wider">
+            <p className="text-gray-100 text-sm font-bold text-center tracking-wider">
               {game.name}
             </p>
           </a>

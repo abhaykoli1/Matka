@@ -10,8 +10,10 @@ const AddMoneyQrTab = () => {
   const token = localStorage.getItem("accessToken");
 
   const [currentQR, setCurrentQR] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null); // <-- NEW
+  const [selectedFile, setSelectedFile] = useState(null); // <-- NEW
 
-  console.log(currentQR);
   useEffect(() => {
     fetchCurrentQR();
   }, []);
@@ -19,7 +21,6 @@ const AddMoneyQrTab = () => {
   const fetchCurrentQR = async () => {
     try {
       const res = await axios.get(`${API_BASE}/image/get`);
-      // FIX: prevent browser cache
       setCurrentQR(
         API_BASE + res.data.image_url + "?t=" + new Date().getTime()
       );
@@ -28,38 +29,105 @@ const AddMoneyQrTab = () => {
     }
   };
 
-  // Open hidden file dialog
+  // Open file dialog
   const openFilePicker = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    fileInputRef.current?.click();
   };
 
-  // Auto upload when user selects file
+  // When user selects file → show preview modal
   const onFileSelected = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Prepare formData
+    setSelectedFile(file);
+    setPreviewImage(URL.createObjectURL(file)); // <-- preview image
+  };
+
+  // Upload when user confirms
+  const confirmUpload = async () => {
+    if (!selectedFile) return;
+
     const formData = new FormData();
-    formData.append("image", file); // MUST match FastAPI parameter name
+    formData.append("image", selectedFile);
 
     try {
-      await axios.post(`${API_BASE}/deposit-qr/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await axios.post(`${API_BASE}/deposit-qr/upload`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert("Screenshot uploaded successfully!");
+      console.log(res);
+      setPreviewImage(null); // close preview
+      setSelectedFile(null);
+      setShowSuccess(true);
+      fetchCurrentQR();
     } catch (err) {
       alert("Upload failed. Try again.");
       console.error(err);
     }
   };
 
+  // Cancel preview
+  const cancelPreview = () => {
+    setPreviewImage(null);
+    setSelectedFile(null);
+  };
+
   return (
     <div>
+      {/* ====================== IMAGE PREVIEW MODAL ====================== */}
+      {previewImage && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-5 w-[320px] text-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">
+              Preview Screenshot
+            </h2>
+
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="w-full h-56 object-cover rounded-lg border mb-4"
+            />
+
+            <div className="flex justify-between gap-3">
+              <button
+                onClick={cancelPreview}
+                className="w-1/2 py-2 bg-gray-300 rounded-lg font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmUpload}
+                className="w-1/2 py-2 bg-indigo-600 text-white rounded-lg font-semibold"
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================== SUCCESS MODAL ====================== */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
+            <h2 className="text-xl font-semibold text-green-600">
+              Request Successful!
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Your screenshot has been uploaded.
+            </p>
+
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ====================== MAIN UI ====================== */}
       <div className="w-[93%] mx-auto mb-12 max-w-md bg-white/20 rounded-2xl shadow-lg p-5 mt-4 flex flex-col items-center">
         {/* UPI ID */}
         <div className="w-full flex items-center justify-between border rounded-md px-3 py-2 mb-4">
@@ -67,7 +135,7 @@ const AddMoneyQrTab = () => {
           <Copy size={16} className="text-gray-600 cursor-pointer" />
         </div>
 
-        {/* QR Code */}
+        {/* QR CODE */}
         <img
           src={currentQR ? currentQR : "../assets/logo.png"}
           alt="QR Code"
@@ -90,7 +158,7 @@ const AddMoneyQrTab = () => {
           <p className="text-red-500 font-semibold">Pay Minimum 200 Rupees.</p>
         </div>
 
-        {/* Hidden File Input */}
+        {/* File Input (hidden) */}
         <input
           type="file"
           accept="image/*"
@@ -102,7 +170,7 @@ const AddMoneyQrTab = () => {
         {/* Upload Button */}
         <button
           onClick={openFilePicker}
-          className="w-full bg-gradient-to-tl from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-full hover:bg-purple-800 transition"
+          className="w-full bg-gradient-to-tl from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-lg hover:bg-purple-800 transition"
         >
           Upload Screenshot
         </button>

@@ -28,6 +28,8 @@ export default function AdminDepositRequests() {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
 
+      console.log(res);
+
       setPending(res.data.pending);
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to load pending deposits");
@@ -51,6 +53,14 @@ export default function AdminDepositRequests() {
 
       const imageURL = URL.createObjectURL(res.data);
       window.open(imageURL, "_blank");
+    } catch (err) {
+      alert("Screenshot not found!");
+    }
+  };
+  const viewScreenshotImg = async (img) => {
+    console.log(API_URL + "/" + img);
+    try {
+      window.open(API_URL + "/" + img, "_blank");
     } catch (err) {
       alert("Screenshot not found!");
     }
@@ -156,7 +166,7 @@ export default function AdminDepositRequests() {
 
                   <td className="px-4 py-4">
                     <button
-                      onClick={() => viewScreenshot(p.user_id)}
+                      onClick={() => viewScreenshotImg(p.image_url)}
                       className="text-blue-400 flex items-center gap-2 hover:text-blue-300"
                     >
                       <ImageIcon size={18} /> View Screenshot

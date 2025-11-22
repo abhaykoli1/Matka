@@ -18,11 +18,50 @@ import {
   DollarSign,
   Star, // Replaced BiMoney with DollarSign from lucide-react
 } from "lucide-react";
-// Removed import { BiMoney } from "react-icons/bi";
+import axios from "axios";
+import { API_URL } from "../../config";
+
+const API_BASE = `${API_URL}/user`;
 
 export default function SidebarMenu({ sidebar, setSidebar }) {
   const [notifications, setNotifications] = useState(true);
   const [accessToken, setAccessToken] = useState(null); // Track authentication state
+  const [user, setUser] = useState(null);
+
+  const [username, setUsername] = useState("");
+  const [mobile, setMobile] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState("");
+
+  const token = localStorage.getItem("accessToken");
+
+  const authHeader = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  // ---------------------------
+  // GET PROFILE
+  // ---------------------------
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/profile`, authHeader);
+
+      setUser(res.data);
+      setUsername(res.data.username || "");
+      setMobile(res.data.mobile || "");
+    } catch (err) {
+      console.log("Profile load error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   // 1. Check for token on initial load
   useEffect(() => {
@@ -52,6 +91,7 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
       label: "Add Points",
       link: "/add-points",
     },
+
     { icon: <Star size={18} />, label: "Starline", link: "/starline" },
     { icon: <Star size={18} />, label: "King Jackpot", link: "/king-jackpot" },
     {
@@ -59,12 +99,16 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
       label: "Withdraw Funds",
       link: "/withdraw-request",
     },
-    { icon: <ArrowUpCircle size={18} />, label: "Transfer Points" },
-    // { icon: <Clock size={18} />, label: "Bid History", link: "/my-bids" },
+    // { icon: <ArrowUpCircle size={18} />, label: "Transfer Points" },
+    { icon: <Clock size={18} />, label: "Bid History", link: "/bid-history" },
     { icon: <Trophy size={18} />, label: "Win History", link: "/win-history" },
-    { icon: <Gamepad2 size={18} />, label: "Game Rate" },
-    { icon: <Phone size={18} />, label: "Contact Us" },
-    { icon: <Lock size={18} />, label: "Change Password" },
+    { icon: <Gamepad2 size={18} />, label: "Game Rate", link: "/game-rate" },
+    { icon: <Phone size={18} />, label: "Contact Us", link: "/contact-us" },
+    {
+      icon: <Lock size={18} />,
+      label: "Change Password",
+      link: "/change-password",
+    },
     // Only include onClick for the logout action
     {
       icon: <LogOut size={18} />,
@@ -101,15 +145,15 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
           <div className="w-16 h-16 bg-yellow-300 text-purple-800 rounded-full flex items-center justify-center font-bold text-2xl">
             Y
           </div>
-          <h3 className="mt-2 text-lg font-semibold">Yash</h3>
-          <p className="text-sm opacity-80">9828051384</p>
-          <button className="backdrop-blur-2xl bg-white/30 mt-3 text-white  px-4 py-1 text-sm font-medium rounded-full hover:bg-purple-100 transition">
+          <h3 className="mt-2 text-lg font-semibold">{username}</h3>
+          <p className="text-sm opacity-80">{mobile}</p>
+          {/* <button className="backdrop-blur-2xl bg-white/30 mt-3 text-white  px-4 py-1 text-sm font-medium rounded-full hover:bg-purple-100 transition">
             Choose Language
-          </button>
+          </button> */}
         </div>
 
         {/* Menu */}
-        <div className="p-4 flex flex-col space-y-3 -mt-4 pt-5 overflow-y-auto bg-[rgba(20,25,51,1)] text-white h-[calc(100%-175px)]">
+        <div className="p-4 flex flex-col space-y-3 -mt-4 pt-5 overflow-y-auto bg-[rgba(20,25,51,1)] text-white h-[calc(100%-136px)]">
           {menuItems
             // 3. Filter the Logout item if the user is not authenticated
             .filter((item) => !item.isLogout || accessToken)

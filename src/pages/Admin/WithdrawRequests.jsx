@@ -129,7 +129,7 @@ export default function AdminWithdrawalRequests() {
 
   return (
     <div className=" mx-auto p-3 font-sans text-white bg- min-h-screen">
-      <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white pb-2">
+      <h2 className="text-xl font-bold mb-6 flex items-center gap-3   pb-2">
         Pending Withdrawal Requests
       </h2>
 

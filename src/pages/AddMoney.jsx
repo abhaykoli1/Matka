@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Wallet, Copy, MessageCircle, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Wallet,
+  Copy,
+  MessageCircle,
+  Loader2,
+  DollarSign,
+  History,
+} from "lucide-react";
 import AddMoneyQrTab from "./Admin/Qr/AddMoneyQrTab";
 import axios from "axios";
 import DepositeByOwn from "./DepositeByOwn";
@@ -32,17 +40,16 @@ const getPaymentUrl = (method, amount, txId) => {
       return `${baseUri}&url=phonepe://pay`;
     case "other":
     default:
-      // Generic UPI deep link will prompt the user to choose an app
       return baseUri;
   }
 };
 
 export default function AddMoney() {
-  const [activeTab, setActiveTab] = useState("auto");
+  const [activeTab, setActiveTab] = useState("qr");
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null); // To display API response/error
+  const [message, setMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -125,12 +132,17 @@ export default function AddMoney() {
 
   return (
     <div className="max-w-md  mx-auto flex flex-col items-center font-sans">
-      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center relative">
-        <h1 className="text-lg font-semibold">Add Money</h1>
-      </div>
-
+      <h2 className="text-xl w-full justify-between font-bold border-b border-gray-700 bg-gradient-to-b from-black to-black/0 px-4 py-2 mb-3 flex items-center gap-2">
+        <span className="flex gap-2 text-lg items-center">
+          <DollarSign size={20} className="text-green-400" />
+          Add Points
+        </span>
+        <a href="/deposit-history">
+          <History />
+        </a>
+      </h2>
       {/* Tabs */}
-      <div className="flex w-[93%] max-w-md mt-2 border-b border-gray-300">
+      {/* <div className="flex w-[93%] max-w-md mt-2 border-b border-gray-300">
         <button
           onClick={() => setActiveTab("auto")}
           className={`flex-1 text-center py-2 font-semibold ${
@@ -152,7 +164,7 @@ export default function AddMoney() {
         >
           PAY BY QR CODE
         </button>
-      </div>
+      </div> */}
 
       {/* API Response/Error Message Display */}
       {message && (

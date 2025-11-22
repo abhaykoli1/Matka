@@ -1,241 +1,162 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import moment from "moment";
+import {
+  Calendar,
+  ArrowLeft,
+  Loader,
+  Wallet,
+  History,
+  IndianRupee,
+} from "lucide-react";
 import { API_URL } from "../config";
 
-const API_BASE_URL = API_URL;
+const API_BASE = `${API_URL}/passbook/history`;
 
-/**
- * Helper function to determine the color and icon for the transaction type/status
- * @param {string} type - The transaction type (e.g., DEPOSIT, WITHDRAWAL, BID, WIN)
- * @param {string} status - The transaction status (e.g., SUCCESS, PENDING, FAILED)
- * @returns {{color: string, icon: string}}
- */
-const getStatusClasses = (type, status) => {
-  if (type === "BID") {
-    return { color: "text-red-600 bg-red-100", icon: "💸" }; // Debit
-  }
-  if (type === "WIN" || type === "DEPOSIT") {
-    return { color: "text-green-600 bg-green-100", icon: "💰" }; // Credit/Success
-  }
-
-  // For Transactions/Withdrawals status
-  switch (status) {
-    case "SUCCESS":
-      return { color: "text-green-600 bg-green-100", icon: "✅" };
-    case "PENDING":
-      return { color: "text-yellow-600 bg-yellow-100", icon: "⏳" };
-    case "FAILED":
-      return { color: "text-red-600 bg-red-100", icon: "❌" };
-    default:
-      return { color: "text-gray-600 bg-gray-100", icon: "ℹ️" };
-  }
-};
-
-/**
- * Generates the main description for a passbook entry
- * @param {object} entry - The passbook entry object
- * @returns {string}
- */
-const getEntryDescription = (entry) => {
-  switch (entry.type) {
-    case "DEPOSIT":
-      return `Funds Deposited via ${entry.payment_method}`;
-    case "WIN":
-      return "Winnings Credited";
-    case "WITHDRAWAL":
-      return `Withdrawal Request via ${entry.method}`;
-    case "BID":
-      return `Bid Placed: ${entry.digit} on ${entry.market_id} (${entry.session})`;
-    case "QR_DEPOSIT":
-      return "QR Deposit Screenshot Uploaded";
-    default:
-      return "Transaction Detail";
-  }
-};
-
-const Passbook = () => {
+export default function Passbook() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [dateRange, setDateRange] = useState({
-    startDate: null,
-    endDate: null,
-  });
-  // For date filter, based on the screenshot, we'll use a simple filter button for "Last 7 Days"
-  const [filterDays, setFilterDays] = useState(7);
 
-  const fetchHistory = async () => {
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const token = localStorage.getItem("accessToken");
+
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
-    setError(null);
+
     try {
-      // NOTE: You'll need to handle the token/auth header for your API
-      const token = localStorage.getItem("authToken");
-      const response = await axios.get(`${API_BASE_URL}/passbook/history`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.get(API_BASE, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          start_date: startDate || null,
+          end_date: endDate || null,
         },
       });
-      setHistory(response.data.history || []);
+
+      setHistory(res.data.history || []);
     } catch (err) {
-      console.error("Failed to fetch passbook history:", err);
-      setError("Failed to load history. Please try again.");
+      console.log("Passbook error:", err);
+      setHistory([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate, token]);
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [fetchHistory]);
 
-  // Filter history based on the selected filterDays (Last 7 Days, Last 30 Days, All, etc.)
-  const filteredHistory = useMemo(() => {
-    if (filterDays === "all" || history.length === 0) {
-      return history;
+  // color mapping
+  const getColor = (type) => {
+    switch (type) {
+      case "DEPOSIT":
+      case "WIN":
+        return "text-green-400";
+      case "WITHDRAWAL":
+      case "BID":
+        return "text-red-400";
+      case "QR_DEPOSIT":
+        return "text-yellow-300";
+      default:
+        return "text-gray-300";
     }
+  };
 
-    const cutoffDate = moment().subtract(filterDays, "days");
+  const getAmountText = (item) => {
+    if (item.type === "BID") return `-${item.debit}`;
+    if (item.type === "WITHDRAWAL") return `-${item.amount}`;
+    return `+${item.amount}`;
+  };
 
-    return history.filter((entry) =>
-      moment(entry.created_at).isSameOrAfter(cutoffDate, "day")
-    );
-  }, [history, filterDays]);
+  const getTitle = (item) => {
+    if (item.type === "DEPOSIT") return "Deposit Added";
+    if (item.type === "WIN") return "Winning Amount";
+    if (item.type === "WITHDRAWAL") return "Withdrawal";
+    if (item.type === "BID") return `Bid Placed (${item.game_type})`;
+    if (item.type === "QR_DEPOSIT") return "QR Deposit";
+    return item.type;
+  };
 
-  const renderHistoryItem = (entry, index) => {
-    const { color, icon } = getStatusClasses(entry.type, entry.status);
-    const description = getEntryDescription(entry);
-
-    // Determine Credit or Debit amount display
-    let amountDisplay;
-    let amountClass;
-
-    if (entry.type === "BID") {
-      // Bids are debit (negative)
-      amountDisplay = `-${entry.debit}`;
-      amountClass = "text-red-600 font-semibold";
-    } else if (entry.type === "WIN" || entry.type === "DEPOSIT") {
-      // Wins and Deposits are credit (positive)
-      amountDisplay = `+${entry.amount.toFixed(2)}`;
-      amountClass = "text-green-600 font-semibold";
-    } else if (entry.type === "WITHDRAWAL" && entry.status === "SUCCESS") {
-      // Successful withdrawal is a debit
-      amountDisplay = `-${entry.amount.toFixed(2)}`;
-      amountClass = "text-red-600 font-semibold";
-    } else if (entry.amount) {
-      // Default for other transactions with an amount (e.g., Pending Withdrawal)
-      amountDisplay = entry.amount.toFixed(2);
-      amountClass = "text-gray-700 font-medium";
-    } else {
-      // For QR_DEPOSIT without amount or other types
-      amountDisplay = "";
-      amountClass = "text-gray-500";
-    }
-
-    return (
-      <div
-        key={index}
-        className="flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
-      >
-        {/* Left Section: Icon, Description, and Date */}
-        <div className="flex items-center space-x-3">
-          <div
-            className={`flex-shrink-0 w-10 h-10 rounded-full ${color} flex items-center justify-center text-lg`}
-          >
-            {icon}
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-900 capitalize">
-              {description}
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {moment(entry.created_at).format("DD-MMM-YYYY | hh:mm A")}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Section: Amount and Status */}
-        <div className="flex flex-col items-end">
-          <p className={`text-base ${amountClass}`}>{amountDisplay}</p>
-          <span
-            className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-xs font-medium ${color}`}
-          >
-            {entry.status || entry.type}
-          </span>
-        </div>
-      </div>
-    );
+  const getDescription = (item) => {
+    if (item.type === "BID")
+      return `Market: ${item.market_id} | ${item.session} | Digit: ${item.digit}`;
+    return item.status;
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-2">
-        💰 Passbook History
-      </h1>
+    <div className="max-w-md mx-auto   text-white  pb-20 font-sans">
+      {/* Header */}
 
-      {/* Date Range/Filter Section (Matching the screenshot's filter options) */}
-      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-6 p-4 bg-white rounded-lg shadow-md border border-gray-200">
-        <div className="flex space-x-2">
-          {/* Basic date filter buttons */}
-          {["7", "30", "all"].map((days) => (
-            <button
-              key={days}
-              onClick={() =>
-                setFilterDays(days === "all" ? "all" : parseInt(days))
-              }
-              className={`px-3 py-1 text-sm rounded-full transition-colors duration-200 ${
-                filterDays === days ||
-                (filterDays !== "all" && filterDays === parseInt(days))
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-              }`}
-            >
-              {days === "all" ? "All Time" : `Last ${days} Days`}
-            </button>
-          ))}
+      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
+        <h1 className="text-lg font-semibold uppercase tracking-widest">
+          Passbook
+        </h1>
+      </div>
+
+      {/* FILTERS */}
+      <div className="bg-white/10 mx-3 p-4 rounded-lg border border-white/10 mb-4">
+        <div className="flex flex-col gap-3">
+          <label className="text-sm text-gray-300">Start Date</label>
+          <input
+            type="date"
+            className="p-2 rounded bg-black/30 border border-gray-700 text-white"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+
+          <label className="text-sm text-gray-300">End Date</label>
+          <input
+            type="date"
+            className="p-2 rounded bg-black/30 border border-gray-700 text-white"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+
+          <button
+            onClick={fetchHistory}
+            className="mt-2 bg-purple-700 hover:bg-purple-600 w-full py-2 rounded font-semibold"
+          >
+            Apply Filter
+          </button>
         </div>
       </div>
 
-      {/* History List/Table */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-        {loading ? (
-          <div className="p-10 text-center text-gray-500">
-            <svg
-              className="animate-spin h-5 w-5 text-blue-500 mx-auto mb-2"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
+      {/* HISTORY LIST */}
+      {loading ? (
+        <div className="text-center py-10">
+          <Loader size={28} className="animate-spin mx-auto text-cyan-400" />
+          <p className="mt-2 text-gray-400">Loading history...</p>
+        </div>
+      ) : history.length === 0 ? (
+        <div className="text-center py-10 text-gray-400">No records found.</div>
+      ) : (
+        <div className="space-y-3 mx-3">
+          {history.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white/5 border border-gray-800 p-4 rounded-lg flex justify-between items-center"
             >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Loading history...
-          </div>
-        ) : error ? (
-          <div className="p-10 text-center text-red-500">{error}</div>
-        ) : filteredHistory.length === 0 ? (
-          <div className="p-10 text-center text-gray-500">
-            No transactions found for the selected period.
-          </div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {filteredHistory.map(renderHistoryItem)}
-          </div>
-        )}
-      </div>
+              <div>
+                <div className={`font-semibold ${getColor(item.type)}`}>
+                  {getTitle(item)}
+                </div>
+
+                <div className="text-sm text-gray-300 mt-1">
+                  {getDescription(item)}
+                </div>
+
+                <div className="text-xs text-gray-500 mt-1">
+                  {new Date(item.created_at).toLocaleString()}
+                </div>
+              </div>
+
+              <div className={`text-lg font-bold ${getColor(item.type)}`}>
+                ₹{getAmountText(item)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default Passbook;
+}

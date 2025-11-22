@@ -18,7 +18,7 @@ import AddMoney from "./pages/AddMoney";
 
 import Charts from "./pages/Charts";
 import RateCard from "./pages/KingJackpot";
-import StarlineGame from "./pages/StarlineGame";
+import StarlineGame from "./pages/StarlineUI/StarlineGame";
 import BidHistoryPage from "./pages/BidHistory";
 import WithdrawRequest from "./pages/WithdrawRequest";
 import MyWithdrawals from "./pages/WithdrawlHistory";
@@ -36,32 +36,37 @@ import StarlineGamePannaBed from "./pages/StarlineUI/StarlineGamePannaBed";
 import AdminDeclareStarlineResult from "./pages/Admin/Starline/AdminDeclareStarlineResult";
 import StarlineResultBox from "./pages/StarlineUI/StarlineResultBox";
 import AdminDepositApprovals from "./pages/Admin/Deposit/AdminDepositApprovals";
-
-// import RajdhaniDay from "./pages/RajdhaniDay";
+import WalletTransactionHistory from "./pages/Wallet/walletHistory";
+import StarlineBidHistory from "./pages/StarlineUI/StarlineBidHistory";
+import StarlineWinHistory from "./pages/StarlineUI/StarlineWinHistory";
+import AdminJackpot from "./pages/Admin/Jackpot/AdminJackpot";
+import JackpotGame from "./pages/JackpotUI/JackpotGame";
+import JackpotBidHistory from "./pages/JackpotUI/JackpotBidHistory";
+import JackpotGamePanna from "./pages/JackpotUI/JackpotGamePanna";
+import JackpotGamePannaBed from "./pages/JackpotUI/JackpotGamePannaBed";
+import JackpotWinHistory from "./pages/JackpotUI/JackpotWinHistory";
+import GameRatePage from "./pages/GameRate";
+import ContactUs from "./pages/ContactUs";
+import UpdatePasswordPage from "./pages/ChangePassWord";
+import AdminDeclareResult from "./pages/Admin/DeclareResult/AdminDeclareResult";
 
 const ProtectedRoute = ({ redirectPath = "/login" }) => {
-  // Check for the token stored during login
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
-    // Redirect to login page if token is missing
     return <Navigate to={redirectPath} replace />;
   }
 
-  // If authenticated, render the nested routes using Outlet
   return <Outlet />;
 };
 
 const PublicOnlyRoute = ({ redirectPath = "/" }) => {
-  // Check for the token
   const accessToken = localStorage.getItem("accessToken");
 
   if (accessToken) {
-    // If token exists (user is logged in), redirect them away
     return <Navigate to={redirectPath} replace />;
   }
 
-  // If no token, allow the nested route (e.g., /login, /signup) to render
   return <Outlet />;
 };
 
@@ -89,7 +94,12 @@ const App = () => {
           <Route path="deposite-requests" element={<AdminDepositRequests />} />
           <Route path="qr-manager" element={<AdminQRManager />} />
           <Route path="starline" element={<AdminStarline />} />
+          <Route path="jackpot" element={<AdminJackpot />} />
           <Route path="deposit-approvals" element={<AdminDepositApprovals />} />
+          <Route
+            path="declare-result/:marketId"
+            element={<AdminDeclareResult />}
+          />
           <Route
             path="starline-declare-result"
             element={<AdminDeclareStarlineResult />}
@@ -109,25 +119,60 @@ const App = () => {
 
             <Route path="win-history" element={<WinHistory />} />
             <Route path="withdraw-request" element={<WithdrawRequest />} />
-            {/* <Route path="withdraw-points" element={<WithdrawPoints />} /> */}
             <Route path="my-bids" element={<MyBids />} />
             <Route path="how-to-play" element={<HowToPlay />} />
             <Route path="add-points" element={<AddMoney />} />
-            <Route path="king-jackpot" element={<RateCard />} />
-            <Route path="charts" element={<Charts />} />
+            {/* <Route path="king-jackpot" element={<RateCard />} /> */}
+            <Route path="charts/:marketId" element={<Charts />} />
             <Route path="starline" element={<StarlineGame />} />
+
+            <Route
+              path="starline-bid-history"
+              element={<StarlineBidHistory />}
+            />
+            <Route
+              path="starline-win-history"
+              element={<StarlineWinHistory />}
+            />
+
+            <Route path="/starline/:marketId" element={<StarlineGames />} />
+
+            <Route
+              path="/starline/:marketId/:gameId"
+              element={<StarlineGamePannaBed />}
+            />
+
+            <Route path="game-rate" element={<GameRatePage />} />
+            <Route path="contact-us" element={<ContactUs />} />
+            <Route path="king-jackpot" element={<JackpotGame />} />
+            <Route path="change-password" element={<UpdatePasswordPage />} />
+
+            <Route path="jackpot-bid-history" element={<JackpotBidHistory />} />
+            <Route path="jackpot-win-history" element={<JackpotWinHistory />} />
+            <Route path="/jackpot/:marketId" element={<JackpotGamePanna />} />
+            <Route
+              path="/starline/:marketId/:gameId"
+              element={<StarlineGamePannaBed />}
+            />
+            <Route
+              path="/jackpot/:marketId/:gameId"
+              element={<JackpotGamePannaBed />}
+            />
+            {/* <Route
+              path="jackpot-win-history"
+              element={<JackpotWinHistory />}
+            /> */}
+
             <Route path="bid-history" element={<BidHistoryPage />} />
             <Route path="withdraw-history" element={<MyWithdrawals />} />
             <Route path="starline-result-box" element={<StarlineResultBox />} />
 
             <Route path="deposit-history" element={<MyDepositHistory />} />
-            <Route path="passbook" element={<Passbook />} />
-
-            <Route path="/starline/:marketId" element={<StarlineGames />} />
             <Route
-              path="/starline/:marketId/:gameId"
-              element={<StarlineGamePannaBed />}
+              path="wallet-history"
+              element={<WalletTransactionHistory />}
             />
+            <Route path="passbook" element={<Passbook />} />
 
             <Route path="/play/:marketId" element={<Games />} />
             <Route path="/game/:marketId/:gameId" element={<MatkaGame />} />

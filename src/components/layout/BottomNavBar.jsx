@@ -1,5 +1,16 @@
 import React from "react";
-import { Home, TrendingUp, CalendarDays, DollarSign, Send } from "lucide-react";
+import {
+  Home,
+  TrendingUp,
+  CalendarDays,
+  DollarSign,
+  Send,
+  User,
+} from "lucide-react";
+import { IoHammerOutline } from "react-icons/io5";
+import { FaBook } from "react-icons/fa";
+import { IoMdBook } from "react-icons/io";
+import { MdOutlineCurrencyRupee } from "react-icons/md";
 
 export default function BottomNavBar() {
   return (
@@ -7,15 +18,15 @@ export default function BottomNavBar() {
       <div className="relative overflow-hidden  w-[100%] max-w-md bg-[rgba(19,21,41,1)] backdrop-blur-3xl  rounded-t-xl shadow-lg flex justify-between items-center  text-gray-400">
         {/* Left icons */}
         <div className="flex p-3 mt-1 rounded-tl-xl mr-18 rounded-tr-3xl bg-[rgba(78,80,94,1)] /60 w-full items-center space-x-8">
-          <a href="/charts" className="w-full">
-            <TrendingUp
+          <a href="/bid-history" className="w-full">
+            <IoHammerOutline
               size={22}
               className="cursor-pointer w-full hover:text-white transition"
             />
           </a>
-          <a href="/charts" className="w-full">
-            <CalendarDays
-              size={22}
+          <a href="/passbook" className="w-full">
+            <IoMdBook
+              size={24}
               className="cursor-pointer w-full hover:text-white transition"
             />
           </a>
@@ -29,15 +40,17 @@ export default function BottomNavBar() {
         {/* Right icons */}
         <div className="grid grid-cols-2 mt-1 -ml-[14px] rounded-tl-3xl rounded-tr-xl  items-center  p-3  bg-[rgba(78,80,94,1)] w-full space-x-8">
           <a href="/withdraw-request">
-            <DollarSign
+            <MdOutlineCurrencyRupee
               size={22}
               className="cursor-pointer  w-full hover:text-white transition"
             />
           </a>
-          <Send
-            size={22}
-            className="cursor-pointer  w-full hover:text-white transition"
-          />
+          <a href="/profile">
+            <User
+              size={22}
+              className="cursor-pointer  w-full hover:text-white transition"
+            />
+          </a>
         </div>
       </div>
       <a

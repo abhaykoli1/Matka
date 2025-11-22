@@ -1,5 +1,7 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { API_URL } from "../../../config";
+
 const API_BASE = `${API_URL}/starline_jackpot`;
 
 const AddSlotForm = ({ onSlotAdded }) => {
@@ -24,7 +26,7 @@ const AddSlotForm = ({ onSlotAdded }) => {
     setMessage("");
 
     try {
-      const response = await axios.post(`${API_BASE}/starline/add`, {
+      const response = await axios.post(`${API_BASE}/jackpot/add`, {
         headers: {
           "Content-Type": "application/json",
         },

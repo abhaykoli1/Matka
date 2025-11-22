@@ -140,9 +140,8 @@ export default function WithdrawRequest() {
   return (
     <div className="max-w-md mx-auto  font-sans text-white">
       <h2 className="text-xl justify-between font-bold border-b border-gray-700 bg-gradient-to-b from-black to-black/0 px-4 py-2 mb-3 flex items-center gap-2">
-        <span className="flex gap-2">
-          {" "}
-          <DollarSign className="text-green-400" />
+        <span className="flex gap-2 text-lg items-center">
+          <DollarSign size={20} className="text-green-400" />
           Withdraw Funds
         </span>
         <a href="/withdraw-history">

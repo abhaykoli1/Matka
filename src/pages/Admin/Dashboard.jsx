@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { User, Tag } from "lucide-react";
 import Sidebar from "../../components/Admin/Sidebar";
 import Header from "../../components/Admin/Header";
 import DashboardCard from "../../components/Admin/DashboardCard";
+import axios from "axios";
+import { API_URL } from "../../config";
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,6 +19,43 @@ export default function AdminDashboard() {
     "#F43F5E",
   ];
 
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  console.log(users);
+  const token = localStorage.getItem("accessToken");
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/user/all-users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const formatted = res.data.map((u) => ({
+        id: u.user_id,
+        username: u.username,
+        mobile: u.mobile,
+        role: u.role,
+        date: new Date(u.created_at).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+      }));
+
+      setUsers(formatted);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
     <div className="flex   min-h-screen">
       <div className="flex-1 flex flex-col">
@@ -29,23 +68,30 @@ export default function AdminDashboard() {
               </h3>
               <p className="text-gray-600 text-sm">Admin Dashboard</p>
             </div>
-            <img
+            {/* <img
               src="/admin-desk.svg"
               alt="Dashboard Illustration"
               className="w-24"
-            />
+            /> */}
           </div>
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <DashboardCard
               title="Users"
-              value="600"
+              value={users.length}
               subtext="Approved Users"
               color={colors[0]}
               icon={<User size={18} />}
             />
-            <DashboardCard
+            {/* <DashboardCard
+              title="Users"
+              value={users.filter((user) => user.role === "admin").length}
+              subtext="Approved Users"
+              color={colors[0]}
+              icon={<User size={18} />}
+            /> */}
+            {/* <DashboardCard
               title="Today Registration"
               value="1"
               color={colors[2]}
@@ -56,11 +102,11 @@ export default function AdminDashboard() {
               value="1"
               color={colors[1]}
               icon={<Tag size={18} />}
-            />
+            /> */}
           </div>
 
           {/* Dropdown Filters */}
-          <div className="bg-white p-4 rounded-xl shadow-md">
+          {/* <div className="bg-white p-4 rounded-xl shadow-md">
             <h3 className="font-semibold text-gray-700 mb-3">
               Total Bids On Single Ank Of Date 09 Nov 2025
             </h3>
@@ -86,10 +132,10 @@ export default function AdminDashboard() {
                 </select>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Ank Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
@@ -107,7 +153,7 @@ export default function AdminDashboard() {
                 </p>
               </div>
             ))}
-          </div>
+          </div> */}
         </main>
       </div>
     </div>

@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, BarChart2 } from "lucide-react";
 import { API_URL } from "../../config";
 
 const API_BASE = `${API_URL}/starline_jackpot`;
 
-export default function StarlineGamePannaBed() {
+export default function JackpotGamePannaBed() {
   const { marketId, gameId } = useParams();
 
-  console.log(gameId);
   const [market, setMarket] = useState(null);
   const [digit, setDigit] = useState("");
   const [points, setPoints] = useState("");
@@ -18,83 +16,67 @@ export default function StarlineGamePannaBed() {
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState([]);
 
-  // --------------------------------------------
-  // TOKEN CONFIG
-  // --------------------------------------------
+  // AUTH
   const token = localStorage.getItem("accessToken");
-
   const authHeader = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   };
 
-  // GAME NAME FORMATTER
-  const formatGameName = (str) =>
-    str.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  // FORMAT GAME NAME
+  const formatGameName = (str = "") =>
+    str.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const gameName = formatGameName(gameId);
-  const apiGameName = gameId.replace(/-/g, "_"); // required for API
+  const apiGameName = gameId.replace(/-/g, "_");
 
-  // -----------------------------
-  // FETCH STARLINE SLOT DETAILS
-  // -----------------------------
-  const fetchMarket = async () => {
-    try {
-      const res = await axios.get(
-        `${API_BASE}/starline/${marketId}`,
-        authHeader
-      );
-      setMarket(res.data);
-    } catch (err) {
-      console.error("Error loading market:", err);
-    }
-  };
+  // LIMIT INPUT
   const handleDigitChange = (value) => {
-    // allow only numeric characters
     const clean = value.replace(/\D/g, "");
 
-    if (gameId === "single-digit" || gameId === "single_digit") {
+    if (apiGameName === "single_digit") {
       if (clean.length <= 1) setDigit(clean);
-    } else if (
-      gameId === "single-panna" ||
-      gameId === "double-panna" ||
-      gameId === "triple-panna" ||
-      gameId === "single_panna" ||
-      gameId === "double_panna" ||
-      gameId === "triple_panna"
-    ) {
+    } else {
       if (clean.length <= 3) setDigit(clean);
     }
   };
 
-  // -----------------------------
-  // FETCH CURRENT RESULT
-  // -----------------------------
+  // FETCH MARKET DETAILS
+  const fetchMarket = async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE}/jackpot/${marketId}`,
+        authHeader
+      );
+      setMarket(res.data);
+    } catch (err) {
+      console.error("Failed to load market", err);
+    }
+  };
+
+  // FETCH RESULT
   const fetchResult = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/starline/result/get`, {
+      const res = await axios.get(`${API_BASE}/jackpot/result/get`, {
         params: { slot_id: marketId },
         ...authHeader,
       });
       setResult(res.data);
     } catch (err) {
-      console.error("Error loading result:", err);
+      console.log("Failed to load result", err);
     }
   };
 
-  // -----------------------------
-  // FETCH USER BID HISTORY
-  // -----------------------------
+  // FETCH HISTORY
   const fetchHistory = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE}/starline/bid/history`,
+        `${API_BASE}/jackpot/bid/history`,
         authHeader
       );
-      setHistory(res.data);
+      const list = Array.isArray(res.data) ? res.data : res.data.history || [];
+      setHistory(list);
     } catch (err) {
-      console.error("Error loading history:", err);
+      console.log("Failed to load history", err);
     }
   };
 
@@ -107,9 +89,7 @@ export default function StarlineGamePannaBed() {
     })();
   }, [marketId]);
 
-  // -----------------------------
-  // PLACE BID API
-  // -----------------------------
+  // SUBMIT BID
   const placeBid = async () => {
     setMessage("");
 
@@ -120,13 +100,13 @@ export default function StarlineGamePannaBed() {
 
     try {
       const res = await axios.post(
-        `${API_BASE}/starline/bid`,
+        `${API_BASE}/jackpot/bid`,
         {},
         {
           params: {
             slot_id: marketId,
             game_type: apiGameName,
-            digit: digit,
+            digit,
             points: Number(points),
           },
           ...authHeader,
@@ -136,16 +116,14 @@ export default function StarlineGamePannaBed() {
       setMessage(res.data.msg);
       setDigit("");
       setPoints("");
-
-      fetchHistory(); // refresh history after placing bid
+      fetchHistory();
     } catch (err) {
+      console.log(err);
       setMessage(err.response?.data?.detail || "Error placing bid");
     }
   };
 
-  // -----------------------------
-  // LOADING SCREEN
-  // -----------------------------
+  // LOADING UI
   if (loading) {
     return (
       <div className="text-white min-h-screen flex justify-center items-center bg-black">
@@ -154,13 +132,11 @@ export default function StarlineGamePannaBed() {
     );
   }
 
-  console.log("market", market);
   return (
     <div className="max-w-md mx-auto text-white min-h-screen pb-24">
       {/* HEADER */}
-
-      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center relative  ">
-        <h1 className="text-xl font-semibold text-white tracking-wide">
+      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center">
+        <h1 className="text-xl font-semibold tracking-wide">
           {market.name.toUpperCase()} - {gameName}
         </h1>
       </div>
@@ -168,22 +144,16 @@ export default function StarlineGamePannaBed() {
       {/* MARKET INFO */}
       <div className="p-4 flex items-center justify-between border-b border-purple-900 text-sm">
         <p>
-          <span className="text-gray-300  flex flex-col gap-0 items-center">
-            Open:
-          </span>{" "}
-          {market.start_time || "—"}
+          <span className="text-gray-300">Open:</span> {market.start_time}
         </p>
         <p>
-          <span className="text-gray-300  flex flex-col gap-0 items-center">
-            Close:{" "}
-          </span>{" "}
-          {market.end_time || "—"}
+          <span className="text-gray-300">Close:</span> {market.end_time}
         </p>
 
-        <p className=" flex flex-col gap-0 items-center">
+        <p className="text-center">
           Status:
           <span
-            className={`px-2 py-0.5 font-medium rounded-lg text-sm ${
+            className={`px-2 py-0.5 rounded-lg font-bold ml-1 ${
               market.status === "Market Running"
                 ? "text-green-600"
                 : "text-red-500"
@@ -197,10 +167,9 @@ export default function StarlineGamePannaBed() {
       {/* RESULT BOX */}
       <div className="p-4 border-b border-purple-900">
         <h2 className="font-bold text-purple-300">Latest Result</h2>
-
         {result?.panna ? (
-          <div className="mt-2 text-center">
-            <p className="text-lg font-bold text-yellow-400">{result.panna}</p>
+          <div className="text-center mt-2">
+            <p className="text-xl font-bold text-yellow-400">{result.panna}</p>
             <p className="text-sm text-gray-400">{result.date}</p>
           </div>
         ) : (
@@ -220,33 +189,33 @@ export default function StarlineGamePannaBed() {
           disabled={market.status !== "Market Running"}
           onChange={(e) => handleDigitChange(e.target.value)}
           className="w-full p-2.5 rounded-lg border text-white mb-3 outline-none"
-          maxLength={
-            gameId === "single_digit" || gameId === "single-digit" ? 1 : 3
-          }
+          maxLength={apiGameName === "single_digit" ? 1 : 3}
         />
+
         <input
           type="number"
-          disabled={market.status !== "Market Running"}
           placeholder="Enter Points"
           value={points}
+          disabled={market.status !== "Market Running"}
           onChange={(e) => setPoints(e.target.value)}
-          className="w-full p-2.5 rounded-lg  border text-white mb-3 outline-none"
+          className="w-full p-2.5 rounded-lg border text-white mb-3 outline-none"
         />
 
         <button
           disabled={market.status !== "Market Running"}
           onClick={placeBid}
-          className={` ${
-            market.status !== "Market Running"
-              ? "opacity-50 cursor-not-allowed"
-              : ""
-          } w-full bg-gradient-to-bl from-[#212b61] to-[#79049a] text-white py-3 rounded-lg font-bold`}
+          className={`w-full bg-gradient-to-bl from-[#212b61] to-[#79049a] text-white py-3 rounded-lg font-bold 
+            ${
+              market.status !== "Market Running"
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
         >
           Submit Bid
         </button>
 
         {message && (
-          <p className="mt-4 text-center font-semibold text-red-400">
+          <p className="text-center text-red-400 font-semibold mt-3">
             {message}
           </p>
         )}
@@ -254,7 +223,7 @@ export default function StarlineGamePannaBed() {
 
       {/* BID HISTORY */}
       <div className="p-4 border-t border-purple-900 mt-4">
-        <h2 className="text-lg font-bold mb-3 text-white">Your Bid History</h2>
+        <h2 className="text-lg font-bold mb-3">Your Bid History</h2>
 
         {history.length === 0 ? (
           <p className="text-gray-500">No bidding history found.</p>
@@ -263,22 +232,22 @@ export default function StarlineGamePannaBed() {
             {history.map((b, i) => (
               <div
                 key={i}
-                className="bg-white/20 border border-gray-700 p-3 rounded-lg"
+                className="bg-white/20 p-3 border border-gray-700 rounded-lg"
               >
                 <p className="text-sm">
-                  <span className="text-white">Game:</span>{" "}
-                  {formatGameName(b.game.replace(/_/g, " "))}
+                  <span className="text-gray-300">Game: </span>
+                  {formatGameName(b.game)}
                 </p>
 
                 <p className="text-sm">
-                  <span className="text-white">Digit:</span> {b.digit}
+                  <span className="text-gray-300">Digit: </span> {b.digit}
                 </p>
 
                 <p className="text-sm">
-                  <span className="text-white">Points:</span> {b.points}
+                  <span className="text-gray-300">Points: </span> {b.points}
                 </p>
 
-                <p className="text-xs text-gray-300 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   {new Date(b.time).toLocaleString()}
                 </p>
               </div>

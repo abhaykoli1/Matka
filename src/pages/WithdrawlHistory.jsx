@@ -139,14 +139,16 @@ export default function MyWithdrawals() {
             <tbody className="divide-y divide-gray-700">
               {withdrawals.map((w) => (
                 <tr key={w.wd_id} className="hover:bg-gray-700 transition">
-                  <td className="px-4 py-3 whitespace-nowrap text-lg font-bold text-green-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-400">
                     ₹{w.amount.toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-xs">
-                    <p className="text-gray-300 font-medium">{w.method}</p>
-                    <p className="text-gray-500">{w.number}</p>
+                  <td className="px-4 py-3 text-xs min-w-60">
+                    <p className="text-gray-300 font-medium text-sm">
+                      {w.method}
+                    </p>
+                    <p className="text-gray-500. text-sm">{w.number}</p>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm">
                     {getStatusDisplay(w.status)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-400">
