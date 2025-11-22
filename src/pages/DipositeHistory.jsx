@@ -92,7 +92,7 @@ export default function DepositHistory() {
   }, []);
 
   return (
-    <div className="max-w-md mx-auto font-sans text-white">
+    <div className="max-w-md mx-auto font-sans pb-20 text-white">
       {/* HEADER */}
       <h2 className="text-xl p-4 bg-gradient-to-b from-black to-black/0 font-bold mb-4 flex items-center gap-2 border-b border-gray-700 pb-2">
         <DollarSign className="text-purple-400" />
@@ -123,7 +123,7 @@ export default function DepositHistory() {
 
       {/* TABLE */}
       {!loading && history.length > 0 && (
-        <div className="overflow-x-auto m-3 bg-gray-800 rounded-lg shadow-xl">
+        <div className="overflow-x-auto m-3  bg-gray-800 rounded-lg shadow-xl">
           <table className="min-w-full divide-y divide-gray-700">
             <thead className="bg-gray-700">
               <tr>

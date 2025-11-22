@@ -27,12 +27,7 @@ const StarlineWinHistory = () => {
         authHeader
       );
 
-      console.log(res);
-
-      // Response is always an array
-      const list = Array.isArray(res.data) ? res.data : [];
-
-      setHistory(list);
+      setHistory(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.log("Error loading win history:", err);
     } finally {

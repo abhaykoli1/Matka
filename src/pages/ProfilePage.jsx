@@ -17,6 +17,20 @@ export default function ProfilePage() {
 
   const token = localStorage.getItem("accessToken");
 
+  function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split(".")[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+  const [userId, setUserId] = useState(null);
+  const decoded = parseJwt(token);
+  console.log("userId", userId);
+  useEffect(() => {
+    setUserId(decoded?.sub);
+  }, [decoded]);
+
   const authHeader = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -29,11 +43,11 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/profile`, authHeader);
+      const res = await axios.get(`${API_BASE}/profile2`, authHeader);
 
-      setUser(res.data);
-      setUsername(res.data.username || "");
-      setMobile(res.data.mobile || "");
+      setUser(res?.data);
+      setUsername(res?.data?.username || "");
+      setMobile(res?.data?.mobile || "");
     } catch (err) {
       console.log("Profile load error:", err);
     } finally {
@@ -45,9 +59,6 @@ export default function ProfilePage() {
     fetchProfile();
   }, []);
 
-  // ---------------------------
-  // UPDATE PROFILE
-  // ---------------------------
   const updateProfile = async () => {
     setMsg("");
 
@@ -87,14 +98,14 @@ export default function ProfilePage() {
       <div className="w-full bg-gradient-to-b  from-black to-black/0 text-white py-4 flex items-center justify-between px-4 relative">
         <h1 className="text-lg font-semibold">My Profile</h1>
 
-        {user?.role === "admin" && (
+        {/* {user?.role === "admin" && (
           <a
             href="/admin"
             className=" flex border px-3 rounded-xl py-1 items-center text-xs font-medium hover:text-purple-500"
           >
             Go To Admin
           </a>
-        )}
+        )} */}
       </div>
 
       {/* Profile Card */}
