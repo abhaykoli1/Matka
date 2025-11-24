@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
 import dayjs from "dayjs";
+import { ArrowLeft } from "lucide-react";
 
 export default function Chats() {
   const [marketName, setMarketName] = useState("");
@@ -17,13 +18,12 @@ export default function Chats() {
       setLoading(true);
       setNoData(false);
       try {
-
         const url = marketId
           ? `${API_URL}/api/admin/market-chart?market_id=${marketId}`
           : `${API_URL}/api/admin/market-chart`;
 
         const res = await axios.get(url);
-        console.log(res)
+        console.log(res);
         const data = Array.isArray(res.data)
           ? res.data
           : res.data.chart || res.data.results || [];
@@ -73,21 +73,33 @@ export default function Chats() {
     );
 
   return (
-    <div className="max-w-[960px] mx-auto p-4">
+    <div className="max-w-[960px] mx-auto">
       {/* Header */}
-      <h1 className="text-2xl font-bold text-center text-slate-100 mb-4">
-        {marketName.toUpperCase()} RESULT CHART
-      </h1>
+
+      <div className="w-full max-w-md mx-auto relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full  transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center">
+            {marketName.toUpperCase()} - RESULT CHART
+          </span>
+        </h2>
+        <a className="pr-4 z-10"></a>
+      </div>
 
       {/* Calendar Grid */}
-      <div className="space-y-4">
+      <div className=" max-w-md mx-auto px-4 mt-4">
         {rows.map((week, idx) => (
           <div key={idx} className="w-full overflow-x-auto">
             <div className="grid grid-cols-7 gap-2">
               {week.map((item, i) => (
                 <div
                   key={i}
-                  className="border border-slate-500 bg-slate-900 rounded-md p-1 text-white"
+                  className="borde bg-white/5 border border-gray-50/5  p-1 text-white"
                   style={{ minWidth: 110 }}
                 >
                   {/* Top Date */}

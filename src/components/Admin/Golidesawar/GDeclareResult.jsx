@@ -175,26 +175,26 @@ export default function GDeclareResultPage() {
   return (
     <div className=" lg:p-6 p-3 text-white">
       {/* SELECT MARKET BLOCK */}
-      <div className="bg-white/5 rounded-xl p-4 shadow border border-white/5">
+      <div className="bg-white/5 rounded-xl p-3 shadow border border-white/5">
         <h2 className="text-xl font-semibold mb-4">Declare Result</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* DATE */}
           <div>
-            <label className="text-gray-300">Result Date</label>
+            <label className="text-gray-300 text-sm">Result Date</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="mt-1 w-full p-3 rounded  border border-gray-50/10"
+              className="mt-1 w-full p-1.5 rounded  border border-gray-50/10"
             />
           </div>
 
           {/* GAME SELECT */}
           <div>
-            <label className="text-gray-300">Game Name</label>
+            <label className="text-gray-300 text-sm">Game Name</label>
             <select
-              className="mt-1 w-full p-3 rounded  border border-gray-50/10"
+              className="mt-1 w-full p-1.5 rounded  border border-gray-50/10"
               value={selectedMarketId}
               onChange={(e) => setSelectedMarketId(e.target.value)}
             >
@@ -217,7 +217,7 @@ export default function GDeclareResultPage() {
         {/* SHOW ONLY AFTER MARKET SELECTED */}
         {selectedMarketId && (
           <div className="mt-6">
-            <label className="text-gray-300 mb-1 block">
+            <label className="text-gray-300 text-sm mb-1 block">
               Enter Digit (Single / -X / Jodi)
             </label>
 
@@ -225,14 +225,14 @@ export default function GDeclareResultPage() {
               <input
                 value={digit}
                 onChange={handleInput}
-                className="p-3 rounded bg-gray-900 border border-white/10 w-full md:w-1/3"
+                className=" p-1.5 rounded  border border-white/10 w-full md:w-1/3"
                 placeholder="Eg: 5, -3, 24"
               />
 
               <button
                 onClick={handleDeclare}
                 disabled={loading}
-                className="bg-green-600 px-6 py-2 rounded font-bold"
+                className="bg-green-600 px-6 py-1.5 text-md rounded font-bold"
               >
                 DECLARE
               </button>
@@ -242,7 +242,7 @@ export default function GDeclareResultPage() {
       </div>
 
       {/* RESULT HISTORY */}
-      <div className="mt-8 bg-white/5 p-4 rounded-xl shadow border border-gray-50/10">
+      <div className="mt-4 bg-white/5 p-3 rounded-xl shadow border border-gray-50/10">
         {/* FILTERS */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">Result History</h3>
@@ -252,7 +252,7 @@ export default function GDeclareResultPage() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="p-2 rounded  border border-gray-50/10"
+              className="p-1.5 rounded  border border-gray-50/10"
             />
             {/* <button
               onClick={fetchResults}
@@ -268,12 +268,24 @@ export default function GDeclareResultPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="text-gray-300 text-sm">
-                <th className="px-4 py-2 border-b border-white/10">#</th>
-                <th className="px-4 py-2 border-b border-white/10">Game</th>
-                <th className="px-4 py-2 border-b border-white/10">Date</th>
-                <th className="px-4 py-2 border-b border-white/10">Open</th>
-                <th className="px-4 py-2 border-b border-white/10">Close</th>
-                <th className="px-4 py-2 border-b border-white/10">Action</th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  #
+                </th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  Game
+                </th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  Date
+                </th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  Open
+                </th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  Close
+                </th>
+                <th className="px-2 py-1.5 text-[14px] border-b border-white/10">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -289,25 +301,25 @@ export default function GDeclareResultPage() {
                   const id = r._id || r.id || getId(r);
                   return (
                     <tr key={id} className="bg-gray-900/20">
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         {i + 1}
                       </td>
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         {r.game_name}
                       </td>
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         {toNiceDate(r.date)}
                       </td>
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         {r.open_digit}
                       </td>
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         {r.close_digit}
                       </td>
-                      <td className="px-4 py-2 border-b border-white/10">
+                      <td className="px-2 py-1.5 text-[14px] border-b border-white/10">
                         <button
                           onClick={() => handleDelete(id)}
-                          className="bg-red-600 px-3 py-1 rounded"
+                          className="bg-red-600 px-3  rounded"
                         >
                           Delete
                         </button>

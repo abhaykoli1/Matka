@@ -178,6 +178,23 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
   const handleQuickAmount = (amt) => setAmount(amt);
 
+  const [settings, setSettings] = useState(null);
+  // console.log(settings);
+
+  useEffect(() => {
+    async function load() {
+      const res = await axios.get(`${API_URL}/settings/get`);
+      console.log("res", res);
+
+      setSettings(res?.data);
+      if (error) {
+        console.log("Settings API Error:", error);
+      }
+    }
+
+    load();
+  }, []);
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -187,7 +204,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
       <input
         type="number"
-        placeholder="Add amount (Min 200)"
+        placeholder={`Add amount (Min Rs ${settings?.min_deposit})`}
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         className="w-full bg-transparent text-gray-200 py-2 px-4 rounded-md border

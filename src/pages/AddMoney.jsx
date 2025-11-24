@@ -118,6 +118,23 @@ export default function AddMoney() {
   const [showAutoNotice, setShowAutoNotice] = useState(false);
   const qrRef = useRef(null);
 
+  const [settings, setSettings] = useState(null);
+  // console.log(settings);
+
+  useEffect(() => {
+    async function load() {
+      const res = await axios.get(`${API_URL}/settings/get`);
+      console.log("res", res);
+
+      // setSettings(res?.data);
+      if (error) {
+        console.log("Settings API Error:", error);
+      }
+    }
+
+    load();
+  }, []);
+
   useEffect(() => {
     (async () => {
       const data = await fetchSiteData();
@@ -184,12 +201,17 @@ export default function AddMoney() {
 
       {/* Auto Tab */}
       {activeTab === "auto" && (
-        <DepositeByOwn onRequestCreated={triggerAutoNotice} />
+        <DepositeByOwn
+          settings={settings}
+          onRequestCreated={triggerAutoNotice}
+        />
       )}
 
       {/* QR Code Tab */}
       <div ref={qrRef} className="w-full">
-        {activeTab === "qr" && <AddMoneyQrTab site={site} />}
+        {activeTab === "qr" && (
+          <AddMoneyQrTab settings={settings} site={site} />
+        )}
       </div>
 
       {/* Info Text */}
@@ -210,8 +232,8 @@ export default function AddMoney() {
 
       {/* SLIDE-UP notification */}
       {showAutoNotice && (
-        <div className="fixed bottom-25 left-1/2 animate-fadeIn -translate-x-1/2 bg-green-500/80 text-white px-4 py-2 rounded-full shadow-lg">
-          Payment Request Created! Pay And Upload Screenshot
+        <div className="fixed bottom-40 left-1/2 text-sm font-medium  animate-fadeIn -translate-x-1/2 bg-green-700 text-white px-4 py-2 rounded-full shadow-lg">
+          Pay And Upload Screenshot
         </div>
       )}
     </div>

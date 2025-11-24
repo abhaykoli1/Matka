@@ -509,6 +509,7 @@ const App = () => {
               path="golidesawar-bid-history"
               element={<GBidHistoryReport />}
             />
+
             <Route
               path="golidesawar-win-history"
               element={<GWinningHistory />}

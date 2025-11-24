@@ -179,7 +179,7 @@ export default function StarlineMarket() {
                   </div>
 
                   {/* Chart Button */}
-                  <a href={`/charts/starline/${mkt.id}`}>
+                  <a href={`/charts/${mkt.id}`}>
                     <FaChartLine size={26} />
                   </a>
 

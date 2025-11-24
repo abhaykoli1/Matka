@@ -114,7 +114,7 @@ export default function BidReport() {
         <h1 className="text-xl font-bold">Bid History Report</h1>
 
         {/* FILTER UI (unchanged) */}
-        <form className="mt-6 flex flex-wrap gap-4 items-end">
+        <form className="mt-6 flex flex-wrap gap-2 items-end">
           {/* DATE */}
           <div className="flex-1">
             <label className="text-sm text-slate-300 block mb-2">Date</label>
@@ -122,7 +122,7 @@ export default function BidReport() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
+              className="w-full bg-transparent border border-white/10 px-3 py-1.5 rounded text-white"
             />
           </div>
 
@@ -132,7 +132,7 @@ export default function BidReport() {
             <select
               value={marketId}
               onChange={(e) => setMarketId(e.target.value)}
-              className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
+              className="w-full bg-transparent border min-w-47 border-white/10 px-3 py-1.5 rounded text-white"
             >
               {markets.map((m) => (
                 <option key={m} value={m}>
@@ -150,7 +150,7 @@ export default function BidReport() {
             <select
               value={gameType}
               onChange={(e) => setGameType(e.target.value)}
-              className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
+              className="w-full bg-transparent border min-w-47 border-white/10 px-3 py-1.5 rounded text-white"
             >
               {gameTypes.map((g) => (
                 <option key={g} value={g}>
@@ -166,7 +166,7 @@ export default function BidReport() {
             <select
               value={session}
               onChange={(e) => setSession(e.target.value)}
-              className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
+              className="w-full bg-transparent border min-w-47 border-white/10 px-3 py-1.5 rounded text-white"
             >
               <option value="all">All</option>
               <option value="open">Open</option>
@@ -181,7 +181,7 @@ export default function BidReport() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Name / Mobile"
-              className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
+              className="w-full bg-transparent border min-w-47 border-white/10 px-3 py-1.5 rounded text-white"
             />
           </div>
         </form>
@@ -203,18 +203,18 @@ export default function BidReport() {
           <div className="overflow-auto">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="bg-white/10 text-slate-300 border-b border-white/10">
-                  <th className="py-3 px-3">#</th>
-                  <th className="py-3 px-3">Name</th>
-                  <th className="py-3 px-3">Mobile</th>
-                  <th className="py-3 px-3">Bid Date</th>
-                  <th className="py-3 px-3">Bid Time</th>
-                  <th className="py-3 px-3">Game</th>
-                  <th className="py-3 px-3">Type</th>
-                  <th className="py-3 px-3">Session</th>
-                  <th className="py-3 px-3">Digit</th>
-                  <th className="py-3 px-3">Points</th>
-                  <th className="py-3 px-3">Action</th>
+                <tr className="bg-white/10 text-left text-slate-300 border-b border-white/10">
+                  <th className="py-2 px-2">#</th>
+                  <th className="py-2 px-2">Name</th>
+                  <th className="py-2 px-2">Mobile</th>
+                  <th className="py-2 px-2">Bid Date</th>
+                  <th className="py-2 px-2">Bid Time</th>
+                  <th className="py-2 px-2">Game</th>
+                  <th className="py-2 px-2">Type</th>
+                  <th className="py-2 px-2">Session</th>
+                  <th className="py-2 px-2">Digit</th>
+                  <th className="py-2 px-2">Points</th>
+                  <th className="py-2 px-2">Action</th>
                 </tr>
               </thead>
 
@@ -236,18 +236,18 @@ export default function BidReport() {
                         idx % 2 === 0 ? "bg-transparent" : "bg-white/5"
                       }
                     >
-                      <td className="py-2 px-3">{idx + 1}</td>
-                      <td className="py-2 px-3 text-sky-300">{b.name}</td>
-                      <td className="py-2 px-3">{b.mobile}</td>
-                      <td className="py-2 px-3">{b.bid_date}</td>
-                      <td className="py-2 px-3">{b.bid_time}</td>
-                      <td className="py-2 px-3">{b.market_name}</td>
-                      <td className="py-2 px-3">{b.game_type}</td>
-                      <td className="py-2 px-3">{b.session}</td>
-                      <td className="py-2 px-3">{b.digit}</td>
-                      <td className="py-2 px-3 font-bold">{b.points}</td>
+                      <td className="py-1.5 px-2">{idx + 1}</td>
+                      <td className="py-1.5 px-2 text-sky-300">{b.name}</td>
+                      <td className="py-1.5 px-2">{b.mobile}</td>
+                      <td className="py-1.5 px-2 min-w-30">{b.bid_date}</td>
+                      <td className="py-1.5 px-2 min-w-30">{b.bid_time}</td>
+                      <td className="py-1.5 px-2">{b.market_name}</td>
+                      <td className="py-1.5 px-2">{b.game_type}</td>
+                      <td className="py-1.5 px-2">{b.session}</td>
+                      <td className="py-1.5 px-2">{b.digit}</td>
+                      <td className="py-1.5 px-2 font-bold">{b.points}</td>
 
-                      <td className="py-2 px-3">
+                      <td className="py-1.5 px-2">
                         <button
                           onClick={() => handleDelete(b.bid_id)}
                           className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded text-white flex items-center gap-2"

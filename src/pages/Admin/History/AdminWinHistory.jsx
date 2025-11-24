@@ -20,37 +20,15 @@ export default function AdminWinHistory({ wins }) {
 
   return (
     <div className="bg-white/10 text-white p-3 rounded-xl shadow mt-5">
-      <h2 className="text-md text-yellow-500/70 font-semibold mb-3">
-        Winning History
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-1 mb-3">
+        <h2 className="text-md text-yellow-500/70 font-semibold ">
+          Winning History
+        </h2>
 
-      {/* Top Bar */}
-      <div className="flex items-center justify-between mb-3">
-        {/* Show Entries */}
-        <div className="flex text-sm items-center gap-2">
-          <span>Show</span>
-          <select
-            className="border-1 outline-none px-1 py-0 rounded"
-            value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[5, 10, 20, 50].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-          <span>Entries</span>
-        </div>
-
-        {/* Search */}
         <input
           type="text"
           placeholder="Search"
-          className="border px-3 py-1 rounded"
+          className="border px-3 min-w-60 md:max-w-70  sm:max-w-60 w-full py-1 rounded"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -58,6 +36,28 @@ export default function AdminWinHistory({ wins }) {
           }}
         />
       </div>
+      {/* Top Bar */}
+      {/* Show Entries */}
+      <div className="flex text-sm items-center gap-2 mb-3">
+        <span>Show</span>
+        <select
+          className="border-1 outline-none px-1 py-0 rounded"
+          value={rowsPerPage}
+          onChange={(e) => {
+            setRowsPerPage(Number(e.target.value));
+            setPage(1);
+          }}
+        >
+          {[5, 10, 20, 50].map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+        <span>Entries</span>
+      </div>
+
+      {/* Search */}
 
       {/* Table */}
       <div className="overflow-x-auto">

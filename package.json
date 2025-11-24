@@ -15,6 +15,7 @@
     "@tiptap/react": "^3.11.0",
     "@tiptap/starter-kit": "^3.11.0",
     "axios": "^1.13.2",
+    "dayjs": "^1.11.19",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.553.0",
     "moment": "^2.30.1",

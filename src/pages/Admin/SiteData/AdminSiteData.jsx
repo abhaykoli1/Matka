@@ -94,9 +94,7 @@ export default function AdminSiteData() {
 
       <div className="grid grid-cols-2 gap-4 my-4 mb-8">
         <div>
-          <label className="font-medium text-sm">
-            Dashboard Notification Line
-          </label>
+          <label className="font-medium text-sm">Dashboard Notification</label>
           <input
             name="dashboard_notification_line"
             value={siteData.dashboard_notification_line}
@@ -107,9 +105,7 @@ export default function AdminSiteData() {
         </div>
 
         <div>
-          <label className="font-medium text-sm">
-            Add Fund Notification Line
-          </label>
+          <label className="font-medium text-sm">Add Fund Notification</label>
           <input
             name="add_fund_notification_line"
             value={siteData.add_fund_notification_line}

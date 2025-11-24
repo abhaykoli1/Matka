@@ -7,9 +7,11 @@ import {
   DollarSignIcon,
   ArrowLeft,
   HistoryIcon,
+  Phone,
 } from "lucide-react";
 import { API_URL } from "../config";
 import axios from "axios";
+import { getUserById } from "../components/layout/fetchUser";
 
 const API_BASE_URL = API_URL; // Replace with your actual base URL
 
@@ -44,6 +46,24 @@ export default function WithdrawRequest() {
   const [minWithdraw, setMinWithdraw] = useState(200); // Example minimum
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const res = await axios.get(`${API_URL}/settings/get`);
+
+      console.log(res);
+      setSettings(res?.data);
+      if (error) {
+        console.log("Settings API Error:", error);
+      } else {
+        setSettings(data);
+      }
+    }
+
+    load();
+  }, []);
+
   // --- Fetch Current Balance and User ID ---
 
   const fetchBalance = async () => {
@@ -68,6 +88,25 @@ export default function WithdrawRequest() {
     setCurrentUserId(getUserIdFromToken());
     fetchBalance();
   }, []);
+
+  const userId = localStorage.getItem("userId");
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+
+  console.log(user);
+  useEffect(() => {
+    async function fetchUser() {
+      const { data, error } = await getUserById(userId);
+
+      if (error) {
+        setError(error);
+      } else {
+        setUser(data);
+      }
+    }
+
+    fetchUser();
+  }, [userId]);
 
   // --- Handle Form Submission ---
   const handleSubmit = async (e) => {
@@ -157,7 +196,7 @@ export default function WithdrawRequest() {
     }
   };
 
-  const paymentMethods = ["Paytm", "Google Pay", "PhonePe", "Bank Transfer"];
+  const paymentMethods = ["Paytm", "Google Pay", "PhonePe"];
 
   return (
     <div className="max-w-md mx-auto pb-20 font-sans text-white">
@@ -181,17 +220,15 @@ export default function WithdrawRequest() {
       {/* Balance Info */}
       <div className="bg-white/10 p-4 mx-3 rounded-lg mb-4 shadow-md">
         <p className="text-sm text-gray-300 flex items-center gap-2">
-          <User2 size={16} /> User ID:{" "}
-          <span className="font-mono text-xs text-purple-300">
-            {currentUserId}
-          </span>
+          <User2 size={16} /> Name : {user?.username}
         </p>
+
         <p className="text-sm text-gray-300 mt-2">Your Current Balance:</p>
         <p className="text-3xl font-extrabold text-green-400">
           {currentBalance?.toFixed(2)}
         </p>
         <p className="text-xs mt-1 text-gray-400">
-          Minimum Withdrawal: ₹{minWithdraw}
+          Minimum Withdrawal: ₹{settings?.min_withdraw}
         </p>
       </div>
 
@@ -224,7 +261,7 @@ export default function WithdrawRequest() {
             placeholder={`Min ₹${minWithdraw}`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+            className="w-full p-3 rounded-lg  border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
             min={minWithdraw}
             disabled={loading}
           />
@@ -239,11 +276,11 @@ export default function WithdrawRequest() {
             id="method"
             value={method}
             onChange={(e) => setMethod(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+            className="w-full p-3 rounded-lg  border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
             disabled={loading}
           >
             {paymentMethods.map((m) => (
-              <option key={m} value={m} className="bg-gray-800">
+              <option key={m} value={m} className="">
                 {m}
               </option>
             ))}
@@ -261,7 +298,7 @@ export default function WithdrawRequest() {
             placeholder={`Enter your ${method} number or UPI ID`}
             value={number}
             onChange={(e) => setNumber(e.target.value)}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+            className="w-full p-3 rounded-lg  border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
             required
             disabled={loading}
           />

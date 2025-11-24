@@ -13,6 +13,7 @@ export default function MyBids() {
   const bidOptions = [
     {
       id: 1,
+      link: "/bid-history",
       title: "Bid History",
       desc: "you can add funds to your wallet",
       color: "bg-purple-600",
@@ -20,6 +21,7 @@ export default function MyBids() {
     },
     {
       id: 2,
+      link: "/win-history",
       title: "Game Results",
       desc: "you can view market result history.",
       color: "bg-green-500",
@@ -27,6 +29,7 @@ export default function MyBids() {
     },
     {
       id: 3,
+      link: "/bid-history",
       title: "Starline Bid History",
       desc: "you can starline history.",
       color: "bg-purple-400",
@@ -34,6 +37,7 @@ export default function MyBids() {
     },
     {
       id: 4,
+      link: "/win-history",
       title: "Starline Result History",
       desc: "You can view starline result",
       color: "bg-red-500",
@@ -41,6 +45,7 @@ export default function MyBids() {
     },
     {
       id: 5,
+      link: "/king-bids-history",
       title: "Jackpot Bid History",
       desc: "You can view your jackpot history",
       color: "bg-cyan-500",
@@ -48,6 +53,7 @@ export default function MyBids() {
     },
     {
       id: 6,
+      link: "/king-win-history",
       title: "Jackpot Result History",
       desc: "You can view your jackpot result",
       color: "bg-green-500",
@@ -77,7 +83,7 @@ export default function MyBids() {
       <div className="mt-3 pb-10 w-[94%] max-w-md mx-auto space-y-4">
         {bidOptions.map((item) => (
           <a
-            href="/bid-history"
+            href={item?.link}
             key={item.id}
             className="flex items-center justify-between bg-white/5 rounded-xl shadow p-4 hover:shadow-md transition"
             // className="flex items-center  bg-white rounded-xl shadow p-4 hover:shadow-md transition"

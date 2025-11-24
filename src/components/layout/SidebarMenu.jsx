@@ -130,7 +130,7 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-white w-72 shadow-xl border-r-[0.5px] border-gray-300 z-40 transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-full w-72 shadow-xl border-r-[0.5px] border-gray-50/10 z-40 transform transition-transform duration-300 ease-in-out
         ${sidebar ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Header */}
@@ -142,18 +142,15 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
             <X size={22} />
           </button>
 
-          <div className="w-16 h-16 border text-purple-800 rounded-full flex items-center justify-center font-bold text-2xl">
+          <div className="w-16 h-16 border-2 text-white border-purple-900 rounded-full flex items-center justify-center font-bold text-2xl">
             {username?.[0]}
           </div>
           <h3 className="mt-2 text-lg font-semibold">{username}</h3>
           <p className="text-sm opacity-80">{mobile}</p>
-          {/* <button className="backdrop-blur-2xl bg-white/30 mt-3 text-white  px-4 py-1 text-sm font-medium rounded-full hover:bg-purple-100 transition">
-            Choose Language
-          </button> */}
         </div>
 
         {/* Menu */}
-        <div className="p-4 flex flex-col space-y-3 -mt-4 pt-5 overflow-y-auto bg-[rgba(20,25,51,1)] text-white h-[calc(100%-136px)]">
+        <div className="p-4 flex flex-col space-y-3 -mt-4 pt-5 overflow-y-auto bg-[rgba(20,25,51,1) bg-blac50 backdrop-blur-2xl text-white h-[calc(100%-136px)]">
           {menuItems
             // 3. Filter the Logout item if the user is not authenticated
             .filter((item) => !item.isLogout || accessToken)

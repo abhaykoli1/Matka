@@ -42,7 +42,7 @@ export default function AdminDepositRequests() {
 
   // VIEW SCREENSHOT
   const viewScreenshot = (path) => {
-    window.open(API_URL + "/" + path, "_blank");
+    window.open(API_URL + path, "_blank");
   };
 
   // APPROVE

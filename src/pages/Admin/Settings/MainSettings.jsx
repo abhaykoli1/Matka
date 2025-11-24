@@ -8,18 +8,18 @@ export default function MainSettings() {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    min_deposit: "",
-    max_deposit: "",
-    min_withdraw: "",
-    max_withdraw: "",
-    min_transfer: "",
-    max_transfer: "",
-    min_bid: "",
-    max_bid: "",
-    welcome_bonus: "",
-    withdraw_open_time: "",
-    withdraw_close_time: "",
-    website_link: "",
+    min_deposit: "0",
+    max_deposit: "0",
+    min_withdraw: "0",
+    max_withdraw: "0",
+    min_transfer: "0",
+    max_transfer: "0",
+    min_bid: "0",
+    max_bid: "0",
+    welcome_bonus: "0",
+    withdraw_open_time: "0",
+    withdraw_close_time: "0",
+    website_link: "0",
   });
 
   // -------------------------------------
@@ -181,7 +181,7 @@ export default function MainSettings() {
         </div>
 
         {/* Welcome Bonus */}
-        <div>
+        {/* <div>
           <label className="font-medium text-sm">Welcome Bonus</label>
           <input
             name="welcome_bonus"
@@ -191,10 +191,10 @@ export default function MainSettings() {
             placeholder="1"
             type="number"
           />
-        </div>
+        </div> */}
 
         {/* Withdraw Open Time */}
-        <div>
+        {/* <div>
           <label className="font-medium text-sm">Withdraw Open Time</label>
           <input
             name="withdraw_open_time"
@@ -204,10 +204,10 @@ export default function MainSettings() {
             placeholder="11:00 AM"
             type="text"
           />
-        </div>
+        </div> */}
 
         {/* Withdraw Close Time */}
-        <div>
+        {/* <div>
           <label className="font-medium text-sm">Withdraw Close Time</label>
           <input
             name="withdraw_close_time"
@@ -217,10 +217,10 @@ export default function MainSettings() {
             placeholder="07:00 PM"
             type="text"
           />
-        </div>
+        </div> */}
 
         {/* Website Link */}
-        <div className="md:col-span-2 lg:col-span-3">
+        {/* <div className="md:col-span-2 lg:col-span-3">
           <label className="font-medium text-sm">
             Website & Share Button Link
           </label>
@@ -232,7 +232,7 @@ export default function MainSettings() {
             placeholder="https://example.com"
             type="text"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Submit Button */}

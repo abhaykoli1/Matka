@@ -106,7 +106,7 @@ export default function EditGGameModal({ data, onClose, refresh }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 mt-16 flex justify-center items-start z-30 p-4 overflow-auto">
-      <div className="backdrop-blur-2xl w-full lg:max-w-2xl md:max-w-2xl rounded-xl p-5 bg-[#07101a] border border-white/10 shadow-xl mt-8">
+      <div className="backdrop-blur-2xl w-full lg:max-w-2xl md:max-w-2xl rounded-xl p-5 bg-white/5 border border-white/10 shadow-xl mt-8">
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-xl font-bold text-white">Edit Game</h2>
           <button onClick={onClose} className="text-white">
