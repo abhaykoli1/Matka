@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { CheckCircle, XCircle, Loader } from "lucide-react";
+import { CheckCircle, XCircle, Loader, ArrowLeft } from "lucide-react";
 import { API_URL } from "../config";
 
 const API_BASE = `${API_URL}`;
@@ -56,7 +56,7 @@ const Message = ({ type, text }) => {
   if (!text) return null;
   return (
     <div
-      className={`p-3 rounded-lg mb-4 flex items-center gap-3 ${
+      className={`p-3 mx-3 rounded-lg mb-4 flex items-center gap-3 ${
         type === "success"
           ? "bg-green-900 text-green-200"
           : type === "error"
@@ -107,13 +107,21 @@ export default function MatkaGame() {
   const fetchMarket = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/market/${marketId}`);
-      setMarket(res.data);
+      const res = await axios.get(`${API_BASE}/api/admin/market`, {
+        headers: authHeader,
+      });
+
+      console.log(res);
+
+      const list = res.data.data;
+      const found = list.find((m) => m._id?.$oid === marketId);
+
+      setMarket(found || null);
     } catch {
       setMarket(null);
     }
     setLoading(false);
-  }, [marketId]);
+  }, [marketId, authHeader]);
 
   useEffect(() => {
     fetchMarket();
@@ -152,7 +160,6 @@ export default function MatkaGame() {
         points: Number(points),
       };
 
-      // sangam special fields
       if (gameType === "full_sangam") {
         const [o, c] = finalDigit.split("-");
         payload.open_panna = o;
@@ -172,14 +179,20 @@ export default function MatkaGame() {
       }
 
       await axios.post(
-        `${API_BASE}/bid/place`,
+        `${API_BASE}/user/bid/place`,
         {},
-        { params: payload, headers: authHeader }
+        {
+          params: payload,
+          headers: authHeader,
+        }
       );
 
       setMsg({ type: "success", text: "Bid placed successfully!" });
 
-      // reset
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
       setDigit("");
       setOpenPanna("");
       setClosePanna("");
@@ -200,20 +213,51 @@ export default function MatkaGame() {
       </div>
     );
 
+  if (!market)
+    return <div className="text-center text-red-400 p-6">Market Not Found</div>;
+
   return (
-    <div className="max-w-md mx-auto min-h-screen p-4 text-white">
-      <h1 className="text-xl font-bold uppercase">
-        {market.name} — {displayGame}
-      </h1>
-      <p className="text-xs text-gray-300 mb-4">
-        {market.open_time} • {market.close_time} • {market.status}
+    <div className="max-w-md mx-auto min-h-screen  text-white">
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2  items-center uppercase">
+            {market.name} — {displayGame}
+          </span>
+        </h2>
+        <a className="pr-4 z-10"></a>
+      </div>
+      <p className="text-xs bg-white/5 flex justify-between px-3 py-3 rounded-b-lg text-gray-300 mb-4">
+        <span className="flex flex-col">
+          <strong>Open Time :</strong> <span>{market.open_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Close Time :</strong>
+
+          <span>{market.close_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Status:</strong>
+          <span
+            className={`${
+              market.status === true ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {market.status === true ? "Market Running" : "Market Closed"}
+          </span>
+        </span>
       </p>
 
       <Message type={msg?.type} text={msg?.text} />
 
       <form
         onSubmit={placeBid}
-        className="bg-white/5 p-4 rounded-lg border border-gray-800"
+        className="bg-white/5 p-4 mx-3 mt-3 rounded-lg border border-gray-800"
       >
         {/* SESSION */}
         <div className="mb-3 text-sm text-gray-300">

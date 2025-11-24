@@ -96,8 +96,8 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
     { icon: <Star size={18} />, label: "King Jackpot", link: "/king-jackpot" },
     {
       icon: <ArrowDownCircle size={18} />,
-      label: "Withdraw Funds",
-      link: "/withdraw-request",
+      label: "Withdrawal Funds",
+      link: "/withdrawal-request",
     },
     // { icon: <ArrowUpCircle size={18} />, label: "Transfer Points" },
     { icon: <Clock size={18} />, label: "Bid History", link: "/bid-history" },
@@ -142,8 +142,8 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
             <X size={22} />
           </button>
 
-          <div className="w-16 h-16 bg-yellow-300 text-purple-800 rounded-full flex items-center justify-center font-bold text-2xl">
-            Y
+          <div className="w-16 h-16 border text-purple-800 rounded-full flex items-center justify-center font-bold text-2xl">
+            {username?.[0]}
           </div>
           <h3 className="mt-2 text-lg font-semibold">{username}</h3>
           <p className="text-sm opacity-80">{mobile}</p>

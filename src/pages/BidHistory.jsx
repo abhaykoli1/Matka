@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../config";
-import { Loader } from "lucide-react";
+import { ArrowLeft, Loader } from "lucide-react";
 
 const API_BASE = `${API_URL}`;
 
@@ -44,11 +44,20 @@ export default function BidHistoryPage() {
   }, [fetchHistory]);
 
   return (
-    <div className="max-w-md mx-auto  text-white font-sans min-h-screen">
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
-        <h1 className="text-lg font-semibold uppercase tracking-widest">
-          Bid History
-        </h1>
+    <div className="max-w-md mx-auto pb-20  text-white font-sans min-h-screen">
+      <div className="w-full mb-2 relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center uppercase">
+            Bid History
+          </span>
+        </h2>
+        <a className="pr-4 z-10"></a>
       </div>
 
       {loadingHistory ? (
@@ -59,11 +68,11 @@ export default function BidHistoryPage() {
       ) : history.length === 0 ? (
         <div className="text-gray-500 text-center">No bids found.</div>
       ) : (
-        <div className="space-y-3 pb-15">
+        <div className="space-y-3 ">
           {history.map((h) => (
             <div
               key={h.id}
-              className="bg-white/10 p-3 mx-3 mt-1  rounded-lg border border-gray-700"
+              className="bg-white/5 p-3 mx-3 mt-1  rounded-lg border border-gray-50/10"
             >
               <p className="text-sm font-semibold">
                 {(h.game_type || "").replace(/_/g, " ")} — {h.session}

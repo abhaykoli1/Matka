@@ -87,10 +87,19 @@ export default function Passbook() {
     <div className="max-w-md mx-auto   text-white  pb-20 font-sans">
       {/* Header */}
 
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
-        <h1 className="text-lg font-semibold uppercase tracking-widest">
-          Passbook
-        </h1>
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 pb-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 uppercase text-md items-center">
+            Passbook
+          </span>
+        </h2>
+        <a className="pr-4 z-10">{/* <HistoryIcon /> */}</a>
       </div>
 
       {/* FILTERS */}

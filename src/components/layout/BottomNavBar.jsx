@@ -14,21 +14,24 @@ import { MdOutlineCurrencyRupee } from "react-icons/md";
 
 export default function BottomNavBar() {
   return (
-    <div className="fixed bottom-0 left-0 w-full flex justify-center items-center  z-40">
+    <div className="fixed -bottom-3 left-0 w-full flex justify-center items-center  z-40">
       <div className="relative overflow-hidden  w-[100%] max-w-md bg-[rgba(19,21,41,1)] backdrop-blur-3xl  rounded-t-xl shadow-lg flex justify-between items-center  text-gray-400">
         {/* Left icons */}
         <div className="flex p-3 mt-1 rounded-tl-xl mr-18 rounded-tr-3xl bg-[rgba(78,80,94,1)] /60 w-full items-center space-x-8">
-          <a href="/bid-history" className="w-full">
+          <a href="/bid-history" className="w-full text-center">
             <IoHammerOutline
               size={22}
               className="cursor-pointer w-full hover:text-white transition"
             />
+            <span className="text-xs"> My Bids</span>
           </a>
-          <a href="/passbook" className="w-full">
+
+          <a href="/passbook" className="w-full text-center">
             <IoMdBook
               size={24}
               className="cursor-pointer w-full hover:text-white transition"
             />
+            <span className="text-xs"> Passbook</span>
           </a>
         </div>
 
@@ -39,17 +42,19 @@ export default function BottomNavBar() {
 
         {/* Right icons */}
         <div className="grid grid-cols-2 mt-1 -ml-[14px] rounded-tl-3xl rounded-tr-xl  items-center  p-3  bg-[rgba(78,80,94,1)] w-full space-x-8">
-          <a href="/withdraw-request">
+          <a href="/withdrawal-request" className="w-full text-center">
             <MdOutlineCurrencyRupee
-              size={22}
+              size={24}
               className="cursor-pointer  w-full hover:text-white transition"
             />
+            <span className="text-xs"> Withdrawal</span>
           </a>
-          <a href="/profile">
+          <a href="/profile" className="w-full text-center">
             <User
               size={22}
               className="cursor-pointer  w-full hover:text-white transition"
             />
+            <span className="text-xs"> Profile</span>
           </a>
         </div>
       </div>

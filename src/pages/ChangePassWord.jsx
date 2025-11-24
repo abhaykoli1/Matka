@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../config";
-import { Lock, Save, Eye, EyeOff } from "lucide-react";
+import { Lock, Save, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const API_BASE = `${API_URL}/user`;
 
@@ -60,11 +60,23 @@ export default function UpdatePasswordPage() {
   return (
     <div className="max-w-md mx-auto text-white">
       {/* Header */}
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 text-center">
-        <h1 className="text-lg font-semibold">Update Password</h1>
+
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center uppercase">
+            Change Password
+          </span>
+        </h2>
+        <a className="pr-4 z-10"></a>
       </div>
 
-      <div className="bg-white/10 mx-3 rounded-2xl p-4 mt-4 shadow-xl">
+      <div className="bg-white/5 mx-3 pt-7 rounded-2xl p-4 mt-4 shadow-xl">
         <div className="flex justify-center mb-4">
           <Lock size={38} className="text-purple-400" />
         </div>
@@ -86,7 +98,7 @@ export default function UpdatePasswordPage() {
             type={showOld ? "text" : "password"}
             value={oldPass}
             onChange={(e) => setOldPass(e.target.value)}
-            className="w-full p-2 mt-1 border rounded-md text-white outline-none"
+            className="w-full p-2 mt-1 border border-gray-50/15 rounded-md text-white outline-none"
           />
 
           <button
@@ -105,7 +117,7 @@ export default function UpdatePasswordPage() {
             type={showNew ? "text" : "password"}
             value={newPass}
             onChange={(e) => setNewPass(e.target.value)}
-            className="w-full p-2 mt-1 border rounded-md text-white outline-none"
+            className="w-full p-2 mt-1 border border-gray-50/15 rounded-md text-white outline-none"
           />
 
           <button

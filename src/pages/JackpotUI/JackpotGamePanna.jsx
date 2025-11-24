@@ -1,13 +1,20 @@
-import { CardSim, Diamond, Dice1 } from "lucide-react";
+import {
+  ArrowLeft,
+  CardSim,
+  Diamond,
+  DiamondIcon,
+  Dice1,
+  Dice2,
+} from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";
 
-const API_BASE = `${API_URL}/starline_jackpot`;
-
-export default function JackpotGamePanna() {
+export default function JackpotDigitSelect() {
   const { marketId } = useParams();
+  const token = localStorage.getItem("accessToken");
+  const headers = { Authorization: `Bearer ${token}` };
 
   console.log(marketId);
 
@@ -20,21 +27,26 @@ export default function JackpotGamePanna() {
     setError(null);
 
     try {
-      const response = await axios.get(`${API_BASE}/jackpot/${marketId}`);
+      const response = await axios.get(
+        `${API_URL}/api/admin/Golidesawar/market/${marketId}`,
+        {
+          headers,
+        }
+      );
 
-      const data = response.data;
+      console.log(response);
 
-      const formattedData = {
-        id: data.id,
-        name: data.name || data.start_time,
-        open_time: data.start_time,
-        close_time: data.end_time || "—",
-        is_active: data.is_active ?? true,
-      };
+      // const formattedData = {
+      //   id: data.id,
+      //   name: data.name || data.start_time,
+      //   open_time: data.start_time,
+      //   close_time: data.end_time || "—",
+      //   is_active: data.is_active ?? true,
+      // };
 
-      setMarket(formattedData);
+      setMarket(response?.data?.data);
     } catch (err) {
-      console.error("Error fetching market:", err);
+      console.log("Error fetching market:", err);
       setError("Failed to load market. Please check server.");
     } finally {
       setLoading(false);
@@ -49,20 +61,16 @@ export default function JackpotGamePanna() {
 
   const allGames = [
     {
-      name: "Single Digit",
+      name: "Open Digit",
       icon: <Dice1 size={30} className="text-yellow-500" />,
     },
     {
-      name: "Single Panna",
-      icon: <CardSim size={30} className="text-yellow-500" />,
+      name: "Close Digit",
+      icon: <Dice2 size={30} className="text-yellow-500" />,
     },
     {
-      name: "Double Panna",
-      icon: <CardSim size={30} className="text-yellow-500" />,
-    },
-    {
-      name: "Triple Panna",
-      icon: <Diamond size={30} className="text-yellow-500" />,
+      name: "Jodi",
+      icon: <DiamondIcon size={30} className="text-yellow-500" />,
     },
   ];
 
@@ -93,48 +101,86 @@ export default function JackpotGamePanna() {
     );
   }
 
+  console.log(market);
   return (
     <div className="max-w-md mx-auto flex flex-col font-sans pb-20">
       {/* MARKET HEADER */}
-      <div className="w-full bg-black text-white py-4 flex items-center justify-center">
-        <h1 className="text-lg font-semibold uppercase tracking-widest">
-          {market.name}
-        </h1>
-      </div>
-
-      {/* MARKET DETAILS */}
-      <div className="bg-[#5a0572] text-xs py-2 px-4 flex justify-around text-gray-200 mb-4 border-b-2 border-[#5a0572]">
-        <p>
-          Open: <span className="text-white">{market.open_time}</span>
-        </p>
-        <p>
-          Close: <span className="text-white">{market.close_time}</span>
-        </p>
-        <span
-          className={`font-bold px-2 py-0.5 rounded-full ${
-            market.is_active ? "bg-green-600" : "bg-red-600"
-          }`}
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 pb-2  flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
         >
-          {market.is_active ? "LIVE" : "CLOSED"}
-        </span>
+          <ArrowLeft size={22} />
+        </button>
+
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 uppercase text-md items-center">
+            {market?.name}
+          </span>
+        </h2>
+
+        <a className="pr-4 z-10">{/* <HistoryIcon /> */}</a>
       </div>
+      {/* MARKET DETAILS */}
+
+      <p className="text-xs bg-white/5 flex justify-between px-4 py-3 rounded-b-lg text-gray-300 mb-4">
+        <span className="flex flex-col">
+          <strong>Open Time :</strong> <span>{market.open_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Close Time :</strong>
+
+          <span>{market.close_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Status:</strong>
+          <span
+            className={`font-bold rounded-full text-xs ${
+              market.status === true ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {market.status === true ? "Market Running" : "Market Closed"}
+          </span>
+        </span>
+      </p>
 
       {/* GAME GRID */}
-      <div className="grid grid-cols-2 gap-4 p-3">
-        {allGames.map((game, index) => (
-          <a
-            key={index}
-            href={`/jackpot/${marketId}/${createSlug(game.name)}`}
-            className="flex flex-col justify-center items-center bg-gray-800 rounded-xl py-6 border border-gray-700 hover:border-cyan-500 hover:bg-cyan-700/40 transition-all hover:scale-[1.04]"
-          >
-            <div className="bg-[#5a0572] rounded-full p-4 mb-2 shadow-lg">
-              {game.icon}
-            </div>
-            <p className="text-white text-sm font-bold text-center">
-              {game.name}
-            </p>
-          </a>
-        ))}
+      <div className="flex flex-col items-center p-3 gap-4">
+        {/* TOP TWO ROW ITEMS */}
+        <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+          {allGames.slice(0, 2).map((game, index) => (
+            <a
+              key={index}
+              href={`/jackpot/${marketId}/${createSlug(game.name)}`}
+              className="flex flex-col justify-center items-center backdrop-blur-2xl rounded-xl py-6 shadow-2xl hover:bg-gray-50/5 transition-all duration-200 hover:scale-[1.03] border border-gray-50/15 "
+            >
+              <div className="bg-[#5a0572] rounded-full p-4 mb-2 shadow-lg">
+                {game.icon}
+              </div>
+              <p className="text-white text-sm font-bold text-center">
+                {game.name}
+              </p>
+            </a>
+          ))}
+        </div>
+
+        {/* SINGLE CENTER ITEM */}
+        <div className="mt-2">
+          {allGames.slice(2, 3).map((game, index) => (
+            <a
+              key={index}
+              href={`/jackpot/${marketId}/${createSlug(game.name)}`}
+              className="flex flex-col w-40  justify-center items-center backdrop-blur-2xl rounded-xl py-6 shadow-2xl hover:bg-gray-50/5 transition-all duration-200 hover:scale-[1.03] border border-gray-50/15 "
+            >
+              <div className="bg-[#5a0572] rounded-full p-4 mb-2 shadow-lg">
+                {game.icon}
+              </div>
+              <p className="text-white text-sm font-bold text-center">
+                {game.name}
+              </p>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

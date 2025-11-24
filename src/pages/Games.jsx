@@ -1,18 +1,18 @@
-import { CardSim, Coins, Diamond, Dice1, Dice2 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
-
-const API_BASE = `${API_URL}/market`;
+import { ArrowLeft, CardSim, Coins, Diamond, Dice1, Dice2 } from "lucide-react";
 
 export default function Games() {
   const { marketId } = useParams();
 
-  // --- STATE FOR MARKET ---
   const [market, setMarket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("accessToken");
+  const headers = { Authorization: `Bearer ${token}` };
 
   // Convert name → slug
   const createSlug = (name) => name.toLowerCase().replace(/\s+/g, "-");
@@ -20,6 +20,7 @@ export default function Games() {
   // ============================
   // FETCH MARKET DETAILS
   // ============================
+
   const fetchMarketDetails = useCallback(async () => {
     if (!marketId) {
       setError("Market ID missing");
@@ -30,11 +31,25 @@ export default function Games() {
     try {
       setIsLoading(true);
 
-      const res = await axios.get(`${API_BASE}/${marketId}`);
+      const res = await axios.get(`${API_URL}/api/admin/market/${marketId}`, {
+        headers,
+      });
 
-      setMarket(res.data);
+      const m = res.data?.data;
+      if (!m) {
+        setError("Market not found");
+        return;
+      }
+
+      setMarket({
+        id: m._id?.$oid,
+        name: m.name,
+        open_time: m.open_time,
+        close_time: m.close_time,
+        status: m.status ? "Market Running" : "Market Closed",
+      });
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError("Failed to load market details.");
     } finally {
       setIsLoading(false);
@@ -78,8 +93,7 @@ export default function Games() {
       icon: (
         <img
           src="https://placehold.co/60x60/fde047/1f2937?text=H"
-          alt=""
-          className="w-14 h-14 object-contain"
+          className="w-14 h-14"
         />
       ),
     },
@@ -88,17 +102,13 @@ export default function Games() {
       icon: (
         <img
           src="https://placehold.co/60x60/fde047/1f2937?text=F"
-          alt=""
-          className="w-14 h-14 object-contain"
+          className="w-14 h-14"
         />
       ),
     },
   ];
 
-  // ============================
-  // LOADING
-  // ============================
-  if (isLoading) {
+  if (isLoading)
     return (
       <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen">
         <h1 className="text-xl font-semibold animate-pulse">
@@ -106,65 +116,70 @@ export default function Games() {
         </h1>
       </div>
     );
-  }
 
-  // ============================
-  // ERROR
-  // ============================
-  if (error) {
+  if (error)
     return (
       <div className="text-center py-10 max-w-md mx-auto min-h-screen bg-red-800/30 text-red-300 p-4">
         <h1 className="text-xl font-semibold mb-2">Error</h1>
         <p>{error}</p>
       </div>
     );
-  }
 
-  if (!market) {
+  if (!market)
     return (
       <div className="text-white text-center py-10 max-w-md mx-auto min-h-screen">
         <h1 className="text-xl font-semibold">Market Not Found</h1>
       </div>
     );
-  }
 
   return (
     <div className="max-w-md mx-auto flex flex-col font-sans text-white">
-      {/* HEADER */}
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
-        <h1 className="text-lg font-semibold uppercase tracking-widest">
-          {market.name}
-        </h1>
-      </div>
-
-      {/* MARKET DETAILS */}
-      <div className="bg-[#5a0572] text-xs py-2 px-4 flex justify-around text-gray-300 mb-4 border-b-2 border-[#5a0572]">
-        <p>
-          Open:{" "}
-          <span className="text-white font-medium">{market.open_time}</span>
-        </p>
-
-        <p>
-          Close:{" "}
-          <span className="text-white font-medium">{market.close_time}</span>
-        </p>
-
-        <span
-          className={`font-bold py-0.5 px-2 rounded-full text-xs ${
-            market.status === "Market Running" ? "bg-green-600" : "bg-red-600"
-          }`}
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 pb-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
         >
-          {market.status === "Market Running" ? "LIVE" : "CLOSED"}
-        </span>
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 uppercase text-md items-center">
+            {market?.name}
+          </span>
+        </h2>
+        <a className="pr-4 z-10">{/* <HistoryIcon /> */}</a>
       </div>
 
-      {/* GAME GRID */}
+      <p className="text-xs bg-white/5 flex justify-between px-4 py-3 rounded-b-lg text-gray-300 mb-4">
+        <span className="flex flex-col">
+          <strong>Open Time :</strong> <span>{market.open_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Close Time :</strong>
+
+          <span>{market.close_time}</span>
+        </span>
+        <span className="flex flex-col">
+          <strong>Status:</strong>
+          <span
+            className={`font-bold rounded-full text-xs ${
+              market.status === "Market Running"
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {market.status === "Market Running"
+              ? "Market Running"
+              : "Market Closed"}
+          </span>
+        </span>
+      </p>
+
       <div className="grid grid-cols-2 gap-4 p-3 pb-20">
         {allGames.map((game, index) => (
           <a
             key={index}
             href={`/game/${marketId}/${createSlug(game.name)}`}
-            className="flex flex-col justify-center items-center bg-gray-800/80 rounded-xl py-6 shadow-2xl hover:bg-cyan-700/50 transition-all duration-200 hover:scale-[1.03] border border-gray-700 hover:border-cyan-500"
+            className="flex flex-col justify-center items-center backdrop-blur-2xl rounded-xl py-6 shadow-2xl hover:bg-gray-50/5 transition-all duration-200 hover:scale-[1.03] border border-gray-50/15 "
           >
             <div className="bg-[#5a0572] rounded-full p-4 mb-3 shadow-lg shadow-[#5a0572]/50">
               {game.icon}

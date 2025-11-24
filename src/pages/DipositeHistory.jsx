@@ -7,6 +7,7 @@ import {
   DollarSign,
   Info,
   Image as ImageIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { API_URL } from "../config";
 import axios from "axios";
@@ -94,10 +95,22 @@ export default function DepositHistory() {
   return (
     <div className="max-w-md mx-auto font-sans pb-20 text-white">
       {/* HEADER */}
-      <h2 className="text-xl p-4 bg-gradient-to-b from-black to-black/0 font-bold mb-4 flex items-center gap-2 border-b border-gray-700 pb-2">
-        <DollarSign className="text-purple-400" />
-        My Deposit History
-      </h2>
+
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center">
+            {" "}
+            My Deposit History
+          </span>
+        </h2>
+        <a className="pr-4 z-10">{/* <HistoryIcon /> */}</a>
+      </div>
 
       {/* LOADING */}
       {loading && (

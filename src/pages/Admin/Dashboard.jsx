@@ -6,6 +6,7 @@ import Header from "../../components/Admin/Header";
 import DashboardCard from "../../components/Admin/DashboardCard";
 import axios from "axios";
 import { API_URL } from "../../config";
+import AutoDepositHistory from "./ReportManagement/DepositeReport";
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,17 +57,85 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
+  const [approved, setApproved] = useState(0);
+  const [unapproved, setUnapproved] = useState(0);
+  const [todayCreated, setTodayCreated] = useState(0);
+  const [todayPlayers, setTodayPlayers] = useState(0);
+  const [todayLogins, setTodayLogins] = useState(0);
+
+  const headers = { Authorization: `Bearer ${token}` };
+
+  const fetchData = async () => {
+    try {
+      // Approved Users
+      const approvedRes = await axios.get(
+        `${API_URL}/api/v1/admin/users/status/approve`,
+        { headers }
+      );
+      setApproved(approvedRes.data.count);
+
+      // Unapproved Users
+      const unapprovedRes = await axios.get(
+        `${API_URL}/api/v1/admin/users/status/disapprove`,
+        { headers }
+      );
+      setUnapproved(unapprovedRes.data.count);
+
+      // Today Created
+      const createdRes = await axios.get(
+        `${API_URL}/api/v1/admin/users/today-created`,
+        { headers }
+      );
+      setTodayCreated(createdRes.data.count);
+
+      // Today Players (Today Created + Login Today can be different)
+      setTodayPlayers(createdRes.data.count);
+
+      // Today Logins
+      const loginRes = await axios.get(
+        `${API_URL}/api/v1/admin/users/today-logins`,
+        { headers }
+      );
+      setTodayLogins(loginRes.data.count);
+    } catch (error) {
+      console.log("Dashboard Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // COLORS FOR CARDS
+  // const colors = [
+  //   "bg-blue-600/20 text-blue-300",
+  //   "bg-green-600/20 text-green-300",
+  //   "bg-yellow-600/20 text-yellow-300",
+  //   "bg-purple-600/20 text-purple-300",
+  // ];
+
   return (
-    <div className="flex   min-h-screen">
+    <div className="">
       <div className="flex-1 flex flex-col">
         <main className="p-4 space-y-4 z-10">
           {/* Welcome Banner */}
-          <div className="bg-blue-100 rounded-xl p-4 flex justify-between items-center">
+          <div className="bg-white/5 gap-10 rounded-xl shadow backdrop-blur  p-4 flex flex-col justify-between ">
             <div>
-              <h3 className="text-blue-700 font-semibold text-lg">
+              <h3 className="text-white font-semibold text-xl mb-2">
                 Welcome Back!
               </h3>
-              <p className="text-gray-600 text-sm">Admin Dashboard</p>
+              <p className="text-gray-300 text-sm">Admin Dashboard</p>
+            </div>
+            <div className="w-full  rounded-xl grid grid-cols-2 md:grid-cols-3 gap-6 ">
+              <div>
+                <p className="text-4xl font-semibold">{approved}</p>
+                <p className="text-gray-300 mt-1">Approved Users</p>
+              </div>
+
+              <div>
+                <p className="text-4xl font-semibold">{unapproved}</p>
+                <p className="text-gray-300 mt-1">Unapproved Users</p>
+              </div>
             </div>
             {/* <img
               src="/admin-desk.svg"
@@ -76,33 +145,41 @@ export default function AdminDashboard() {
           </div>
 
           {/* Summary Cards */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Approved Users */}
             <DashboardCard
               title="Users"
-              value={users.length}
-              subtext="Approved Users"
+              value={approved}
+              // subtext="All Users"
               color={colors[0]}
               icon={<User size={18} />}
             />
-            {/* <DashboardCard
-              title="Users"
-              value={users.filter((user) => user.role === "admin").length}
-              subtext="Approved Users"
-              color={colors[0]}
+
+            {/* Admin Users */}
+            <DashboardCard
+              title="Login (Today)"
+              value={users.filter((u) => u.role === "admin").length}
+              // subtext="Total Login Accounts"
+              color={colors[1]}
               icon={<User size={18} />}
-            /> */}
-            {/* <DashboardCard
+            />
+
+            {/* Today Registrations */}
+            <DashboardCard
               title="Today Registration"
-              value="1"
+              value={todayCreated}
               color={colors[2]}
               icon={<Tag size={18} />}
             />
+
+            {/* Today Logged-In Players */}
             <DashboardCard
               title="Players (Today)"
-              value="1"
-              color={colors[1]}
+              value={todayLogins}
+              color={colors[3]}
               icon={<Tag size={18} />}
-            /> */}
+            />
           </div>
 
           {/* Dropdown Filters */}
@@ -156,6 +233,7 @@ export default function AdminDashboard() {
           </div> */}
         </main>
       </div>
+      <AutoDepositHistory />
     </div>
   );
 }

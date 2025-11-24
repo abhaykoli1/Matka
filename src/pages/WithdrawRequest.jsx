@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Loader2, DollarSign, User2, History } from "lucide-react";
+import {
+  Loader2,
+  DollarSign,
+  User2,
+  History,
+  DollarSignIcon,
+  ArrowLeft,
+  HistoryIcon,
+} from "lucide-react";
 import { API_URL } from "../config";
+import axios from "axios";
 
 const API_BASE_URL = API_URL; // Replace with your actual base URL
 
@@ -36,26 +45,27 @@ export default function WithdrawRequest() {
   const [currentUserId, setCurrentUserId] = useState(null);
 
   // --- Fetch Current Balance and User ID ---
+
+  const fetchBalance = async () => {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/balance`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCurrentBalance(data.balance);
+      }
+    } catch (error) {
+      // console.error("Balance fetch error:", error);
+    }
+  };
+
   useEffect(() => {
     setCurrentUserId(getUserIdFromToken());
-
-    const fetchBalance = async () => {
-      const token = getAuthToken();
-      if (!token) return;
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/user/balance`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setCurrentBalance(data.balance);
-        }
-      } catch (error) {
-        // console.error("Balance fetch error:", error);
-      }
-    };
     fetchBalance();
   }, []);
 
@@ -94,42 +104,54 @@ export default function WithdrawRequest() {
     formData.append("number", number);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/withdraw/request`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/x-www-form-urlencoded", // CRITICAL for FastAPI Form(...)
-        },
-        body: formData.toString(),
-      });
+      const response = await axios.post(
+        `${API_URL}/user-deposit-withdrawal/withdraw/request`,
+        new URLSearchParams({
+          amount: withdrawAmount,
+          number: number,
+          method: method, // if you have method field
+        }),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage({
-          type: "success",
-          text:
-            data.message +
-            `. ID: ${data.withdrawal_id.substring(
-              0,
-              8
-            )}... Your request is now pending review.`,
-        });
-        // Clear form fields after successful submission
-        setAmount("");
-        setNumber("");
-        // Optimistically update balance
-        setCurrentBalance((cb) => cb - withdrawAmount);
-      } else {
-        const errorText =
-          data.detail || "Request failed. Check balance and withdrawal limits.";
-        setMessage({ type: "error", text: errorText });
+      const data = response.data;
+      if (data.message === "Withdrawal request submitted") {
+        fetchBalance();
       }
-    } catch (error) {
+      console.log(data);
       setMessage({
-        type: "error",
-        text: "Network error. Could not connect to server.",
+        type: "success",
+        text:
+          data.message +
+          `. ID: ${data.withdrawal_id.substring(
+            0,
+            8
+          )}... Your request is now pending review.`,
       });
+
+      setAmount("");
+      setNumber("");
+      setCurrentBalance((cb) => cb - withdrawAmount);
+    } catch (error) {
+      if (error.response) {
+        // Server responded
+        const errText =
+          error.response.data?.detail ||
+          "Request failed. Check balance and withdrawal limits.";
+
+        setMessage({ type: "error", text: errText });
+      } else {
+        // Network error
+        setMessage({
+          type: "error",
+          text: "Network error. Could not connect to server.",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -138,16 +160,23 @@ export default function WithdrawRequest() {
   const paymentMethods = ["Paytm", "Google Pay", "PhonePe", "Bank Transfer"];
 
   return (
-    <div className="max-w-md mx-auto  font-sans text-white">
-      <h2 className="text-xl justify-between font-bold border-b border-gray-700 bg-gradient-to-b from-black to-black/0 px-4 py-2 mb-3 flex items-center gap-2">
-        <span className="flex gap-2 text-lg items-center">
-          <DollarSign size={20} className="text-green-400" />
-          Withdraw Funds
-        </span>
-        <a href="/withdraw-history">
+    <div className="max-w-md mx-auto pb-20 font-sans text-white">
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center">
+            Withdraw Funds
+          </span>
+        </h2>
+        <a href="/withdrawal-history" className="pr-4 z-10">
           <History />
         </a>
-      </h2>
+      </div>
 
       {/* Balance Info */}
       <div className="bg-white/10 p-4 mx-3 rounded-lg mb-4 shadow-md">
@@ -159,7 +188,7 @@ export default function WithdrawRequest() {
         </p>
         <p className="text-sm text-gray-300 mt-2">Your Current Balance:</p>
         <p className="text-3xl font-extrabold text-green-400">
-          ₹{currentBalance !== null ? currentBalance.toFixed(2) : "..."}
+          {currentBalance?.toFixed(2)}
         </p>
         <p className="text-xs mt-1 text-gray-400">
           Minimum Withdrawal: ₹{minWithdraw}
@@ -169,7 +198,7 @@ export default function WithdrawRequest() {
       {/* Message Display */}
       {message && (
         <div
-          className={`p-3 rounded-md text-sm mb-4 ${
+          className={`p-3 mx-3 rounded-md text-sm mb-4 ${
             message.type === "success"
               ? "bg-green-600/20 text-green-300"
               : "bg-red-600/20 text-red-300"

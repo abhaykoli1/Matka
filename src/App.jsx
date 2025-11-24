@@ -8,7 +8,7 @@ import AdminLayout from "./components/Admin/AdminLayout";
 import UserManagement from "./pages/Admin/UserManagement";
 import UserDetails from "./pages/Admin/UserDetails";
 import UserBidHistory from "./pages/Admin/UserBidHistory";
-import HowToPlay from "./pages/Admin/HowToPlay";
+import HowToPlay from "./pages/HowToPlay";
 import ProfilePage from "./pages/ProfilePage";
 import WalletPage from "./pages/WalletPage";
 import WinHistory from "./pages/WinHistory";
@@ -17,8 +17,7 @@ import AddMoney from "./pages/AddMoney";
 // import GaliDesawarRate from "./pages/GaliDesawarRate";
 
 import Charts from "./pages/Charts";
-import RateCard from "./pages/KingJackpot";
-import StarlineGame from "./pages/StarlineUI/StarlineGame";
+
 import BidHistoryPage from "./pages/BidHistory";
 import WithdrawRequest from "./pages/WithdrawRequest";
 import MyWithdrawals from "./pages/WithdrawlHistory";
@@ -42,13 +41,33 @@ import StarlineWinHistory from "./pages/StarlineUI/StarlineWinHistory";
 import AdminJackpot from "./pages/Admin/Jackpot/AdminJackpot";
 import JackpotGame from "./pages/JackpotUI/JackpotGame";
 import JackpotBidHistory from "./pages/JackpotUI/JackpotBidHistory";
-import JackpotGamePanna from "./pages/JackpotUI/JackpotGamePanna";
-import JackpotGamePannaBed from "./pages/JackpotUI/JackpotGamePannaBed";
 import JackpotWinHistory from "./pages/JackpotUI/JackpotWinHistory";
 import GameRatePage from "./pages/GameRate";
 import ContactUs from "./pages/ContactUs";
 import UpdatePasswordPage from "./pages/ChangePassWord";
 import AdminDeclareResult from "./pages/Admin/DeclareResult/AdminDeclareResult";
+import AdminHowToPlay from "./pages/Admin/AdminHowToplay";
+import MainSettings from "./pages/Admin/Settings/MainSettings";
+import AdminSiteData from "./pages/Admin/SiteData/AdminSiteData";
+import AdminNotificationList from "./pages/Admin/Notification/AdminNotificationList";
+import GameList from "./pages/Admin/Game/GameList";
+import GameRates from "./components/Admin/Game/GameRates";
+import ResultDeclareMarket from "./components/Admin/Game/ResultDeclareMarket";
+import StarlineMarket from "./pages/StarlineUI/StarlineGame";
+import WithdrawReport from "./pages/Admin/ReportManagement/WithdrawReport";
+import BidReport from "./pages/Admin/ReportManagement/BidReport";
+import WinningReport from "./pages/Admin/ReportManagement/WinningReport";
+import AutoDepositHistory from "./pages/Admin/ReportManagement/DepositeReport";
+import GGameRates from "./components/Admin/Golidesawar/GGameRates";
+import GGameList from "./components/Admin/Golidesawar/GGameMarkets";
+import GBidHistoryReport from "./components/Admin/Golidesawar/GBidHistoryReport";
+import GWinningHistory from "./components/Admin/Golidesawar/GWinningHistory";
+import GDeclareResult from "./components/Admin/Golidesawar/GDeclareResult";
+import JackpotDigitSelect from "./pages/JackpotUI/JackpotGamePanna";
+import KingJackpotPlayBid from "./pages/JackpotUI/KingJackpotPlayBid";
+import AllUserBids from "./pages/JackpotUI/AllUserBids";
+import GWinHistory from "./pages/JackpotUI/KingWinHistory";
+import AdminLoginPage from "./components/Admin/AdminLogin";
 
 const ProtectedRoute = ({ redirectPath = "/login" }) => {
   const accessToken = localStorage.getItem("accessToken");
@@ -70,6 +89,33 @@ const PublicOnlyRoute = ({ redirectPath = "/" }) => {
   return <Outlet />;
 };
 
+// const PublicOnlyRoute = () => {
+//   const userToken = localStorage.getItem("accessToken");
+//   const adminToken = localStorage.getItem("adminToken");
+
+//   // If admin logged in → block login/signup pages, redirect to admin dashboard
+//   if (adminToken) {
+//     return <Navigate to="/admin" replace />;
+//   }
+
+//   // If normal user logged in → block login/signup pages, redirect to user dashboard
+//   if (userToken) {
+//     return <Navigate to="/" replace />;
+//   }
+
+//   return <Outlet />;
+// };
+
+const AdminProtectedRoute = ({ redirectPath = "/AdminLogin" }) => {
+  const adminToken = localStorage.getItem("adminToken");
+
+  if (!adminToken) {
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return <Outlet />;
+};
+
 const App = () => {
   return (
     <section className="">
@@ -82,20 +128,56 @@ const App = () => {
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/AdminLogin" element={<AdminLoginPage />} />
         </Route>
 
-        {/* Admin Routes - Assumed public or handled by AdminLayout for now */}
+        {/* <Route element={<AdminProtectedRoute />}> */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<UserManagement />} />
+          <Route path="details/:id" element={<UserDetails />} />
           <Route path="markets" element={<MarketList />} />
-          <Route path="user-details" element={<UserDetails />} />
           <Route path="user-bid-history" element={<UserBidHistory />} />
           <Route path="deposite-requests" element={<AdminDepositRequests />} />
           <Route path="qr-manager" element={<AdminQRManager />} />
+          <Route path="add-game" element={<GameList />} />
+          <Route path="game-rates" element={<GameRates />} />
+
+          <Route
+            path="declare-result-market"
+            element={<ResultDeclareMarket />}
+          />
+
           <Route path="starline" element={<AdminStarline />} />
           <Route path="jackpot" element={<AdminJackpot />} />
           <Route path="deposit-approvals" element={<AdminDepositApprovals />} />
+
+          {/* Settings */}
+          <Route path="main-settings" element={<MainSettings />} />
+          <Route path="how-to-play" element={<AdminHowToPlay />} />
+          <Route path="site-data" element={<AdminSiteData />} />
+          <Route path="notifications" element={<AdminNotificationList />} />
+
+          {/* Report */}
+
+          <Route path="winning-history" element={<WinningReport />} />
+          <Route path="withdraw-report" element={<WithdrawReport />} />
+          <Route path="bid-history" element={<BidReport />} />
+          <Route path="deposite-history" element={<AutoDepositHistory />} />
+
+          {/* Golidesawar */}
+          <Route path="golidesawar-game-rates" element={<GGameRates />} />
+          <Route
+            path="golidesawar-bid-history"
+            element={<GBidHistoryReport />}
+          />
+          <Route path="golidesawar-win-history" element={<GWinningHistory />} />
+          <Route path="golidesawar" element={<GGameList />} />
+          <Route
+            path="golidesawar-declare-result"
+            element={<GDeclareResult />}
+          />
+
           <Route
             path="declare-result/:marketId"
             element={<AdminDeclareResult />}
@@ -105,10 +187,11 @@ const App = () => {
             element={<AdminDeclareStarlineResult />}
           />
           <Route
-            path="withdrawal-requests"
+            path="admin-withdrawal-requests"
             element={<AdminWithdrawalRequests />}
           />
         </Route>
+        {/* </Route> */}
 
         {/* Protected Routes (Requires accessToken) */}
         <Route element={<ProtectedRoute />}>
@@ -116,15 +199,16 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="wallet" element={<WalletPage />} />
-
             <Route path="win-history" element={<WinHistory />} />
-            <Route path="withdraw-request" element={<WithdrawRequest />} />
+            <Route path="withdrawal-request" element={<WithdrawRequest />} />
             <Route path="my-bids" element={<MyBids />} />
             <Route path="how-to-play" element={<HowToPlay />} />
             <Route path="add-points" element={<AddMoney />} />
             {/* <Route path="king-jackpot" element={<RateCard />} /> */}
+
             <Route path="charts/:marketId" element={<Charts />} />
-            <Route path="starline" element={<StarlineGame />} />
+
+            <Route path="starline" element={<StarlineMarket />} />
 
             <Route
               path="starline-bid-history"
@@ -144,27 +228,28 @@ const App = () => {
 
             <Route path="game-rate" element={<GameRatePage />} />
             <Route path="contact-us" element={<ContactUs />} />
-            <Route path="king-jackpot" element={<JackpotGame />} />
+
             <Route path="change-password" element={<UpdatePasswordPage />} />
 
             <Route path="jackpot-bid-history" element={<JackpotBidHistory />} />
             <Route path="jackpot-win-history" element={<JackpotWinHistory />} />
-            <Route path="/jackpot/:marketId" element={<JackpotGamePanna />} />
-            <Route
-              path="/starline/:marketId/:gameId"
-              element={<StarlineGamePannaBed />}
-            />
+
+            <Route path="king-jackpot" element={<JackpotGame />} />
+            <Route path="/king/:marketId" element={<JackpotDigitSelect />} />
+            <Route path="/king-win-history" element={<GWinHistory />} />
+            <Route path="/king-bids-history" element={<AllUserBids />} />
+
             <Route
               path="/jackpot/:marketId/:gameId"
-              element={<JackpotGamePannaBed />}
+              element={<KingJackpotPlayBid />}
             />
             {/* <Route
               path="jackpot-win-history"
               element={<JackpotWinHistory />}
-            /> */}
+              /> */}
 
             <Route path="bid-history" element={<BidHistoryPage />} />
-            <Route path="withdraw-history" element={<MyWithdrawals />} />
+            <Route path="withdrawal-history" element={<MyWithdrawals />} />
             <Route path="starline-result-box" element={<StarlineResultBox />} />
 
             <Route path="deposit-history" element={<MyDepositHistory />} />
@@ -174,6 +259,7 @@ const App = () => {
             />
             <Route path="passbook" element={<Passbook />} />
 
+            {/* Market */}
             <Route path="/play/:marketId" element={<Games />} />
             <Route path="/game/:marketId/:gameId" element={<MatkaGame />} />
           </Route>

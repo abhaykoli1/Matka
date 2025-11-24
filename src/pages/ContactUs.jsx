@@ -1,48 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, Phone, Mail } from "lucide-react";
 import { FaW, FaWhatsapp } from "react-icons/fa6";
+import { FaTelegram, FaTelegramPlane } from "react-icons/fa";
+import { fetchSiteData } from "../components/layout/fetchSiteData";
 
 export default function ContactUs() {
+  const [site, setSite] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const data = await fetchSiteData();
+      console.log("data ======", data);
+      setSite(data);
+    })();
+  }, []);
+
   return (
     <div className="max-w-md mx-auto min-h-screen font-sans">
       {/* HEADER */}
-      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center relative  ">
-        <h1 className="text-xl font-semibold">Contact Us</h1>
+
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+
+        <h2 className="text-xl z-0 w-full absolute font-bold px-4 py-2 flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center uppercase">
+            Contact Us
+          </span>
+        </h2>
+
+        <div className="pr-4 z-10"></div>
       </div>
 
       {/* CONTENT */}
       <div className="p-3 space-y-3 text-sm">
-        {/* WhatsApp */}
-        <div className="bg-white/20  rounded-xl p-3 shadow flex items-center gap-4">
-          {/* <img
-            src={whatsappLogo}
-            alt="whatsapp"
-            className="w-10 h-10 rounded-full"
-          /> */}
+        <a
+          href={`https://wa.me/${site?.whatsapp_number}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white/5  rounded-xl p-3 shadow flex items-center gap-4"
+        >
           <FaWhatsapp size={30} color="#25D366" />
           <div>
             <p className="text-gray-200 font-semibold">Chat Us:</p>
-            <p className="text-gray-200">+919509397414</p>
+            <p className="text-gray-200">{site?.whatsapp_number}</p>
           </div>
-        </div>
+        </a>
 
         {/* Email */}
-        <div className="bg-white/20 rounded-xl p-3 shadow flex items-center gap-4">
-          <Mail size={30} color="red" />
-          <div>
-            <p className="text-gray-200 font-semibold">Email Us:</p>
-            <p className="text-gray-200">df@gmail.com</p>
-          </div>
-        </div>
 
-        {/* Call */}
-        <div className="bg-white/20  rounded-xl p-3 shadow flex items-center gap-4">
-          <Phone size={30} color="#7e13ca" />
+        <a
+          href={`https://t.me/+${site?.telegram_link}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white/5 rounded-xl p-3 shadow flex items-center gap-4"
+        >
+          <FaTelegramPlane size={30} className="text-blue-500" />
+
           <div>
-            <p className="text-gray-200 font-semibold">Call Us:</p>
-            <p className="text-gray-200">+919509397414</p>
+            <p className="text-gray-200 font-semibold">Telegram:</p>
+            <p className="text-gray-200"> {site?.telegram_link}</p>
           </div>
-        </div>
+        </a>
       </div>
     </div>
   );

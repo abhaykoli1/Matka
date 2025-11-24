@@ -58,13 +58,13 @@ export default function AdminQRManager() {
   };
 
   return (
-    <div className=" flex maxw-md mx-auto justify-center flex-col items-center p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">QR Code Manager</h2>
-      <div className="w-full max-w-xl bg-white/20 shadow-lg rounded-lg p-6">
+    <div className=" flex  justify- flex-col items- lg:p-5 mdLp-5 p-3">
+      <h2 className="text-xl uppercase mb-4 font-bold"> QR Code Manager</h2>
+      <div className="w-full  bg-white/10 shadow-lg rounded-lg p-3">
         {/* If QR Exists */}
         {currentQR && !replaceMode && (
           <>
-            <h3 className="font-semibold mb-2">Current QR Code:</h3>
+            <h3 className="font-semibold mb-2 text-center">Current QR Code:</h3>
 
             <img
               src={currentQR}

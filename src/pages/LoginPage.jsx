@@ -10,8 +10,9 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { API_URL } from "../config";
-
+import logo from "../assets/logo.png";
 const API_BASE_URL = API_URL;
+import { jwtDecode } from "jwt-decode";
 
 // Spinner
 const LoadingSpinner = () => <Loader2 className="animate-spin h-5 w-5 mr-2" />;
@@ -22,6 +23,13 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [shake, setShake] = useState(false);
+  // const [userId, setUserId] = useState(null);
+  // const token = localStorage.getItem("accessToken");
+
+  // if (token) {
+  //   const decoded = jwtDecode(token);
+  //   setUserId(decoded?.sub);
+  // }
 
   useEffect(() => {
     const stored = localStorage.getItem("accessToken");
@@ -52,14 +60,15 @@ export default function Login() {
         { headers: { "Content-Type": "application/json" } }
       );
 
+      console.log(response);
       const data = response.data;
       localStorage.setItem("accessToken", data.access_token);
 
       setMessage({ type: "success", text: "Login Successful!" });
 
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 800);
+      // setTimeout(() => {
+      //   window.location.href = "/";
+      // }, 800);
     } catch (err) {
       console.log("LOGIN ERROR: ", err);
 
@@ -113,8 +122,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#04060f flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-[#0c1123]/60  rounded-2xl p-4 backdrop-blur-xl shadow-2xl">
+    <div className="min-h-screen  flex items-center justify-center px-4">
+      <div className="w-full max-w-md   rounded-2xl  backdrop-blur ">
+        <div className="flex items-center justify-center">
+          <img
+            src={logo}
+            className="h-30 rounded-full place-items-center mb-3"
+          />
+        </div>
         <h1 className="text-center text-3xl text-white font-bold tracking-wide">
           Login
         </h1>

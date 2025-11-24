@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Save } from "lucide-react";
+import { ArrowLeft, DollarSign, HistoryIcon, Pencil, Save } from "lucide-react";
 import { API_URL } from "../config";
 
 const API_BASE = `${API_URL}/user`;
@@ -95,21 +95,23 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen mx-auto max-w-md flex flex-col items-center">
       {/* Header */}
-      <div className="w-full bg-gradient-to-b  from-black to-black/0 text-white py-4 flex items-center justify-between px-4 relative">
-        <h1 className="text-lg font-semibold">My Profile</h1>
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
 
-        {/* {user?.role === "admin" && (
-          <a
-            href="/admin"
-            className=" flex border px-3 rounded-xl py-1 items-center text-xs font-medium hover:text-purple-500"
-          >
-            Go To Admin
-          </a>
-        )} */}
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center">My Profile</span>
+        </h2>
+
+        <a className="z-10">{/* <HistoryIcon /> */}</a>
       </div>
 
       {/* Profile Card */}
-      <div className="w-[90%] bg-white/10 shadow-xl max-w-md mt-6 rounded-2xl p-6 relative">
+      <div className="w-[90%]  bg-white/10 shadow-xl max-w-md mt-6 rounded-2xl p-6 relative">
         {/* Edit Button */}
 
         <button

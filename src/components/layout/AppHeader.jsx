@@ -74,7 +74,7 @@ export default function AppHeader({ setSidebar }) {
           <h1 className="text-white text-lg font-bold">KalyanRatan777</h1>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex font-medium items-center gap-2 text-white px-2.5 py-2 text-sm rounded-lg border border-white hover:bg-gray-700 transition duration-150">
+          <button className="flex font-medium items-center gap-2 text-white py-0.5 px-1 text-sm rounded-md border-[0.5px] border-white hover:bg-gray-700 transition duration-150">
             <Wallet2Icon size={18} />
             {loading ? (
               <span className="animate-pulse">Loading...</span>

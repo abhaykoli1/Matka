@@ -27,7 +27,7 @@ export default function WalletPage() {
     },
     {
       id: 3,
-      link: "/withdraw-history",
+      link: "/withdrawal-history",
       title: "Withdrawal History",
       desc: "View your withdrawal transaction history",
       color: "bg-red-500",
@@ -46,11 +46,20 @@ export default function WalletPage() {
   return (
     <div className="min-h-screen max-w-md mx-auto flex flex-col">
       {/* Header */}
-      <div className="w-full bg-gradient-to-b from-black to-black/0 text-white py-4 flex items-center justify-center relative  ">
-        {/* <button className="absolute left-4">
-          <ArrowLeft size={22} className="text-white" />
-        </button> */}
-        <h1 className="text-lg font-semibold">Wallet</h1>
+
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+
+        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center">Wallet</span>
+        </h2>
+
+        <a className="z-10">{/* <HistoryIcon /> */}</a>
       </div>
 
       {/* Wallet Options */}
@@ -59,7 +68,7 @@ export default function WalletPage() {
           <a
             href={item.link || "#"}
             key={item.id}
-            className="flex items-center bg-white/20 rounded-xl shadow p-4 hover:shadow-md transition"
+            className="flex items-center bg-white/5 rounded-xl shadow p-4 hover:shadow-md transition"
           >
             {/* Colored Icon Box */}
             <div

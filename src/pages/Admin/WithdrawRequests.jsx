@@ -3,217 +3,200 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  ListFilter,
   AlertTriangle,
   User,
 } from "lucide-react";
+import axios from "axios";
 import { API_URL } from "../../config";
 
-const API_BASE_URL = API_URL;
-
-const getAuthToken = () => localStorage.getItem("accessToken");
+const getToken = () => localStorage.getItem("accessToken");
 
 export default function AdminWithdrawalRequests() {
-  const [pendingWithdrawals, setPendingWithdrawals] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [processingId, setProcessingId] = useState(null); // Tracks which withdrawal is being processed
+  const [processingId, setProcessingId] = useState(null);
 
-  // --- 1. Fetch Pending Withdrawals (GET /withdraw/admin/pending) ---
-  const fetchPendingWithdrawals = async () => {
+  // ===========================
+  // Fetch Withdrawals
+  // ===========================
+  const fetchWithdrawals = async () => {
     setLoading(true);
     setError(null);
-    const token = getAuthToken();
-
-    if (!token) {
-      setError("Admin authentication token missing. Cannot fetch data.");
-      setLoading(false);
-      return;
-    }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/withdraw/admin/pending`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axios.get(
+        `${API_URL}/user-deposit-withdrawal/admin/withdraw`,
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
+      // console.log(res);
 
-      if (response.ok) {
-        const data = await response.json();
-        setPendingWithdrawals(data);
-      } else {
-        const errorData = await response.json();
-        setError(
-          errorData.detail ||
-            "Failed to fetch pending withdrawals. Check Admin role."
-        );
-        setPendingWithdrawals([]);
-      }
+      setData(res.data || []);
     } catch (err) {
-      setError("Network error: Could not connect to the server.");
-    } finally {
-      setLoading(false);
+      console.log(err);
+      setError("Failed to load withdrawal requests");
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchPendingWithdrawals();
+    fetchWithdrawals();
   }, []);
 
-  // --- 2. Handle Action (Approve or Reject) ---
-  const handleAction = async (wdId, endpoint, actionName) => {
-    setProcessingId(wdId);
-    setError(null);
-    const token = getAuthToken();
-
-    if (!token) {
-      setError("Admin token missing.");
-      setProcessingId(null);
-      return;
-    }
-
-    // Prepare form data for POST request (wd_id is the parameter name)
-    const formData = new URLSearchParams();
-    formData.append("wd_id", wdId);
+  const handleApprove = async (id) => {
+    setProcessingId(id);
+    const fd = new FormData();
+    fd.append("wd_id", id);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/withdraw/admin/${endpoint}`,
+      const res = await axios.post(
+        `${API_URL}/user-deposit-withdrawal/admin/withdraw/approve`,
+        fd,
         {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: formData.toString(),
+          headers: { Authorization: `Bearer ${getToken()}` },
         }
       );
+      console.log(res);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Log success and refresh the list to remove the processed withdrawal
-        console.log(`${actionName} successful:`, data.message);
-        fetchPendingWithdrawals();
-      } else {
-        const errorText =
-          data.detail || `Failed to ${actionName.toLowerCase()} withdrawal.`;
-        setError(errorText);
-      }
+      fetchWithdrawals();
     } catch (err) {
-      setError(`Network error during ${actionName.toLowerCase()}.`);
-    } finally {
-      setProcessingId(null);
+      console.log(err);
+      alert(err.response?.data?.detail || "Approve failed");
     }
+
+    setProcessingId(null);
   };
 
-  const handleApprove = (wdId) => handleAction(wdId, "approve", "Approve");
-  const handleReject = (wdId) => handleAction(wdId, "reject", "Reject");
+  const handleReject = async (id) => {
+    setProcessingId(id);
+    const fd = new FormData();
+    fd.append("wd_id", id);
 
-  // --- Rendering Functions ---
-  const formatTime = (isoString) => {
-    if (!isoString) return "N/A";
-    return new Date(isoString).toLocaleString();
+    try {
+      const res = await axios.post(
+        `${API_URL}/user-deposit-withdrawal/admin/withdraw/reject`,
+        fd,
+        {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }
+      );
+      console.log(res);
+
+      fetchWithdrawals();
+    } catch (err) {
+      console.log(err);
+      // alert(err.response?.data?.detail || "Reject failed");
+    }
+
+    setProcessingId(null);
   };
 
+  const formatTime = (t) => new Date(t).toLocaleString();
+
+  // ===========================
+  // UI
+  // ===========================
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-8 text-center text-gray-400">
+      <div className="p-8 text-center text-gray-400">
         <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-        Loading pending withdrawals...
+        Loading withdrawal requests...
       </div>
     );
   }
 
   return (
-    <div className=" mx-auto p-3 font-sans text-white bg- min-h-screen">
-      <h2 className="text-xl font-bold mb-6 flex items-center gap-3   pb-2">
-        Pending Withdrawal Requests
-      </h2>
+    <div className="p-4 text-white">
+      <h2 className="text-xl font-bold mb-4">Withdrawal Requests</h2>
 
       {error && (
-        <div className="p-4 bg-red-600/20 text-red-300 rounded-lg mb-4 text-sm flex items-start gap-2">
-          <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-          <p>Error: {error}</p>
+        <div className="bg-red-700/20 text-red-300 p-3 rounded mb-4 flex gap-2">
+          <AlertTriangle size={18} /> {error}
         </div>
       )}
 
-      {pendingWithdrawals.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 border border-dashed border-gray-700 rounded-lg">
-          <p className="text-lg">
-            ✅ All clear! No pending withdrawal requests found.
-          </p>
+      {data.length === 0 ? (
+        <div className="text-center p-10 text-gray-400 border border-gray-700 rounded">
+          🎉 No withdrawal requests found
         </div>
       ) : (
-        <div className="overflow-x-auto bg-gray-800 rounded-xl shadow-2xl">
+        <div className="overflow-x-auto bg-white/5 rounded-xl shadow">
           <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-gray-700">
+            <thead className="bg-white/5">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  User ID / Request ID
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Payment Details
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Requested At
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                  Action
-                </th>
+                <th className="px-4 py-3 text-left text-xs">User</th>
+                <th className="px-4 py-3 text-left text-xs">Amount</th>
+                <th className="px-4 py-3 text-left text-xs">Method</th>
+                <th className="px-4 py-3 text-left text-xs">Requested At</th>
+                <th className="px-4 py-3 text-left text-xs">Status</th>
+                <th className="px-4 py-3 text-center text-xs">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
-              {pendingWithdrawals.map((wd) => (
-                <tr key={wd.wd_id} className="hover:bg-gray-700 transition">
-                  <td className="px-4 py-3 text-sm">
-                    <p className="font-semibold text-gray-200 flex items-center gap-1">
-                      <User
-                        size={14}
-                        className="text-purple-400 flex-shrink-0"
-                      />
-                      User: {wd.user_id.substring(0, 8)}...
+
+            <tbody className="divide-y divide-gray-800">
+              {data.map((wd) => (
+                <tr key={wd.wd_id} className="hover:bg-white/5">
+                  {/* USER */}
+                  <td className="px-4 py-4 text-sm">
+                    <p className="font-semibold flex items-center gap-1">
+                      <User size={14} className="text-purple-400" />
+                      {wd.user_id}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      WD ID: {wd.wd_id.substring(0, 8)}...
-                    </p>
+                    <p className="text-xs text-gray-400 mt-1">WD: {wd.wd_id}</p>
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-lg font-bold text-red-400">
-                    -₹{wd.amount.toFixed(2)}
+
+                  {/* AMOUNT */}
+                  <td className="px-4 py-4 font-bold text-red-400">
+                    -₹{wd.amount}
                   </td>
-                  <td className="px-4 py-3 text-sm">
-                    <p className="font-medium text-purple-300">{wd.method}</p>
+
+                  {/* METHOD */}
+                  <td className="px-4 py-4 text-sm">
+                    <p className="font-semibold text-purple-300">{wd.method}</p>
                     <p className="text-xs text-gray-400">{wd.number}</p>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-400">
+
+                  {/* TIME */}
+                  <td className="px-4 py-4 text-xs text-gray-400">
                     {formatTime(wd.created_at)}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-center space-x-2">
-                    {processingId === wd.wd_id ? (
-                      <Loader2 className="h-5 w-5 animate-spin text-indigo-400 inline" />
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleApprove(wd.wd_id)}
-                          className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full transition duration-150"
-                          title="Approve Withdrawal (Deduct Funds)"
-                        >
-                          <CheckCircle size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleReject(wd.wd_id)}
-                          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition duration-150"
-                          title="Reject Withdrawal"
-                        >
-                          <XCircle size={18} />
-                        </button>
-                      </>
-                    )}
+
+                  {/* STATUS */}
+                  <td className="px-4 py-4">
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-bold ${
+                        wd.status === "pending"
+                          ? "bg-yellow-600/40 text-yellow-300"
+                          : wd.status === "success"
+                          ? "bg-green-600/40 text-green-300"
+                          : "bg-red-600/40 text-red-300"
+                      }`}
+                    >
+                      {wd.status}
+                    </span>
+                  </td>
+
+                  {/* ACTION BUTTONS */}
+                  <td className="px-4 py-4 text-center">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => handleApprove(wd.wd_id)}
+                        className="p-2 bg-green-600 hover:bg-green-700 rounded-full w-full"
+                      >
+                        <CheckCircle size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => handleReject(wd.wd_id)}
+                        className="p-2 bg-red-600 hover:bg-red-700 rounded-full"
+                      >
+                        <XCircle size={18} />
+                      </button>
+                    </div>
+                    {/* )} */}
                   </td>
                 </tr>
               ))}

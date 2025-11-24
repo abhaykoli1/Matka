@@ -202,12 +202,21 @@ export default function WinningHistory() {
 
   return (
     <section className="max-w-md mx-auto text-white font-sans pb-20">
-      {/* HEADER */}
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 px-4 flex justify-between items-center">
-        <h1 className="text-lg font-semibold text-center justify-center w-full flex items-center gap-2">
-          <Trophy className="text-yellow-400" size={20} /> Winning History
-        </h1>
-        <div className="w-6" /> {/* alignment */}
+      <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
+        <button
+          onClick={() => window.history.back()}
+          className="p-2 pl-4 z-10 rounded-full hover:bg-white/10 transition"
+        >
+          <ArrowLeft size={22} />
+        </button>
+
+        <h2 className="text-md z-0 w-full absolute font-bold px-4 py-2 flex justify-center items-center gap-2">
+          <span className="flex gap-2 text-md items-center uppercase">
+            Winning History
+          </span>
+        </h2>
+
+        <div className="pr-4 z-10"></div>
       </div>
 
       {/* TOTAL WINS */}

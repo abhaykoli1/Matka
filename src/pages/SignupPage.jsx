@@ -10,7 +10,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { API_URL } from "../config";
-
+import logo from "../assets/logo.png";
 const API_BASE_URL = API_URL;
 
 export default function SignupPage() {
@@ -93,8 +93,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#04060f] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-[#0c1123]/60 rounded-2xl p-6 backdrop-blur-xl shadow-2xl border border-purple-700/40">
+    <div className="min-h-screen  flex items-center justify-center px-4">
+      <div className="w-full max-w-md   rounded-2xl  backdrop-blur ">
+        <div className="flex items-center justify-center">
+          <img
+            src={logo}
+            className="h-30 rounded-full place-items-center mb-3"
+          />
+        </div>
         <h1 className="text-center text-3xl text-white font-bold tracking-wide">
           Create Account
         </h1>
