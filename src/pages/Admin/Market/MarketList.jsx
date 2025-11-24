@@ -7,7 +7,6 @@ import { API_URL } from "../../../config";
 const API_BASE = `${API_URL}/market`;
 
 const MarketList = () => {
-  console.log(API_BASE);
   const [markets, setMarkets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,8 +22,6 @@ const MarketList = () => {
 
     try {
       const res = await axios.get(`${API_BASE}/`);
-      console.log("MARKETS =>", res);
-
       setMarkets(res.data.markets || []);
     } catch (err) {
       console.log(err);
@@ -42,7 +39,6 @@ const MarketList = () => {
   // DELETE MARKET
   // -----------------------------
   const handleDelete = async (marketId, marketName) => {
-    console.log(marketId);
     if (!window.confirm(`Delete market "${marketName}"?`)) return;
 
     try {

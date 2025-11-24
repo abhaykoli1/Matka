@@ -211,7 +211,8 @@ export default function UserDetails() {
 
           <div className="space-y-3 text-sm">
             <p>
-              Full Name: <span className="text-gray-300">{user.username}</span>
+              Full Name:{" "}
+              <span className="text-gray-300 capitalize">{user.username}</span>
             </p>
             <p>Mobile: {user.mobile}</p>
             <p>Created: {new Date(user.created_at).toLocaleString("en-IN")}</p>

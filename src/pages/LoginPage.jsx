@@ -63,12 +63,13 @@ export default function Login() {
       console.log(response);
       const data = response.data;
       localStorage.setItem("accessToken", data.access_token);
-
+      localStorage.setItem("userId", data.userId);
       setMessage({ type: "success", text: "Login Successful!" });
 
-      // setTimeout(() => {
-      //   window.location.href = "/";
-      // }, 800);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+      
     } catch (err) {
       console.log("LOGIN ERROR: ", err);
 

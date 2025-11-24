@@ -16,7 +16,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!token) {
       window.location.href = "/login";
-    }
+    } 
   }, [token]);
 
   const displayDigit = (v) => (!v || v === "-" ? "X" : v);

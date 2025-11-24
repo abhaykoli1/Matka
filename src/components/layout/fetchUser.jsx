@@ -11,7 +11,8 @@ export const getUserById = async (userId) => {
       },
     });
 
-    return { data: response, error: null };
+    // return ONLY backend JSON
+    return { data: response.data, error: null };
   } catch (err) {
     return {
       data: null,

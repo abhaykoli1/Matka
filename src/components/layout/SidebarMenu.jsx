@@ -74,8 +74,8 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
   // 2. Corrected handleLogout function
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
     setAccessToken(null);
-    // Optional: Redirect the user to the login page here.
     window.location.href = "/login";
   };
 

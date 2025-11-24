@@ -8,20 +8,21 @@ import {
   Power,
   ShieldAlert,
   CheckCircle,
+  Ticket,
 } from "lucide-react";
 import { API_URL } from "../config";
 import logo from "../assets/logo.png";
-const API_BASE_URL = API_URL;
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [referral_code, setReferralCode] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [shake, setShake] = useState(false);
 
-  // Reusable error shake
   const triggerError = (text) => {
     setMessage({ type: "error", text });
     setShake(true);
@@ -39,19 +40,37 @@ export default function SignupPage() {
 
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/auth/register`,
-        { username, mobile, password },
+        `${API_URL}/auth/register`,
+        {
+          username,
+          mobile,
+          password,
+          referral_code: referral_code || null,
+        },
         { headers: { "Content-Type": "application/json" } }
       );
 
+      console.log("REGISTER RESPONSE:", res.data);
+
+      // ------------------------------------
+      // AUTO LOGIN AFTER REGISTER SUCCESS
+      // ------------------------------------
+      localStorage.setItem("accessToken", res.data.access_token);
+      localStorage.setItem("userId", res.data.user.id);
+
       setMessage({
         type: "success",
-        text: "Registration successful! You can log in now.",
+        text: "Registration successful! Redirecting...",
       });
 
-      setUsername("");
-      setMobile("");
-      setPassword("");
+      // REDIRECT BY ROLE
+      // setTimeout(() => {
+      //   if (res.data.user.role === "admin") {
+      //     window.location.href = "/admin";
+      //   } else {
+      //     window.location.href = "/";
+      //   }
+      // }, 900);
     } catch (err) {
       console.log("SIGNUP ERROR:", err);
 
@@ -61,7 +80,6 @@ export default function SignupPage() {
         triggerError("Server error. Try again.");
       }
     }
-
     setIsLoading(false);
   };
 
@@ -93,15 +111,13 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center px-4">
-      <div className="w-full max-w-md   rounded-2xl  backdrop-blur ">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-2xl backdrop-blur">
         <div className="flex items-center justify-center">
-          <img
-            src={logo}
-            className="h-30 rounded-full place-items-center mb-3"
-          />
+          <img src={logo} className="h-30 rounded-full mb-3" />
         </div>
-        <h1 className="text-center text-3xl text-white font-bold tracking-wide">
+
+        <h1 className="text-center text-3xl text-white font-bold">
           Create Account
         </h1>
         <p className="text-center text-gray-400 text-sm mt-2">
@@ -110,7 +126,7 @@ export default function SignupPage() {
 
         {message && <Message type={message.type} text={message.text} />}
 
-        {/* Username Input */}
+        {/* Username */}
         <label className="text-gray-300 block mt-6 mb-1 text-sm font-semibold">
           Username
         </label>
@@ -125,7 +141,7 @@ export default function SignupPage() {
           <User className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
         </div>
 
-        {/* Mobile Input */}
+        {/* Mobile */}
         <label className="text-gray-300 block mt-5 mb-1 text-sm font-semibold">
           Mobile Number
         </label>
@@ -144,7 +160,7 @@ export default function SignupPage() {
           </span>
         </div>
 
-        {/* Password Input */}
+        {/* Password */}
         <label className="text-gray-300 block mt-5 mb-1 text-sm font-semibold">
           Password
         </label>
@@ -159,7 +175,22 @@ export default function SignupPage() {
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
         </div>
 
-        {/* Signup Button */}
+        {/* Referral Code */}
+        <label className="text-gray-300 block mt-5 mb-1 text-sm font-semibold">
+          Referral Code (Optional)
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            value={referral_code}
+            onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+            placeholder="Enter referral code"
+            className="w-full px-12 py-3 rounded-xl bg-black/30 text-white border border-purple-600/40 outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400" />
+        </div>
+
+        {/* Register Button */}
         <button
           onClick={handleSignup}
           disabled={isLoading}
@@ -174,7 +205,6 @@ export default function SignupPage() {
           )}
         </button>
 
-        {/* Login Link */}
         <p className="text-center text-gray-400 text-sm mt-5">
           Already have an account?{" "}
           <a href="/login" className="text-purple-400 underline">
@@ -185,15 +215,12 @@ export default function SignupPage() {
 
       <style>{`
         @keyframes shake {
-          0% { transform: translateX(0); }
+          0%,100% { transform: translateX(0); }
           25% { transform: translateX(-4px); }
           50% { transform: translateX(4px); }
           75% { transform: translateX(-4px); }
-          100% { transform: translateX(0); }
         }
-        .animate-shake {
-          animation: shake 0.3s ease-in-out;
-        }
+        .animate-shake { animation: shake 0.3s; }
       `}</style>
     </div>
   );

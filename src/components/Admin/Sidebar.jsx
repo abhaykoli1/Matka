@@ -145,12 +145,21 @@ import {
   Star,
   Notebook,
   Wallet2,
+  LogOut,
 } from "lucide-react";
 import { MdMoney } from "react-icons/md";
 import { SiMarketo } from "react-icons/si";
 
 const Sidebar = ({ open }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [accessToken, setAccessToken] = useState(null); // Track authentication state
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    setAccessToken(null);
+    window.location.href = "/login";
+  };
 
   const toggleDropdown = (index) => {
     setOpenDropdown(openDropdown === index ? null : index);
@@ -228,9 +237,9 @@ const Sidebar = ({ open }) => {
       ],
     },
     {
-      name: "Notifications",
-      link: "/admin/notifications",
-      icon: <Notebook size={18} />,
+      name: "Logout",
+      onClick: handleLogout,
+      icon: <LogOut size={18} />,
     },
   ];
 
@@ -246,13 +255,29 @@ const Sidebar = ({ open }) => {
             {/* Main menu item */}
             <div
               className="flex justify-between items-center text-sm hover:bg-[#2a3047] p-2 rounded-md cursor-pointer"
-              onClick={() => (item.dropdown ? toggleDropdown(idx) : null)}
+              onClick={() => {
+                if (item.onClick) {
+                  item.onClick();
+                } else if (item.dropdown) {
+                  toggleDropdown(idx);
+                }
+              }}
             >
-              <a href={item.link} className="flex items-center gap-3">
-                {item.icon}
-                <span>{item.name}</span>
-              </a>
+              {/* If item has link → make clickable */}
+              {item.link ? (
+                <a href={item.link} className="flex items-center gap-3">
+                  {item.icon}
+                  <span>{item.name}</span>
+                </a>
+              ) : (
+                // For Logout: no link, just a div
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <span>{item.name}</span>
+                </div>
+              )}
 
+              {/* Dropdown chevrons */}
               {item.dropdown &&
                 (openDropdown === idx ? (
                   <ChevronUp size={14} />
