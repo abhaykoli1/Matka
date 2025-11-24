@@ -435,17 +435,27 @@ const UserOnly = () => {
   const token = localStorage.getItem("accessToken");
 
   if (user === undefined) return <div>Checking...</div>;
-  // if (!token) return <Navigate to="/login" replace />;
-  if (user?.role === "player" && token) return <Navigate to="/" />;
 
+  // Not logged in → login page
+  if (!token) return <Navigate to="/login" replace />;
+
+  // If ADMIN tries to access user pages → redirect to admin
+  if (user?.role === "admin") return <Navigate to="/admin" replace />;
+
+  // Player allowed
   return <Outlet />;
 };
 
+
+
 const AdminOnly = () => {
   const user = useAuthUser();
+
   if (user === undefined) return <div>Checking...</div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (user?.role === "player") return <Navigate to="/admin" replace />;
+  if (!user) return <Navigate to="/AdminLogin" replace />;
+
+  // If PLAYER tries to access admin routes → redirect home
+  if (user?.role === "player") return <Navigate to="/" replace />;
 
   return <Outlet />;
 };
