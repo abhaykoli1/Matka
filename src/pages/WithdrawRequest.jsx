@@ -219,8 +219,8 @@ export default function WithdrawRequest() {
 
       {/* Balance Info */}
       <div className="bg-white/10 p-4 mx-3 rounded-lg mb-4 shadow-md">
-        <p className="text-sm text-gray-300 flex items-center gap-2">
-          <User2 size={16} /> Name : {user?.username}
+        <p className="text-sm capitalize text-gray-300 flex items-center gap-2">
+          <User2 size={16} /> {user?.username}
         </p>
 
         <p className="text-sm text-gray-300 mt-2">Your Current Balance:</p>

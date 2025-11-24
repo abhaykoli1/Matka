@@ -142,10 +142,10 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
             <X size={22} />
           </button>
 
-          <div className="w-16 h-16 border-2 text-white border-purple-900 rounded-full flex items-center justify-center font-bold text-2xl">
+          <div className="capitalize w-16 h-16 border-2 text-white border-purple-900 rounded-full flex items-center justify-center font-bold text-2xl">
             {username?.[0]}
           </div>
-          <h3 className="mt-2 text-lg font-semibold">{username}</h3>
+          <h3 className="mt-2 text-lg font-semibold capitalize">{username}</h3>
           <p className="text-sm opacity-80">{mobile}</p>
         </div>
 

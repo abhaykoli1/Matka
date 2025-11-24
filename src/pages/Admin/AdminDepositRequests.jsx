@@ -148,7 +148,7 @@ export default function AdminDepositRequests() {
                 <tr key={p.id} className="hover:bg-white/5">
                   {/* USER */}
                   <td className="px-4 py-4 text-sm">
-                    <p className="font-semibold">{p.username}</p>
+                    <p className="font-semibold capitalize">{p.username}</p>
                     <p className="text-xs text-gray-400">{p.user_id}</p>
                   </td>
 

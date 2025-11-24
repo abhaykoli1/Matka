@@ -57,6 +57,9 @@ export default function SignupPage() {
       // ------------------------------------
       localStorage.setItem("accessToken", res.data.access_token);
       localStorage.setItem("userId", res.data.user.id);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
 
       setMessage({
         type: "success",

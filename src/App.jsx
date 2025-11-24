@@ -446,8 +446,6 @@ const UserOnly = () => {
   return <Outlet />;
 };
 
-
-
 const AdminOnly = () => {
   const user = useAuthUser();
 
@@ -607,7 +605,10 @@ const App = () => {
           </Route>
         </Route>
 
-        <Route path="*" element={<div>404 Not Found</div>} />
+        <Route
+          path="*"
+          element={<div className=" h-screen">404 Not Found</div>}
+        />
       </Routes>
     </section>
   );
