@@ -423,7 +423,7 @@ const PublicRoute = () => {
     return user.role === "admin" ? (
       <Navigate to="/admin" replace />
     ) : (
-      <Navigate to="" replace />
+      <Navigate to="/" replace />
     );
   }
 
@@ -435,11 +435,12 @@ const UserOnly = () => {
   const token = localStorage.getItem("accessToken");
 
   if (user === undefined) return <div>Checking...</div>;
-  // if (!token) return <Navigate to="/login" replace />;
-  if (user?.role === "player" && token) return <Navigate to="/" />;
+  if (!token) return <Navigate to="/login" replace />;
+  if (user?.role === "admin") return <Navigate to="/admin" replace />;
 
   return <Outlet />;
 };
+
 
 const AdminOnly = () => {
   const user = useAuthUser();
