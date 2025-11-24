@@ -1,149 +1,144 @@
+// Updated Chats.jsx UI with clean layout and no extra images
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
-import { useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 export default function Chats() {
   const [marketName, setMarketName] = useState("");
-  const [chart, setChart] = useState([]);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [noData, setNoData] = useState(false);
   const { marketId } = useParams();
 
-  // ------------------------------
-  // FALLBACK TEST DATA (your sample)
-  // ------------------------------
-  const fallbackData = {
-    market_name: "Sample Market",
-    chart: [
-      {
-        date: "2025-02-10",
-        day: "Mon",
-        open_panna: "248",
-        open_digit: "4",
-        close_panna: "112",
-        close_digit: "4",
-      },
-      {
-        date: "2025-02-09",
-        day: "Sun",
-        open_panna: "680",
-        open_digit: "4",
-        close_panna: "570",
-        close_digit: "2",
-      },
-      {
-        date: "2025-02-08",
-        day: "Sat",
-        open_panna: "390",
-        open_digit: "2",
-        close_panna: "245",
-        close_digit: "1",
-      },
-    ],
-  };
-
-  const fetchChart = async () => {
-    try {
-      const res = await axios.get(
-        `${API_URL}/market/chart/monthly/${marketId}`
-      );
-
-      if (!res.data || !res.data.chart || res.data.chart.length === 0) {
-        // APPLY FALLBACK DATA AUTOMATICALLY
-        setMarketName(fallbackData.market_name);
-        setChart(fallbackData.chart);
-      } else {
-        setMarketName(res.data.market_name);
-        setChart(res.data.chart);
-      }
-    } catch (err) {
-      console.error("Error loading chart:", err);
-
-      // SERVER FAILED → use fallback
-      setMarketName(fallbackData.market_name);
-      setChart(fallbackData.chart);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchChart();
+    const fetch = async () => {
+      setLoading(true);
+      setNoData(false);
+      try {
+
+        const url = marketId
+          ? `${API_URL}/api/admin/market-chart?market_id=${marketId}`
+          : `${API_URL}/api/admin/market-chart`;
+
+        const res = await axios.get(url);
+        console.log(res)
+        const data = Array.isArray(res.data)
+          ? res.data
+          : res.data.chart || res.data.results || [];
+
+        if (!data.length) {
+          setNoData(true);
+          setItems([]);
+        } else {
+          const normalized = data.map((it) => ({
+            ...it,
+            date: it.date,
+            open_panna: (it.open_panna || "000").toString().padStart(3, "0"),
+            close_panna: (it.close_panna || "000").toString().padStart(3, "0"),
+            open_digit: (it.open_digit || "-").toString(),
+            close_digit: (it.close_digit || "-").toString(),
+          }));
+
+          normalized.sort((a, b) => (a.date > b.date ? 1 : -1));
+
+          setItems(normalized);
+          setMarketName(normalized[0]?.market_name || "Market");
+        }
+      } catch (err) {
+        setNoData(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetch();
   }, [marketId]);
 
-  // Group into rows of 7
   const rows = [];
-  for (let i = 0; i < chart.length; i += 7) {
-    rows.push(chart.slice(i, i + 7));
-  }
+  for (let i = 0; i < items.length; i += 7) rows.push(items.slice(i, i + 7));
 
-  if (loading) {
+  const getDayLabel = (d) => dayjs(d).format("ddd");
+  const formatDate = (d) => dayjs(d).format("DD MMM YYYY");
+
+  if (loading)
+    return <div className="text-center text-white p-6">Loading...</div>;
+
+  if (noData)
     return (
-      <div className="text-white text-center mt-10 text-lg">
-        Loading Chart...
+      <div className="text-center text-white p-6 text-lg font-semibold">
+        No data available
       </div>
     );
-  }
 
   return (
-    <div className="max-w-md mx-auto pb-20">
-      {/* Title */}
+    <div className="max-w-[960px] mx-auto p-4">
+      {/* Header */}
+      <h1 className="text-2xl font-bold text-center text-slate-100 mb-4">
+        {marketName.toUpperCase()} RESULT CHART
+      </h1>
 
-      <div className="w-full bg-gradient-to-b from-black to-black/0 py-4 flex items-center justify-center">
-        <h1 className="text-lg font-semibold uppercase tracking-widest">
-          {marketName.toUpperCase()} Chart
-        </h1>
-      </div>
-
-      {/* Chart Container */}
-      <div className="space-y-3">
+      {/* Calendar Grid */}
+      <div className="space-y-4">
         {rows.map((week, idx) => (
-          <div key={idx} className="  p-3 ">
-            <div className="grid grid-cols-2 gap-3">
+          <div key={idx} className="w-full overflow-x-auto">
+            <div className="grid grid-cols-7 gap-2">
               {week.map((item, i) => (
                 <div
                   key={i}
-                  className="border border-gray-600 rounded-lg p-1 bg-[#111426]"
+                  className="border border-slate-500 bg-slate-900 rounded-md p-1 text-white"
+                  style={{ minWidth: 110 }}
                 >
-                  {/* Day + Date */}
-                  <p className="text-center text-[11px] font-bold text-gray-300">
-                    {item.day}
-                  </p>
-                  <p className="text-center text-[10px] text-gray-400">
-                    {item.date}
-                  </p>
+                  {/* Top Date */}
+                  <div className="text-center mb-1">
+                    <div className="text-[11px] font-semibold text-sky-400">
+                      {getDayLabel(item.date)}
+                    </div>
+                    <div className="text-[11px] text-slate-300">
+                      {formatDate(item.date)}
+                    </div>
+                  </div>
 
-                  {/* Open panna */}
-                  <div className="grid grid-cols-3 text-[11px] text-gray-300 mt-1">
-                    <p className="text-center">{item.open_panna[0]}</p>
-                    <p className="text-center font-bold text-red-400">
+                  {/* Open Panna */}
+                  <div className="grid grid-cols-3 text-[12px] mb-1">
+                    <span className="text-center">{item.open_panna[0]}</span>
+                    <span className="text-center font-bold text-lime-400">
                       {item.open_panna}
-                    </p>
-                    <p className="text-center">{item.open_panna[2]}</p>
+                    </span>
+                    <span className="text-center">{item.open_panna[2]}</span>
                   </div>
 
-                  <p className="text-center text-[11px] font-semibold text-white">
+                  {/* Open Digit */}
+                  <div className="text-center text-[18px] font-extrabold text-yellow-300">
                     {item.open_digit}
-                  </p>
-
-                  {/* Close panna */}
-                  <div className="grid grid-cols-3 text-[11px] text-gray-300 mt-1">
-                    <p className="text-center">{item.close_panna[0]}</p>
-                    <p className="text-center font-bold text-red-400">
-                      {item.close_panna}
-                    </p>
-                    <p className="text-center">{item.close_panna[2]}</p>
                   </div>
 
-                  <p className="text-center text-[11px] font-semibold text-white">
+                  <div className="h-px bg-slate-600 my-1" />
+
+                  {/* Close Panna */}
+                  <div className="grid grid-cols-3 text-[12px] mt-1">
+                    <span className="text-center">{item.close_panna[0]}</span>
+                    <span className="text-center font-bold text-red-400">
+                      {item.close_panna}
+                    </span>
+                    <span className="text-center">{item.close_panna[2]}</span>
+                  </div>
+
+                  {/* Close Digit */}
+                  <div className="text-center text-[18px] font-extrabold text-yellow-300 mt-1">
                     {item.close_digit}
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Footer */}
+      <div className="mt-6 text-center text-slate-400 text-sm">
+        © 2025 — Result Chart
       </div>
     </div>
   );
