@@ -10,6 +10,9 @@ export default function BidHistoryPage() {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  const [selectedType, setSelectedType] = useState("All"); // <-- FILTER STATE
+  const [marketCache, setMarketCache] = useState({}); // <-- MARKET DATA CACHE
+
   const token = localStorage.getItem("accessToken");
 
   const authHeader = useMemo(
@@ -17,6 +20,38 @@ export default function BidHistoryPage() {
       Authorization: `Bearer ${token}`,
     }),
     [token]
+  );
+
+  // Fetch market details by ID
+  const fetchMarketInfo = useCallback(
+    async (marketId) => {
+      if (!marketId) return null;
+
+      // Already cached?
+      if (marketCache[marketId]) return marketCache[marketId];
+
+      try {
+        const res = await axios.get(
+          `${API_BASE}/api/admin/market/${marketId}`,
+          {
+            headers: authHeader,
+          }
+        );
+
+        const data = res?.data?.data;
+        if (data) {
+          setMarketCache((prev) => ({
+            ...prev,
+            [marketId]: data,
+          }));
+          return data;
+        }
+      } catch (err) {
+        console.log("Market fetch failed:", marketId, err);
+      }
+      return null;
+    },
+    [authHeader, marketCache]
   );
 
   // Fetch History
@@ -27,7 +62,19 @@ export default function BidHistoryPage() {
         headers: authHeader,
       });
 
-      setHistory(Array.isArray(res.data) ? res.data : res.data.history || []);
+      const rawHistory = Array.isArray(res.data)
+        ? res.data
+        : res.data.history || [];
+
+      // Attach market info for each history item
+      const historyWithMarket = await Promise.all(
+        rawHistory.map(async (item) => {
+          const market = await fetchMarketInfo(item.market_id);
+          return { ...item, market };
+        })
+      );
+
+      setHistory(historyWithMarket);
     } catch (err) {
       console.warn(
         "Failed to fetch history:",
@@ -37,14 +84,22 @@ export default function BidHistoryPage() {
     } finally {
       setLoadingHistory(false);
     }
-  }, [authHeader]);
+  }, [authHeader, fetchMarketInfo]);
 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
+  // FILTERED HISTORY
+  const filteredHistory = useMemo(() => {
+    if (selectedType === "All") return history;
+
+    return history.filter((h) => h.market?.marketType === selectedType);
+  }, [history, selectedType]);
+
   return (
-    <div className="max-w-md mx-auto pb-20  text-white font-sans min-h-screen">
+    <div className="max-w-md mx-auto pb-20 text-white font-sans min-h-screen">
+      {/* Header */}
       <div className="w-full mb-2 relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
         <button
           onClick={() => window.history.back()}
@@ -52,32 +107,53 @@ export default function BidHistoryPage() {
         >
           <ArrowLeft size={22} />
         </button>
-        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
-          <span className="flex gap-2 text-md items-center uppercase">
-            Bid History
-          </span>
+
+        <h2 className="text-md z-0 absolute top-2 w-full text-center font-bold">
+          Bid History
         </h2>
-        <a className="pr-4 z-10"></a>
+
+        <div className="pr-4 z-10"></div>
       </div>
 
+      {/* FILTER DROPDOWN */}
+      <div className="px-4 mb-4">
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="w-full bg-white/10 text-white p-2 rounded-md border border-white/20"
+        >
+          <option value="All">All Markets</option>
+          <option value="Market">Market</option>
+          <option value="Starline">Starline</option>
+        </select>
+      </div>
+
+      {/* CONTENT */}
       {loadingHistory ? (
         <div className="text-center text-gray-400">
-          <Loader className="animate-spin inline-block text-center" />{" "}
-          Loading...
+          <Loader className="animate-spin inline-block" /> Loading...
         </div>
-      ) : history.length === 0 ? (
+      ) : filteredHistory.length === 0 ? (
         <div className="text-gray-500 text-center">No bids found.</div>
       ) : (
-        <div className="space-y-3 ">
-          {history.map((h) => (
+        <div className="space-y-3">
+          {filteredHistory.map((h) => (
             <div
               key={h.id}
-              className="bg-white/5 p-3 mx-3 mt-1  rounded-lg border border-gray-50/10"
+              className="bg-white/5 p-3 mx-3 mt-1 rounded-lg border border-gray-50/10"
             >
+              {/* MARKET NAME + TYPE */}
               <p className="text-sm font-semibold">
-                {(h.game_type || "").replace(/_/g, " ")} — {h.session}
+                {h.market?.name || "Unknown Market"}{" "}
+                <span className="text-gray-400 text-xs">
+                  ({h.market?.marketType})
+                </span>
               </p>
 
+              {/* BID INFO */}
+              <p className="text-gray-300">
+                {(h.game_type || "").replace(/_/g, " ")} — {h.session}
+              </p>
               <p className="text-gray-300">Digit: {h.digit}</p>
               <p className="text-gray-300">Points: {h.points}</p>
 

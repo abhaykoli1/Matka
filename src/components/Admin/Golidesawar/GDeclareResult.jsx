@@ -200,16 +200,15 @@ export default function GDeclareResultPage() {
             >
               <option value="">Select Game Name</option>
 
-              {markets
-                .filter((m) => !declaredIds.includes(getId(m)))
-                .map((m) => {
-                  let id = getId(m);
-                  return (
-                    <option key={id} value={id}>
-                      {m.name} ( {m.open_time} - {m.close_time} )
-                    </option>
-                  );
-                })}
+              {/* // .filter((m) => !declaredIds.includes(getId(m))) */}
+              {markets.map((m) => {
+                let id = getId(m);
+                return (
+                  <option key={id} value={id}>
+                    {m.name} ( {m.open_time} - {m.close_time} )
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>

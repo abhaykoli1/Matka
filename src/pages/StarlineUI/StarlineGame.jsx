@@ -11,23 +11,38 @@ export default function StarlineMarket() {
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const displayDigit = (v) => (!v || v === "-" ? "X" : v);
+  const displayPanna = (v) => (!v || v === "-" ? "XXX" : v);
+
   const fetchMarkets = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/admin/user/starline/`, {
+      const res = await axios.get(`${API_URL}/api/admin/user/starline`, {
         headers,
       });
 
-      console.log(res);
+      console.log(res?.data?.data);
+      const list = res.data.data.map((m) => {
+        const today = m.today_result || {};
 
-      // Clean response
-      const list = (res.data?.data || []).map((m) => ({
-        id: m._id?.$oid,
-        name: m.name,
-        openTime: m.open_time,
-        closeTime: m.close_time,
-        status: m.status,
-        today_result: m.today_result,
-      }));
+        return {
+          id: m._id?.$oid,
+          name: m.name,
+          is_active: m.is_active,
+          hindi: m.hindi,
+          openTime: m.open_time,
+          closeTime: m.close_time,
+          status: m.status,
+          marketType: m.marketType,
+          today_result: {
+            open_digit: displayDigit(today.open_digit),
+            close_digit: displayDigit(today.close_digit),
+            open_panna: displayPanna(today.open_panna),
+            close_panna: displayPanna(today.close_panna),
+          },
+        };
+      });
+
+      console.log("List ", list);
 
       setMarkets(list);
     } catch (err) {
@@ -50,7 +65,8 @@ export default function StarlineMarket() {
   }
 
   return (
-    <div className=" space-y-3  mx-auto max-w-md font-sans pb-20">
+    <div className="space-y-3 mx-auto max-w-md font-sans pb-20">
+      {/* Header */}
       <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
         <button
           onClick={() => window.history.back()}
@@ -58,119 +74,99 @@ export default function StarlineMarket() {
         >
           <ArrowLeft size={22} />
         </button>
-        <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
-          <span className="flex gap-2 text-md items-center uppercase">
-            StarLine
-          </span>
+
+        <h2 className="text-md z-0 w-full absolute flex justify-center font-bold uppercase">
+          StarLine
         </h2>
-        <a className="pr-4 z-10"></a>
+
+        <span className="pr-4 z-10"></span>
       </div>
+
+      {/* Types Info */}
       <div className="px-3">
-        <div className="w-full   bg-white/5 p-4 border border-gray-50/5 rounded-xl space-y-2">
-          {/* Row 1 */}
-          <div className="flex justify-between items-center">
-            <span className="font-semibold text-gray-100 text-[13px]">
-              Left Digit
-            </span>
-            <span className="font-semibold text-gray-100 text-[13px]">
-              10–100
-            </span>
+        <div className="w-full bg-white/5 p-4 border border-gray-50/5 rounded-xl space-y-2">
+          <div className="flex justify-between text-[13px] text-gray-100">
+            <span className="font-semibold">Left Digit</span>
+            <span className="font-semibold">10–100</span>
           </div>
-
-          {/* Row 2 */}
-          <div className="flex justify-between items-center">
-            <span className="font-semibold text-gray-100 text-[13px]">
-              Right Digit
-            </span>
-            <span className="font-semibold text-gray-100 text-[13px]">
-              10–100
-            </span>
+          <div className="flex justify-between text-[13px] text-gray-100">
+            <span className="font-semibold">Right Digit</span>
+            <span className="font-semibold">10–100</span>
           </div>
-
-          {/* Row 3 */}
-          <div className="flex justify-between items-center">
-            <span className="font-semibold text-gray-100 text-[13px]">
-              Jodi Digit
-            </span>
-            <span className="font-semibold text-gray-100 text-[13px]">
-              10–1000
-            </span>
+          <div className="flex justify-between text-[13px] text-gray-100">
+            <span className="font-semibold">Jodi Digit</span>
+            <span className="font-semibold">10–1000</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full flex  gap-3 px-3 ">
+      {/* History buttons */}
+      <div className="w-full flex gap-3 px-3">
         <a
           href="/bid-history"
-          className="bg-white/10 flex items-center justify-center font-medium rounded-xl border border-gray-50/5 py-2 px-3 w-full"
+          className="bg-white/10 flex items-center justify-center font-medium rounded-xl border border-gray-50/5 py-2 w-full"
         >
           Bids History
         </a>
         <a
           href="/win-history"
-          className="bg-white/10 flex items-center justify-center font-medium rounded-xl border border-gray-50/5 py-2 px-3 w-full"
+          className="bg-white/10 flex items-center justify-center font-medium rounded-xl border border-gray-50/5 py-2 w-full"
         >
           Win History
         </a>
       </div>
+
+      {/* Markets */}
       <div className="px-3">
         {markets.map((mkt) => {
-          // Extract results safely
-          const openPanna = mkt.today_result?.open_panna || "XXX";
-          const openDigit = mkt.today_result?.open_digit || "X";
-
-          const closeDigit = mkt.today_result?.close_digit || "X";
-          const closePanna = mkt.today_result?.close_panna || "XXX";
+          const r = mkt.today_result;
 
           return (
             <div
               key={mkt.id}
-              className="w-full rounded-xl shadow-lg  backdrop-blur-2xl border border-white/10"
+              className="w-full rounded-xl shadow-lg backdrop-blur-2xl border border-white/10 mb-3"
             >
               <div className="rounded-xl p-3 text-white">
-                {/* Header */}
+                {/* Top Row */}
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-1">
-                    <h2 className="text-base font-semibold uppercase tracking-wide">
+                    <h2 className="text-base font-semibold uppercase">
                       {mkt.name}
                     </h2>
                     <Info
                       size={18}
-                      className="bg-gray-300 rounded-full text-black"
+                      className="bg-gray-300 text-black rounded-full"
                     />
                   </div>
 
                   <span
                     className={`text-xs font-semibold ${
-                      mkt.status === true ? "text-green-400" : "text-red-400"
+                      mkt.status ? "text-green-400" : "text-red-400"
                     }`}
                   >
-                    {mkt.status === true ? "Running" : "Closed"}
+                    {mkt.status === true ? "Market Running" : "Market Closed"}
                   </span>
                 </div>
 
-                {/* Divider */}
                 <div className="border-b border-dashed border-cyan-400/25 mb-2"></div>
 
-                {/* Result + times */}
+                {/* Results */}
                 <div className="flex justify-between items-center text-xs text-gray-300">
                   <div>
-                    {/* Result */}
                     <h3 className="text-2xl mb-1 font-semibold text-[#c21af0] tracking-wider">
-                      {openPanna}-{openDigit}
-                      {closeDigit}-{closePanna}
+                      {r.open_panna}-{r.open_digit}
+                      {r.close_digit}-{r.close_panna}
                     </h3>
 
-                    <div className="flex gap-7">
+                    <div className="flex gap-7 text-gray-400">
                       <p>
-                        <span className="text-gray-400">Open Time:</span>
+                        Open Time:
                         <span className="block text-white font-medium">
                           {mkt.openTime}
                         </span>
                       </p>
-
                       <p>
-                        <span className="text-gray-400">Close Time:</span>
+                        Close Time:
                         <span className="block text-white font-medium">
                           {mkt.closeTime}
                         </span>
@@ -178,28 +174,26 @@ export default function StarlineMarket() {
                     </div>
                   </div>
 
-                  {/* Chart Button */}
                   <a href={`/charts/${mkt.id}`}>
                     <FaChartLine size={26} />
                   </a>
 
-                  {/* Play Button */}
-                  <div className="flex flex-col items-center gap-1">
+                  <div className="flex flex-col items-center">
                     <a
                       href={mkt.status === true ? `/play/${mkt.id}` : ""}
                       className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                        mkt.status === true
+                        mkt.status
                           ? "border-white"
                           : "border-red-400 cursor-not-allowed"
                       }`}
                     >
                       <Play
+                        size={18}
                         className={
                           mkt.status === true
                             ? "text-green-500"
                             : "text-red-400"
                         }
-                        size={18}
                       />
                     </a>
                     <span className="text-[14px] font-semibold">Play</span>

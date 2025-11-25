@@ -16,7 +16,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!token) {
       window.location.href = "/login";
-    } 
+    }
   }, [token]);
 
   const displayDigit = (v) => (!v || v === "-" ? "X" : v);
@@ -26,11 +26,9 @@ export default function Dashboard() {
     try {
       setIsLoading(true);
 
-      const res = await axios.get(`${API_URL}/api/admin/user/markets/`, {
+      const res = await axios.get(`${API_URL}/api/admin/user/markets`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log("MARKET API RESPONSE → ", res.data);
 
       const list = res.data.data.map((m) => {
         const today = m.today_result || {};
@@ -41,12 +39,9 @@ export default function Dashboard() {
           openTime: m.open_time,
           closeTime: m.close_time,
 
-          status: m.status ? "Market Running" : "Market Closed",
-
+          status: m.status,
           // If backend adds final_result later
           result: m.final_result || "xxx-x-xxx",
-
-          // TODAY’S RESULT
           open_digit: displayDigit(today.open_digit),
           close_digit: displayDigit(today.close_digit),
           open_panna: displayPanna(today.open_panna),
@@ -55,6 +50,8 @@ export default function Dashboard() {
       });
 
       setMarkets(list);
+
+      console.log("list", list);
     } catch (err) {
       console.error(err);
       setError("Failed to load markets");

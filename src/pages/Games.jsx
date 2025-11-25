@@ -31,11 +31,17 @@ export default function Games() {
     try {
       setIsLoading(true);
 
-      const res = await axios.get(`${API_URL}/api/admin/market/${marketId}`, {
-        headers,
-      });
+      const res = await axios.get(
+        `${API_URL}/api/admin/market/692587ed5d4e86c0f334143a`,
+        {
+          headers,
+        }
+      );
 
-      const m = res.data?.data;
+      const m = res?.data?.data;
+
+      console.log(m);
+
       if (!m) {
         setError("Market not found");
         return;
@@ -44,12 +50,15 @@ export default function Games() {
       setMarket({
         id: m._id?.$oid,
         name: m.name,
+        hindi: m.hindi,
         open_time: m.open_time,
         close_time: m.close_time,
-        status: m.status ? "Market Running" : "Market Closed",
+        status: m.status,
+        is_active: m.is_active,
+        marketType: m.marketType,
       });
     } catch (err) {
-      console.error(err);
+      console.log(err);
       setError("Failed to load market details.");
     } finally {
       setIsLoading(false);
@@ -162,14 +171,10 @@ export default function Games() {
           <strong>Status:</strong>
           <span
             className={`font-bold rounded-full text-xs ${
-              market.status === "Market Running"
-                ? "text-green-600"
-                : "text-red-600"
+              market.status === true ? "text-green-600" : "text-red-600"
             }`}
           >
-            {market.status === "Market Running"
-              ? "Market Running"
-              : "Market Closed"}
+            {market.status === true ? "Market Running" : "Market Closed"}
           </span>
         </span>
       </p>

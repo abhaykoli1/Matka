@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { User, Tag } from "lucide-react";
+import { User, Tag, Wallet, Wallet2 } from "lucide-react";
 import Sidebar from "../../components/Admin/Sidebar";
 import Header from "../../components/Admin/Header";
 import DashboardCard from "../../components/Admin/DashboardCard";
@@ -13,17 +13,19 @@ export default function AdminDashboard() {
 
   const colors = [
     "#3B82F6",
+    "#3B82F6",
     "#10B981",
     "#F59E0B",
     "#8B5CF6",
     "#EC4899",
     "#F43F5E",
+    "#10B981",
+    "#3B82F6",
   ];
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log(users);
   const token = localStorage.getItem("accessToken");
 
   const fetchUsers = async () => {
@@ -65,6 +67,11 @@ export default function AdminDashboard() {
 
   const headers = { Authorization: `Bearer ${token}` };
 
+  const [deposit, setDeposit] = useState(0);
+  const [todaysDeposit, setTodayDeposit] = useState(0);
+  const [withdrawal, setWithdrawal] = useState(0);
+  const [todaysWithdrawal, setTodayWithdrawal] = useState(0);
+
   const fetchData = async () => {
     try {
       // Approved Users
@@ -73,6 +80,50 @@ export default function AdminDashboard() {
         { headers }
       );
       setApproved(approvedRes.data.count);
+
+      const withdrawalDeposite = await axios.get(
+        `${API_URL}/user-deposit-withdrawal/admin/withdraw`,
+        {
+          headers,
+        }
+      );
+      const withdrawalList = withdrawalDeposite?.data || [];
+
+      console.log("With", withdrawalList);
+      const todayw = new Date().toISOString().split("T")[0];
+
+      const todaysWithdrawals = withdrawalList.filter((item) =>
+        item.created_at?.startsWith(todayw)
+      );
+
+      console.log("todaysWithdrawals", todaysWithdrawals);
+      setTodayWithdrawal(todaysWithdrawals?.length);
+      setWithdrawal(withdrawalDeposite?.data?.length);
+
+      const totalDeposite = await axios.get(
+        `${API_URL}/user-deposit-withdrawal/admin/deposit/pending`,
+        {
+          headers,
+        }
+      );
+
+      const todayData = totalDeposite?.data; // your API structure
+      const pendingDeposits = todayData.pending; // array of deposits
+
+      // Get today's date (YYYY-MM-DD)
+      const today = new Date().toISOString().split("T")[0];
+
+      // Filter deposits uploaded today
+      const todaysDeposits = pendingDeposits.filter((item) =>
+        item.uploaded_at.startsWith(today)
+      );
+
+      // Total count
+      const todaysDepositCount = todaysDeposits.length;
+
+      // console.log("Today's Deposit Count:", todaysDepositCount);
+      setTodayDeposit(todaysDepositCount);
+      setDeposit(totalDeposite?.data?.pending?.length || []);
 
       // Unapproved Users
       const unapprovedRes = await axios.get(
@@ -88,7 +139,6 @@ export default function AdminDashboard() {
       );
       setTodayCreated(createdRes.data.count);
 
-      // Today Players (Today Created + Login Today can be different)
       setTodayPlayers(createdRes.data.count);
 
       // Today Logins
@@ -105,14 +155,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  // COLORS FOR CARDS
-  // const colors = [
-  //   "bg-blue-600/20 text-blue-300",
-  //   "bg-green-600/20 text-green-300",
-  //   "bg-yellow-600/20 text-yellow-300",
-  //   "bg-purple-600/20 text-purple-300",
-  // ];
 
   return (
     <div className="">
@@ -149,6 +191,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Approved Users */}
             <DashboardCard
+              link="/admin/users"
               title="Users"
               value={approved}
               // subtext="All Users"
@@ -179,6 +222,32 @@ export default function AdminDashboard() {
               value={todayLogins}
               color={colors[3]}
               icon={<Tag size={18} />}
+            />
+            <DashboardCard
+              link="/admin/deposite-requests"
+              title="Total Deposits"
+              value={deposit}
+              color={colors[4]}
+              icon={<Wallet size={18} />}
+            />
+            <DashboardCard
+              title="Deposite (Today)"
+              value={todaysDeposit}
+              color={colors[5]}
+              icon={<Wallet size={18} />}
+            />
+            <DashboardCard
+              link="/admin/admin-withdrawal-requests"
+              title="Total Withdrawals"
+              value={withdrawal}
+              color={colors[6]}
+              icon={<Wallet2 size={18} />}
+            />
+            <DashboardCard
+              title="Withdrawals (Today)"
+              value={todaysWithdrawal}
+              color={colors[7]}
+              icon={<Wallet size={18} />}
             />
           </div>
 

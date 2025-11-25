@@ -43,7 +43,7 @@ export default function WithdrawRequest() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [currentBalance, setCurrentBalance] = useState(null);
-  const [minWithdraw, setMinWithdraw] = useState(200); // Example minimum
+  const [minWithdraw, setMinWithdraw] = useState(200);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const [settings, setSettings] = useState(null);
@@ -80,7 +80,7 @@ export default function WithdrawRequest() {
         setCurrentBalance(data.balance);
       }
     } catch (error) {
-      // console.error("Balance fetch error:", error);
+      console.log("Balance fetch error:", error);
     }
   };
 
@@ -258,7 +258,7 @@ export default function WithdrawRequest() {
           <input
             type="number"
             id="amount"
-            placeholder={`Min ₹${minWithdraw}`}
+            placeholder={`Min ₹${settings?.min_withdraw}`}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full p-3 rounded-lg  border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
@@ -309,7 +309,7 @@ export default function WithdrawRequest() {
           type="submit"
           disabled={
             loading ||
-            amount <= minWithdraw ||
+            amount <= settings?.min_withdraw - 1 ||
             amount > currentBalance ||
             !number
           }

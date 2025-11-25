@@ -26,7 +26,7 @@ export default function GGameList() {
   const fetchGames = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/admin/Golidesawar/market/`, {
+      const res = await axios.get(`${API_URL}/api/admin/Golidesawar/market`, {
         headers,
       });
 

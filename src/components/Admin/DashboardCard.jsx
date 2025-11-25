@@ -1,8 +1,18 @@
 import React from "react";
 
-export default function DashboardCard({ title, value, subtext, color, icon }) {
+export default function DashboardCard({
+  title,
+  value,
+  subtext,
+  color,
+  icon,
+  link,
+}) {
   return (
-    <div className="bg-white/10 rounded-xl shadow-md p-4 flex  justify-between items-center">
+    <a
+      href={link}
+      className="bg-white/10 rounded-xl shadow-md p-4 flex  justify-between items-center"
+    >
       <div>
         <h3 className="text-white text-sm">{title}</h3>
         <p className="text-2xl font-semibold mt-1 text-gray-200">{value}</p>
@@ -14,6 +24,6 @@ export default function DashboardCard({ title, value, subtext, color, icon }) {
       >
         {icon}
       </div>
-    </div>
+    </a>
   );
 }

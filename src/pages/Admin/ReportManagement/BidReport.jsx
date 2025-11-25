@@ -31,6 +31,8 @@ export default function BidReport() {
         headers,
       });
 
+      console.log("res", res);
+
       const list = Array.isArray(res.data?.data) ? res.data.data : res.data;
 
       setBids(list);
@@ -241,8 +243,19 @@ export default function BidReport() {
                       <td className="py-1.5 px-2">{b.mobile}</td>
                       <td className="py-1.5 px-2 min-w-30">{b.bid_date}</td>
                       <td className="py-1.5 px-2 min-w-30">{b.bid_time}</td>
-                      <td className="py-1.5 px-2">{b.market_name}</td>
-                      <td className="py-1.5 px-2">{b.game_type}</td>
+                      <td className="py-1.5 px-2 uppercase min-w-40">
+                        {b.market_name}
+                      </td>
+                      <td className="py-1.5 px-2 min-w-30">
+                        {b.game_type
+                          ?.replace(/_/g, " ")
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                          ) // capitalize
+                          .join(" ")}
+                      </td>
                       <td className="py-1.5 px-2">{b.session}</td>
                       <td className="py-1.5 px-2">{b.digit}</td>
                       <td className="py-1.5 px-2 font-bold">{b.points}</td>

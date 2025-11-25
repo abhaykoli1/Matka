@@ -8,21 +8,27 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "../../config";
-import { getUserById } from "../../components/layout/fetchUser";
 
 const getToken = () => localStorage.getItem("accessToken");
 
 export default function AdminWithdrawalRequests() {
   const [data, setData] = useState([]);
+  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
-  // store user details { userId: { name, phone } }
-  const [userDetails, setUserDetails] = useState({});
-
-  // Fetch Withdrawal + Users
-  console.log(userDetails);
+  const fetchUserDetails = async (userId) => {
+    try {
+      const res = await axios.get(`${API_URL}/user/${userId}`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      return res.data;
+    } catch (err) {
+      console.log("User fetch error:", err);
+      return null;
+    }
+  };
 
   const fetchWithdrawals = async () => {
     setLoading(true);
@@ -39,26 +45,19 @@ export default function AdminWithdrawalRequests() {
       const withdrawals = res.data || [];
       setData(withdrawals);
 
+      // Fetch unique user IDs
       const uniqueUserIds = [...new Set(withdrawals.map((w) => w.user_id))];
 
-      // Fetch users in parallel
-      const responses = await Promise.all(
-        uniqueUserIds.map((uid) => getUserById(uid))
+      const userData = {};
+
+      await Promise.all(
+        uniqueUserIds.map(async (uid) => {
+          const details = await fetchUserDetails(uid);
+          if (details) userData[uid] = details;
+        })
       );
 
-      const detailsMap = {};
-
-      uniqueUserIds.forEach((uid, index) => {
-        const raw = responses[index]?.data;
-
-        // Your backend returns:
-        // { userId: { mobile, username, ... } }
-        const userObj = raw ? Object.values(raw)[0] : null;
-
-        detailsMap[uid] = userObj; // { username: "Abhay", mobile: "123..." }
-      });
-
-      setUserDetails(detailsMap);
+      setUsers(userData);
     } catch (err) {
       console.log(err);
       setError("Failed to load withdrawal requests");
@@ -84,10 +83,8 @@ export default function AdminWithdrawalRequests() {
         fd,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
-
       fetchWithdrawals();
     } catch (err) {
-      console.log(err);
       alert(err.response?.data?.detail || "Approve failed");
     }
 
@@ -107,10 +104,8 @@ export default function AdminWithdrawalRequests() {
         fd,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
-
       fetchWithdrawals();
     } catch (err) {
-      console.log(err);
       alert(err.response?.data?.detail || "Reject failed");
     }
 
@@ -119,7 +114,7 @@ export default function AdminWithdrawalRequests() {
 
   const formatTime = (t) => new Date(t).toLocaleString();
 
-  // UI
+  // LOADING
   if (loading) {
     return (
       <div className="p-8 text-center text-gray-400">
@@ -159,20 +154,23 @@ export default function AdminWithdrawalRequests() {
 
             <tbody className="divide-y divide-gray-800">
               {data.map((wd) => {
-                const u = userDetails[wd.user_id]; // shortcut
+                const user = users[wd.user_id];
+
                 return (
                   <tr key={wd.wd_id} className="hover:bg-white/5">
                     {/* USER */}
                     <td className="px-4 py-2 text-sm">
-                      <p className="font-semibold flex items-center gap-1">
-                        <User size={14} className="text-purple-400" />
-
-                        {u ? u.name : "Loading..."}
-                      </p>
-
-                      <p className="text-xs text-gray-400">
-                        {u ? u.phone : ""}
-                      </p>
+                      {user ? (
+                        <div>
+                          <p className="font-semibold capitalize flex items-center gap-1">
+                            <User size={14} className=" text-purple-400" />
+                            {user.username}
+                          </p>
+                          <p className="text-xs text-gray-400">{user.mobile}</p>
+                        </div>
+                      ) : (
+                        "Loading..."
+                      )}
                     </td>
 
                     {/* AMOUNT */}
@@ -181,7 +179,7 @@ export default function AdminWithdrawalRequests() {
                     </td>
 
                     {/* METHOD */}
-                    <td className="px-4 py-2 text-sm min-w-36">
+                    <td className="px-4 py-2 min-w-40 text-sm">
                       <p className="font-semibold text-purple-300">
                         {wd.method}
                       </p>
@@ -189,7 +187,7 @@ export default function AdminWithdrawalRequests() {
                     </td>
 
                     {/* TIME */}
-                    <td className="px-4 py-2 text-xs text-gray-400">
+                    <td className="px-4 py-2 text-xs min-w-44 text-gray-400">
                       {formatTime(wd.created_at)}
                     </td>
 
@@ -208,7 +206,7 @@ export default function AdminWithdrawalRequests() {
                       </span>
                     </td>
 
-                    {/* ACTION BUTTONS */}
+                    {/* ACTIONS */}
                     <td className="px-4 py-2 text-center">
                       <div className="flex justify-center gap-3">
                         <button

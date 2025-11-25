@@ -31,7 +31,7 @@ export default function ResultDeclareMarket() {
   const fetchGames = async () => {
     setLoadingGames(true);
     try {
-      const res = await axios.get(`${API_URL}/api/admin/market/`, { headers });
+      const res = await axios.get(`${API_URL}/api/admin/market`, { headers });
 
       const list = (res.data?.data || []).map((g) => ({
         id: g._id?.$oid,

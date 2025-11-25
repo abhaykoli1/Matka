@@ -25,8 +25,9 @@ export default function GameList() {
   const fetchGames = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/admin/market/`, { headers });
+      const res = await axios.get(`${API_URL}/api/admin/market`, { headers });
 
+      console.log(res);
       // API returns { data: [ {...}, ... ] }
       const list = (res.data?.data || []).map((g) => {
         const id = g._id?.$oid || g._id || g.id;
