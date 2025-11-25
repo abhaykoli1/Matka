@@ -104,6 +104,7 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
     { icon: <Trophy size={18} />, label: "Win History", link: "/win-history" },
     { icon: <Gamepad2 size={18} />, label: "Game Rate", link: "/game-rate" },
     { icon: <Phone size={18} />, label: "Contact Us", link: "/contact-us" },
+    { icon: <Gift size={18} />, label: "Reffer & Earn", link: "/referrals" },
     {
       icon: <Lock size={18} />,
       label: "Change Password",

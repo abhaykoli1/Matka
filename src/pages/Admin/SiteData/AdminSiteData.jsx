@@ -51,7 +51,7 @@ export default function AdminSiteData() {
       {/* MOBILE / WHATSAPP / TELEGRAM */}
 
       <label className="font-bold border-b my-4 text-white">CONTACT</label>
-      <div className="grid grid-cols-2 gap-4 my-4 mb-8">
+      <div className="grid lg:grid-cols-2 md:grid-cols-2 gap-4 my-4 mb-8">
         {/* <div>
            <label className="font-medium text-sm">Mobile Number</label>
           <input
@@ -59,7 +59,8 @@ export default function AdminSiteData() {
             value={siteData.mobile_number}
             onChange={handleChange}
             placeholder="Mobile Number"
-            className="border mt-1 p-2 rounded w-full"
+                        className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
+
           />
         </div> */}
 
@@ -70,7 +71,7 @@ export default function AdminSiteData() {
             value={siteData.whatsapp_number}
             onChange={handleChange}
             placeholder="WhatsApp Number"
-            className="border mt-1 p-2 rounded w-full"
+            className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
           />
         </div>
 
@@ -81,18 +82,18 @@ export default function AdminSiteData() {
             value={siteData.telegram_link}
             onChange={handleChange}
             placeholder="Telegram Link"
-            className="border mt-1 p-2 rounded w-full"
+            className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
           />
         </div>
       </div>
 
       {/* NOTIFICATION LINES */}
 
-      <label className="font-bold border-b my-4 text-white  ">
-        NOTIFICATION LINES
+      <label className="font-bold  border-b my-4 text-white  ">
+        NOTIFICATION
       </label>
 
-      <div className="grid grid-cols-2 gap-4 my-4 mb-8">
+      <div className="grid  lg:grid-cols-2 md:grid-cols-2 gap-4 my-4 mb-8">
         <div>
           <label className="font-medium text-sm">Dashboard Notification</label>
           <input
@@ -100,7 +101,7 @@ export default function AdminSiteData() {
             value={siteData.dashboard_notification_line}
             onChange={handleChange}
             placeholder="Dashboard Notification Line"
-            className="border mt-1 p-2 rounded w-full"
+            className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
           />
         </div>
 
@@ -111,7 +112,7 @@ export default function AdminSiteData() {
             value={siteData.add_fund_notification_line}
             onChange={handleChange}
             placeholder="Add Fund Notification Line"
-            className="border mt-1 p-2 rounded w-full"
+            className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
           />
         </div>
       </div>
@@ -127,7 +128,7 @@ export default function AdminSiteData() {
             value={siteData.upi_id}
             onChange={handleChange}
             placeholder="UPI ID"
-            className="border mt-1 p-2 rounded w-full"
+            className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
           />
         </div>
 
@@ -138,7 +139,8 @@ export default function AdminSiteData() {
             value={siteData.upi_gateway_merchant_id}
             onChange={handleChange}
             placeholder="UPI Gateway Merchant ID"
-            className="border mt-1 p-2 rounded w-full"
+                        className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
+
           />
         </div> */}
 
@@ -149,13 +151,14 @@ export default function AdminSiteData() {
             value={siteData.manual_upi}
             onChange={handleChange}
             placeholder="Manual UPI"
-            className="border mt-1 p-2 rounded w-full"
+                        className="w-full mt-1 px-3 py-2 border border-gray-50/15 rounded"
+
           />
         </div> */}
       </div>
 
       {/* RICH TEXT EDITORS */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Withdraw Money */}
         <div>
           <label className="font-semibold">Withdraw Money (Optional)</label>
@@ -165,7 +168,21 @@ export default function AdminSiteData() {
               setSiteData({ ...siteData, withdraw_money_html: v })
             }
             apiKey={EditerApiKey}
-            init={{ height: 200, menubar: false }}
+            init={{
+              height: 320,
+              menubar: false,
+              skin: "oxide-dark",
+              content_css: "dark",
+              plugins: [
+                "advlist autolink lists link image charmap preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic underline | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat",
+            }}
           />
         </div>
 
@@ -178,7 +195,22 @@ export default function AdminSiteData() {
               setSiteData({ ...siteData, add_money_html: v })
             }
             apiKey={EditerApiKey}
-            init={{ height: 200, menubar: false }}
+            init={{
+              height: 320,
+              menubar: false,
+              skin: "oxide-dark",
+              content_css: "dark",
+              plugins: [
+                "advlist autolink lists link image charmap preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic underline | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat",
+            }}
+            // init={{ height: 200, menubar: false }}
           />
         </div>
 
@@ -191,7 +223,21 @@ export default function AdminSiteData() {
               setSiteData({ ...siteData, notice_board_html: v })
             }
             apiKey={EditerApiKey}
-            init={{ height: 200, menubar: false }}
+            init={{
+              height: 320,
+              menubar: false,
+              skin: "oxide-dark",
+              content_css: "dark",
+              plugins: [
+                "advlist autolink lists link image charmap preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic underline | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat",
+            }}
           />
         </div>
 
@@ -204,7 +250,21 @@ export default function AdminSiteData() {
               setSiteData({ ...siteData, withdraw_terms_html: v })
             }
             apiKey={EditerApiKey}
-            init={{ height: 200, menubar: false }}
+            init={{
+              height: 320,
+              menubar: false,
+              skin: "oxide-dark",
+              content_css: "dark",
+              plugins: [
+                "advlist autolink lists link image charmap preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table paste help wordcount",
+              ],
+              toolbar:
+                "undo redo | formatselect | bold italic underline | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat",
+            }}
           />
         </div>
       </div>

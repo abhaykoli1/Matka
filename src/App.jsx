@@ -80,6 +80,7 @@ import GWinHistory from "./pages/JackpotUI/KingWinHistory";
 import AdminLoginPage from "./components/Admin/AdminLogin";
 import { useEffect, useState } from "react";
 import { getUserById } from "./components/layout/fetchUser";
+import ReferralPage from "./pages/reffer";
 
 const useAuthUser = () => {
   const [user, setUser] = useState(undefined);
@@ -151,7 +152,7 @@ const AdminOnly = () => {
 
 const App = () => {
   return (
-    <section className="">
+    <section className="overflow-hidden">
       <div className="fixed top-0 left-0 right-0 bottom-0 z-0 bg-black">
         <div className="h-full  bg-gradient-to-tr from-purple-700 via-black/10 to-blue-500  shadow-lg flex items-center justify-center text-white text-xl font-semibold"></div>{" "}
       </div>
@@ -245,7 +246,7 @@ const App = () => {
             <Route path="my-bids" element={<MyBids />} />
             <Route path="how-to-play" element={<HowToPlay />} />
             <Route path="add-points" element={<AddMoney />} />
-
+            <Route path="/referrals" element={<ReferralPage />} />
             <Route path="charts/:marketId" element={<Charts />} />
             <Route path="starline" element={<StarlineMarket />} />
             <Route

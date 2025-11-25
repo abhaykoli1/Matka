@@ -58,7 +58,7 @@ export default function AdminHowToPlay() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-2 p-3 rounded-xl shadow-lg text-white">
+    <div className=" mx-auto mt-2 p-3 rounded-xl shadow-lg text-white">
       <h1 className="text-xl font-semibold mb-4">How to Play Content</h1>
 
       <Editor
@@ -89,7 +89,7 @@ export default function AdminHowToPlay() {
 
       <input
         type="text"
-        className="w-full px-4 py-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+        className="w-full px-4 py-2 border border-gray-50/15 rounded-md text-white"
         placeholder="Enter YouTube video ID"
         value={video_id}
         onChange={(e) => setVideoId(e.target.value)}

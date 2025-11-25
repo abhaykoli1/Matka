@@ -12,12 +12,18 @@ import {
 } from "lucide-react";
 import { API_URL } from "../config";
 import logo from "../assets/logo.png";
+import { useSearchParams } from "react-router-dom";
 
 export default function SignupPage() {
+  const [searchParams] = useSearchParams();
+  const ref = searchParams.get("ref");
+
+  console.log(ref);
+
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [referral_code, setReferralCode] = useState("");
+  const [referral_code, setReferralCode] = useState(ref || "");
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
