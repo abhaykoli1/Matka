@@ -24,8 +24,11 @@ export default function UserDetails() {
   const [amount, setAmount] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+
+  // password modal state
   const [password, setPassword] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
 
   const token = localStorage.getItem("accessToken");
 
@@ -115,21 +118,31 @@ export default function UserDetails() {
   // UPDATE PASSWORD
   // ================================
   const updatePassword = async () => {
-    try {
-      const form = new FormData();
-      form.append("user_id", id);
-      form.append("new_password", password);
+    if (!password || password.length < 4) {
+      alert("Password must be at least 4 characters.");
+      return;
+    }
 
-      await axios.post(`${API_URL}/api/v1/admin/user/update-password`, form, {
+    try {
+      setUpdatingPassword(true);
+
+      const url = `${API_URL}/api/v1/admin/${id}/update-password?password=${password}`;
+
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(res);
 
-      alert("Password Updated!");
+      // backend returns user info in your snippet — show success
+      alert("Password updated successfully!");
       setShowPasswordModal(false);
       setPassword("");
       fetchUser();
     } catch (err) {
-      alert(err.response?.data?.detail || "Error");
+      console.log("Update password error:", err);
+      alert(err.response?.data?.detail || "Failed to update password");
+    } finally {
+      setUpdatingPassword(false);
     }
   };
 
@@ -147,11 +160,11 @@ export default function UserDetails() {
         <div className="bg-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl capitalize font-semibold text-blue-400">
+              <h3 className="text-xl capitalize font-semibold text-white">
                 {user.username}
               </h3>
 
-              <p className="text-blue-400 text-sm flex items-center gap-2 mt-2">
+              <p className="text-gray-200 text-sm flex items-center gap-2 mt-2">
                 {user.mobile} <PhoneCall size={13} />
               </p>
             </div>
@@ -181,10 +194,24 @@ export default function UserDetails() {
           </div>
 
           {/* Balance */}
-          <div className="mt-6">
+          <div className="mt-3">
             <p className="text-md font-medium">Available Balance</p>
-            <h3 className="text-xl font-bold">₹ {user.balance}</h3>
+            <h3 className="text-xl font-bold">₹ {user?.balance}</h3>
 
+            <div className="mt-3 flex flex-col gap-2">
+              <span className="text-md font-medium text-white red-400">
+                Current Password :{" "}
+                <span className="text-md font-medium text-green-400">
+                  {user?.password_hash}
+                </span>
+              </span>
+              <button
+                className="px-3 py-1.5 !text-sm font-medium bg-blue-600 rounded w-full"
+                onClick={() => setShowPasswordModal(true)}
+              >
+                Password
+              </button>
+            </div>
             <div className="flex gap-3 mt-4">
               <button
                 className="px-3 py-1.5 !text-sm font-medium bg-green-600 rounded w-full"
@@ -200,6 +227,20 @@ export default function UserDetails() {
                 Withdraw
               </button>
             </div>
+
+            {showPasswordModal && (
+              <PasswordModal
+                title={`Update password for ${user.username}`}
+                password={password}
+                setPassword={setPassword}
+                onSubmit={updatePassword}
+                onClose={() => {
+                  setShowPasswordModal(false);
+                  setPassword("");
+                }}
+                loading={updatingPassword}
+              />
+            )}
           </div>
         </div>
 
@@ -294,6 +335,48 @@ function Modal({ title, amount, setAmount, onSubmit, onClose }) {
             Submit
           </button>
           <button className="px-4 py-2 bg-red-600 rounded" onClick={onClose}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PasswordModal({
+  title,
+  password,
+  setPassword,
+  onSubmit,
+  onClose,
+  loading,
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div className="bg-white/20 backdrop-blur p-5 rounded w-80">
+        <h3 className="text-xl mb-3">{title}</h3>
+
+        <input
+          type="password"
+          placeholder="Enter new password"
+          className="w-full bg-black/30 border border-gray-600 p-2 rounded text-white"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <div className="flex gap-3 mt-4">
+          <button
+            className="px-4 py-2 bg-green-600 rounded"
+            onClick={onSubmit}
+            disabled={loading}
+          >
+            {loading ? "Updating..." : "Update"}
+          </button>
+          <button
+            className="px-4 py-2 bg-red-600 rounded"
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </button>
         </div>
