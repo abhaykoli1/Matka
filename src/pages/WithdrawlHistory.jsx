@@ -161,6 +161,15 @@ export default function MyWithdrawals() {
                       {w.method}
                     </p>
                     <p className="text-gray-500. text-sm">{w.number}</p>
+                    <p className="text-xs text-gray-400 capitalize">
+                      {w.account_holder_name}
+                    </p>
+                    <p className="text-xs text-gray-400 capitalize">
+                      {w.account_no}
+                    </p>
+                    <p className="text-xs text-gray-400 uppercase">
+                      {w.ifc_code}
+                    </p>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm">
                     {getStatusDisplay(w.status)}

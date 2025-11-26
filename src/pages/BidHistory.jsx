@@ -98,7 +98,7 @@ export default function BidHistoryPage() {
   }, [history, selectedType]);
 
   return (
-    <div className="max-w-md mx-auto pb-20 text-white font-sans min-h-screen">
+    <div className="max-w-md mx-auto pb-30 text-white font-sans min-h-screen">
       {/* Header */}
       <div className="w-full mb-2 relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
         <button

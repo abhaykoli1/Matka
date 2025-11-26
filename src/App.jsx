@@ -152,7 +152,7 @@ const AdminOnly = () => {
 
 const App = () => {
   return (
-    <section className="overflow-hidden">
+    <section className="">
       <div className="fixed top-0 left-0 right-0 bottom-0 z-0 bg-black">
         <div className="h-full  bg-gradient-to-tr from-purple-700 via-black/10 to-blue-500  shadow-lg flex items-center justify-center text-white text-xl font-semibold"></div>{" "}
       </div>

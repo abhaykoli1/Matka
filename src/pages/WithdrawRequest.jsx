@@ -217,7 +217,7 @@ export default function WithdrawRequest() {
   const paymentMethods = ["Paytm", "Google Pay", "PhonePe", "Bank Transfer"];
 
   return (
-    <div className="max-w-md mx-auto pb-20 font-sans text-white">
+    <div className="max-w-md mx-auto pb-60 font-sans text-white">
       <div className="w-full relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
         <button
           onClick={() => window.history.back()}
@@ -266,7 +266,7 @@ export default function WithdrawRequest() {
       {/* Withdrawal Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 mx-3 bg-white/10 p-6 rounded-xl shadow-2xl"
+        className="space-y-4 mx-3 bg-white/10  p-6 rounded-xl shadow-2xl"
       >
         {/* Amount Input */}
         <div>

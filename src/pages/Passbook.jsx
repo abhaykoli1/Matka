@@ -84,7 +84,7 @@ export default function Passbook() {
   };
 
   return (
-    <div className="max-w-md mx-auto   text-white  pb-20 font-sans">
+    <div className="max-w-md mx-auto   text-white  pb-30 font-sans">
       {/* Header */}
 
       <div className="w-full relative bg-gradient-to-b from-black to-black/0 pb-2 flex items-center justify-between">
