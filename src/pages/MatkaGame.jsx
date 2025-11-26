@@ -245,10 +245,10 @@ export default function MatkaGame() {
           <strong>Status:</strong>
           <span
             className={`${
-              market.status === true ? "text-green-400" : "text-red-400"
+              market.status !== true ? "text-green-400" : "text-red-400"
             }`}
           >
-            {market.status === true ? "Market Running" : "Market Closed"}
+            {market.status !== true ? "Market Running" : "Market Closed"}
           </span>
         </span>
       </p>

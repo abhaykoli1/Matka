@@ -40,13 +40,6 @@ export default function KingJackpotPlayBid() {
     }
   };
 
-  useEffect(() => {
-    (async () => {
-      const allBids = await loadAllUserBids();
-      setBids(allBids);
-    })();
-  }, []);
-
   // ⭐ Message Component
   const Message = ({ type, text }) => {
     if (!text) return null;
@@ -98,8 +91,6 @@ export default function KingJackpotPlayBid() {
         params: { market_id: marketId, date },
         headers,
       });
-
-      console.log(res);
       setBids(res.data?.data || []);
     } catch (e) {
       console.log("bids", e);
@@ -128,6 +119,13 @@ export default function KingJackpotPlayBid() {
     })();
   }, [marketId]);
 
+  useEffect(() => {
+    (async () => {
+      const allBids = await loadAllUserBids();
+      setBids(allBids);
+    })();
+  }, [marketId]);
+
   // ===================== SUBMIT BID =====================
   const submitBid = async () => {
     setMsg(null);
@@ -148,16 +146,20 @@ export default function KingJackpotPlayBid() {
     };
 
     try {
-      await axios.post(`${API_URL}/api/admin/Golidesawar/bid`, payload, {
-        headers,
-      });
+      const res = await axios.post(
+        `${API_URL}/api/admin/Golidesawar/bid`,
+        payload,
+        {
+          headers,
+        }
+      );
+
+      await loadUserBids();
 
       setMsg({ type: "success", text: "Bid placed successfully!" });
 
       setDigit("");
       setPoints("");
-
-      loadUserBids();
     } catch (err) {
       setMsg({
         type: "error",
@@ -203,10 +205,10 @@ export default function KingJackpotPlayBid() {
           <strong>Status:</strong>
           <span
             className={`font-bold rounded-full text-xs ${
-              market.status === true ? "text-green-600" : "text-red-600"
+              market.status !== true ? "text-green-600" : "text-red-600"
             }`}
           >
-            {market.status === true ? "Market Running" : "Market Closed"}
+            {market.status !== true ? "Market Running" : "Market Closed"}
           </span>
         </span>
       </p>
@@ -249,7 +251,7 @@ export default function KingJackpotPlayBid() {
         </button>
       </div>
 
-      <div className="mt-5 bg-whit mx-3 rounded-xl bor border-gray-50/5">
+      {/* <div className="mt-5 bg-whit mx-3 rounded-xl bor border-gray-50/5">
         <h3 className="text-lg font-bold mb-2">Your Bids ({date})</h3>
 
         {bids.length === 0 && (
@@ -291,7 +293,7 @@ export default function KingJackpotPlayBid() {
             </p>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

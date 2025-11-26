@@ -136,10 +136,10 @@ export default function JackpotDigitSelect() {
           <strong>Status:</strong>
           <span
             className={`font-bold rounded-full text-xs ${
-              market.status === true ? "text-green-600" : "text-red-600"
+              market.status !== true ? "text-green-600" : "text-red-600"
             }`}
           >
-            {market.status === true ? "Market Running" : "Market Closed"}
+            {market.status !== true ? "Market Running" : "Market Closed"}
           </span>
         </span>
       </p>

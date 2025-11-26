@@ -31,12 +31,9 @@ export default function Games() {
     try {
       setIsLoading(true);
 
-      const res = await axios.get(
-        `${API_URL}/api/admin/market/692587ed5d4e86c0f334143a`,
-        {
-          headers,
-        }
-      );
+      const res = await axios.get(`${API_URL}/api/admin/market/${marketId}`, {
+        headers,
+      });
 
       const m = res?.data?.data;
 
@@ -171,10 +168,10 @@ export default function Games() {
           <strong>Status:</strong>
           <span
             className={`font-bold rounded-full text-xs ${
-              market.status === true ? "text-green-600" : "text-red-600"
+              market.status !== true ? "text-green-600" : "text-red-600"
             }`}
           >
-            {market.status === true ? "Market Running" : "Market Closed"}
+            {market.status !== true ? "Market Running" : "Market Closed"}
           </span>
         </span>
       </p>
