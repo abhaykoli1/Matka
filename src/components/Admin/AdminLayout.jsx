@@ -22,7 +22,7 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <main
-        className={`flex-1 overflow-y-auto transition-all duration-300 ${
+        className={`flex-1 pt-15 overflow-y-auto transition-all duration-300 ${
           sidebarOpen ? "lg:ml-64 md:ml-64 ml-0" : "ml-0"
         }`}
       >

@@ -13,23 +13,11 @@ const getToken = () => localStorage.getItem("accessToken");
 
 export default function AdminWithdrawalRequests() {
   const [data, setData] = useState([]);
-  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
-  const fetchUserDetails = async (userId) => {
-    try {
-      const res = await axios.get(`${API_URL}/user/${userId}`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
-      });
-      return res.data;
-    } catch (err) {
-      console.log("User fetch error:", err);
-      return null;
-    }
-  };
-
+  console.log(data);
   const fetchWithdrawals = async () => {
     setLoading(true);
     setError(null);
@@ -41,23 +29,8 @@ export default function AdminWithdrawalRequests() {
           headers: { Authorization: `Bearer ${getToken()}` },
         }
       );
-
       const withdrawals = res.data || [];
       setData(withdrawals);
-
-      // Fetch unique user IDs
-      const uniqueUserIds = [...new Set(withdrawals.map((w) => w.user_id))];
-
-      const userData = {};
-
-      await Promise.all(
-        uniqueUserIds.map(async (uid) => {
-          const details = await fetchUserDetails(uid);
-          if (details) userData[uid] = details;
-        })
-      );
-
-      setUsers(userData);
     } catch (err) {
       console.log(err);
       setError("Failed to load withdrawal requests");
@@ -83,6 +56,7 @@ export default function AdminWithdrawalRequests() {
         fd,
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
+
       fetchWithdrawals();
     } catch (err) {
       alert(err.response?.data?.detail || "Approve failed");
@@ -154,23 +128,18 @@ export default function AdminWithdrawalRequests() {
 
             <tbody className="divide-y divide-gray-800">
               {data.map((wd) => {
-                const user = users[wd.user_id];
-
                 return (
                   <tr key={wd.wd_id} className="hover:bg-white/5">
-                    {/* USER */}
                     <td className="px-4 py-2 text-sm">
-                      {user ? (
-                        <div>
-                          <p className="font-semibold capitalize flex items-center gap-1">
-                            <User size={14} className=" text-purple-400" />
-                            {user.username}
-                          </p>
-                          <p className="text-xs text-gray-400">{user.mobile}</p>
-                        </div>
-                      ) : (
-                        "Loading..."
-                      )}
+                      <div>
+                        <p className="font-semibold capitalize flex items-center gap-1">
+                          <User size={14} className=" text-purple-400" />
+                          {wd.username}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {wd.mobileNumber}
+                        </p>
+                      </div>
                     </td>
 
                     {/* AMOUNT */}
@@ -183,7 +152,17 @@ export default function AdminWithdrawalRequests() {
                       <p className="font-semibold text-purple-300">
                         {wd.method}
                       </p>
+
                       <p className="text-xs text-gray-400">{wd.number}</p>
+                      <p className="text-xs text-gray-400 capitalize">
+                        {wd.account_holder_name}
+                      </p>
+                      <p className="text-xs text-gray-400 capitalize">
+                        {wd.account_no}
+                      </p>
+                      <p className="text-xs text-gray-400 uppercase">
+                        {wd.ifc_code}
+                      </p>
                     </td>
 
                     {/* TIME */}

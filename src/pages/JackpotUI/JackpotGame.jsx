@@ -156,10 +156,10 @@ export default function JackpotGame() {
 
                   <span
                     className={`text-xs font-semibold ${
-                      mkt.status ? "text-green-400" : "text-red-400"
+                      mkt.status !== true ? "text-green-400" : "text-red-400"
                     }`}
                   >
-                    {mkt.status ? "Running" : "Closed"}
+                    {mkt.status !== true ? "Running" : "Closed"}
                   </span>
                 </div>
 
@@ -200,16 +200,18 @@ export default function JackpotGame() {
                   {/* Play */}
                   <div className="flex flex-col items-center gap-1">
                     <a
-                      href={mkt.status ? `/king/${mkt.id}` : ""}
+                      href={mkt.status !== true ? `/king/${mkt.id}` : ""}
                       className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                        mkt.status
+                        mkt.status !== true
                           ? "border-white"
                           : "border-red-400 cursor-not-allowed"
                       }`}
                     >
                       <Play
                         className={
-                          mkt.status ? "text-green-500" : "text-red-400"
+                          mkt.status !== true
+                            ? "text-green-500"
+                            : "text-red-400"
                         }
                         size={18}
                       />

@@ -43,6 +43,7 @@ export default function GDeclareResultPage() {
   const [fetching, setFetching] = useState(false);
   const [digit, setDigit] = useState("");
 
+  console.log(results);
   const declaredIds = results.map((r) => r.market_id);
 
   function formatDateISO(d = new Date()) {
@@ -161,10 +162,13 @@ export default function GDeclareResultPage() {
     if (!window.confirm("Delete this result?")) return;
 
     try {
-      await axios.delete(
+      const res = await axios.delete(
         `${API_URL}/api/admin/Golidesawar/result/${id}`,
         authHeader()
       );
+
+      console.log(res);
+
       fetchResults();
     } catch (err) {
       console.error(err);
@@ -200,15 +204,40 @@ export default function GDeclareResultPage() {
             >
               <option value="">Select Game Name</option>
 
-              {/* // .filter((m) => !declaredIds.includes(getId(m))) */}
-              {markets.map((m) => {
-                let id = getId(m);
-                return (
-                  <option key={id} value={id}>
-                    {m.name} ( {m.open_time} - {m.close_time} )
-                  </option>
-                );
-              })}
+              {markets
+                .filter((m) => {
+                  const id = getId(m);
+                  const res = results.find((r) => r.market_id === id);
+
+                  // No result yet → allow market
+                  if (!res) return true;
+
+                  const openDeclared =
+                    res.open_digit !== null &&
+                    res.open_digit !== undefined &&
+                    res.open_digit !== "" &&
+                    res.open_digit !== "-";
+
+                  const closeDeclared =
+                    res.close_digit !== null &&
+                    res.close_digit !== undefined &&
+                    res.close_digit !== "" &&
+                    res.close_digit !== "-";
+
+                  // Allow if one or both are NOT declared
+                  if (!openDeclared || !closeDeclared) return true;
+
+                  // Hide if BOTH digits are declared (not "-")
+                  return false;
+                })
+                .map((m) => {
+                  const id = getId(m);
+                  return (
+                    <option key={id} value={id}>
+                      {m.name} ( {m.open_time} - {m.close_time} )
+                    </option>
+                  );
+                })}
             </select>
           </div>
         </div>
@@ -253,12 +282,6 @@ export default function GDeclareResultPage() {
               onChange={(e) => setDate(e.target.value)}
               className="p-1.5 rounded  border border-gray-50/10"
             />
-            {/* <button
-              onClick={fetchResults}
-              className="bg-indigo-600 px-4 py-2 rounded"
-            >
-              Filter
-            </button> */}
           </div>
         </div>
 

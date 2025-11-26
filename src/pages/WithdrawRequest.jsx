@@ -38,8 +38,12 @@ const getUserIdFromToken = () => {
 
 export default function WithdrawRequest() {
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState("Paytm"); // Default method
-  const [number, setNumber] = useState(""); // UPI/Payment number
+  const [method, setMethod] = useState("Paytm");
+  const [number, setNumber] = useState("");
+  const [bankholderName, setBankholderName] = useState("");
+  const [account, setAccount] = useState("");
+  const [ifsc, setIfsc] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [currentBalance, setCurrentBalance] = useState(null);
@@ -142,14 +146,28 @@ export default function WithdrawRequest() {
     formData.append("method", method);
     formData.append("number", number);
 
+    let payload;
+
+    if (method === "Bank Transfer") {
+      payload = {
+        amount: withdrawAmount,
+        method: method,
+        account_holder_name: bankholderName,
+        account_no: account,
+        ifc_code: ifsc,
+      };
+    } else {
+      payload = {
+        amount: withdrawAmount,
+        method: method,
+        number: number,
+      };
+    }
+
     try {
       const response = await axios.post(
         `${API_URL}/user-deposit-withdrawal/withdraw/request`,
-        new URLSearchParams({
-          amount: withdrawAmount,
-          number: number,
-          method: method, // if you have method field
-        }),
+        new URLSearchParams(payload),
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -196,7 +214,7 @@ export default function WithdrawRequest() {
     }
   };
 
-  const paymentMethods = ["Paytm", "Google Pay", "PhonePe"];
+  const paymentMethods = ["Paytm", "Google Pay", "PhonePe", "Bank Transfer"];
 
   return (
     <div className="max-w-md mx-auto pb-20 font-sans text-white">
@@ -288,30 +306,87 @@ export default function WithdrawRequest() {
         </div>
 
         {/* Payment Number/ID Input */}
-        <div>
-          <label htmlFor="number" className="block text-sm font-medium mb-1">
-            {method} Number / UPI ID
-          </label>
-          <input
-            type="text"
-            id="number"
-            placeholder={`Enter your ${method} number or UPI ID`}
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            className="w-full p-3 rounded-lg  border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
-            required
-            disabled={loading}
-          />
-        </div>
+        {/* Payment Number / UPI ID OR Bank Fields */}
+        {method !== "Bank Transfer" ? (
+          // ---------- UPI / Wallet Section ----------
+          <div>
+            <label htmlFor="number" className="block text-sm font-medium mb-1">
+              {method} Number / UPI ID
+            </label>
+            <input
+              type="text"
+              id="number"
+              placeholder={`Enter your ${method} number or UPI ID`}
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              className="w-full p-3 rounded-lg border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+              required
+              disabled={loading}
+            />
+          </div>
+        ) : (
+          // ---------- BANK TRANSFER SECTION ----------
+          <>
+            {/* Holder Name */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Bank Holder Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter account holder name"
+                value={bankholderName}
+                onChange={(e) => setBankholderName(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                required
+                disabled={loading}
+              />
+            </div>
+
+            {/* Account Number */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Account Number
+              </label>
+              <input
+                type="text"
+                placeholder="Enter bank account number"
+                value={account}
+                onChange={(e) => setAccount(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                required
+                disabled={loading}
+              />
+            </div>
+
+            {/* IFSC Code */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                IFSC Code
+              </label>
+              <input
+                type="text"
+                placeholder="Enter IFSC code"
+                value={ifsc}
+                onChange={(e) => setIfsc(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-700 text-white focus:ring-purple-500 focus:border-purple-500"
+                required
+                disabled={loading}
+              />
+            </div>
+          </>
+        )}
 
         {/* Submit Button */}
         <button
           type="submit"
           disabled={
             loading ||
-            amount <= settings?.min_withdraw - 1 ||
+            amount < settings?.min_withdraw ||
             amount > currentBalance ||
-            !number
+            (method !== "Bank Transfer"
+              ? !number
+              : !bankholderName || !account || !ifsc) // Bank Transfer validation
           }
           className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >

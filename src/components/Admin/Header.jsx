@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import logo from "../../assets/logo.png";
 export default function Header({ setSidebarOpen }) {
   return (
-    <div className="bg-[#0d1227 bg-black shadow-md flex items-center justify-between px-4 py-3 sticky top-0 z-50">
+    <div className="bg-[#0d1227 fixed top-0 bg-black shadow-md flex items-center justify-between px-4 py-3  top-0 left-0 right-0 z-50">
       <div className="flex items-center gap-3">
         <button
           onClick={() => setSidebarOpen((p) => !p)}

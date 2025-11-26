@@ -5,6 +5,7 @@ import {
   CheckCircle,
   XCircle,
   Image as ImageIcon,
+  User,
 } from "lucide-react";
 import { API_URL } from "../../config";
 
@@ -147,9 +148,12 @@ export default function AdminDepositRequests() {
               {pending.map((p) => (
                 <tr key={p.id} className="hover:bg-white/5">
                   {/* USER */}
-                  <td className="px-4 py-4 text-sm">
-                    <p className="font-semibold capitalize">{p.username}</p>
-                    <p className="text-xs text-gray-400">{p.user_id}</p>
+                  <td className="px-4 py-4 text-sm min-w-40">
+                    <span className="flex gap-1 items-center">
+                      <User size={15} />
+                      <p className="font-semibold capitalize">{p.username}</p>
+                    </span>
+                    <p className="text-xs text-gray-400">{p.mobile}</p>
                   </td>
 
                   {/* METHOD */}
@@ -158,7 +162,7 @@ export default function AdminDepositRequests() {
                   </td>
 
                   {/* AMOUNT */}
-                  <td className="px-4 py-4 text-sm font-bold text-green-400">
+                  <td className="px-4 min-w-26 py-4 text-sm font-bold text-green-400">
                     ₹ {p.amount || 0}
                   </td>
 
@@ -188,7 +192,7 @@ export default function AdminDepositRequests() {
                   </td>
 
                   {/* DATE */}
-                  <td className="px-4 py-4 text-xs text-gray-400">
+                  <td className="px-4 py-4 text-xs min-w-50 text-gray-400">
                     {new Date(p.uploaded_at).toLocaleString()}
                   </td>
 

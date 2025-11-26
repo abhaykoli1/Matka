@@ -180,6 +180,7 @@ export default function UserDetails() {
                   {user.status ? "Yes" : "No"}
                 </span>
               </p>
+              
               <p>
                 Betting:
                 <span
