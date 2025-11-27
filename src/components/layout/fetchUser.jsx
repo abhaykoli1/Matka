@@ -10,6 +10,7 @@ export const getUserById = async (userId) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(response)
 
     // return ONLY backend JSON
     return { data: response.data, error: null };
