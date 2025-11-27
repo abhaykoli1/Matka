@@ -8,22 +8,19 @@ export default function MainSettings() {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    min_deposit: "",
-    max_deposit: "",
-    min_withdraw: "",
-    max_withdraw: "",
-    min_transfer: "",
-    max_transfer: "",
-    min_bid: "",
-    max_bid: "",
-    welcome_bonus: "",
-    referral_bonus: "",
+    min_deposit: 0,
+    max_deposit: 0,
+    min_withdraw: 0,
+    max_withdraw: 0,
+    min_transfer: 0,
+    max_transfer: 0,
+    min_bid: 0,
+    max_bid: 0,
+    welcome_bonus: 0,
+    referral_bonus: 0,
     website_link: "",
   });
 
-  // ------------------------------------------------
-  // LOAD SETTINGS
-  // ------------------------------------------------
   useEffect(() => {
     const loadSettings = async () => {
       try {

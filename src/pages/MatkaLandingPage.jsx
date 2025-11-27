@@ -5,6 +5,7 @@ import { API_URL } from "../config";
 import axios from "axios";
 import MarketList from "./Client/MarketList";
 import { fetchSiteData } from "../components/layout/fetchSiteData";
+import NotificationModal from "../components/layout/NotificationModal";
 
 export default function Dashboard() {
   const token = localStorage.getItem("accessToken");
@@ -74,6 +75,34 @@ export default function Dashboard() {
     })();
   }, []);
 
+  const [siteData, setSiteData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/sitedata/get`);
+        setSiteData(res.data);
+
+        const alreadyShown = localStorage.getItem("notice_shown");
+
+        // Show modal only if notice_board_html exists and not shown before
+        if (res.data.notice_board_html && !alreadyShown) {
+          setShowModal(true);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleClose = () => {
+    setShowModal(false);
+    localStorage.setItem("notice_shown", "true"); // show only once
+  };
+
   return (
     <div className="text-white font-sans">
       <div className="flex flex-col max-w-md mx-auto h-screen">
@@ -141,6 +170,13 @@ export default function Dashboard() {
           {!isLoading && !error && <MarketList markets={markets} />}
         </main>
       </div>
+
+      {showModal && (
+        <NotificationModal
+          html={siteData?.notice_board_html}
+          onClose={handleClose}
+        />
+      )}
     </div>
   );
 }

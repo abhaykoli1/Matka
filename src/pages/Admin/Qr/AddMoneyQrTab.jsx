@@ -6,7 +6,7 @@ import { API_URL } from "../../../config";
 
 const API_BASE = `${API_URL}/user-deposit-withdrawal`;
 
-const AddMoneyQrTab = ({ site }) => {
+const AddMoneyQrTab = () => {
   const fileInputRef = useRef(null);
   const token = localStorage.getItem("accessToken");
 
@@ -16,15 +16,17 @@ const AddMoneyQrTab = ({ site }) => {
 
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-
+  const [siteData, setSiteData] = useState(null);
   const [settings, setSettings] = useState(null);
-  // console.log(settings);
 
   useEffect(() => {
     async function load() {
       const res = await axios.get(`${API_URL}/settings/get`);
-      console.log("res", res);
 
+      const sited = await axios.get(`${API_URL}/sitedata/get`);
+
+      console.log("siteed", sited);
+      setSiteData(sited?.data);
       setSettings(res?.data);
       if (error) {
         console.log("Settings API Error:", error);
@@ -113,13 +115,13 @@ const AddMoneyQrTab = ({ site }) => {
     <div className="w-[93%] mx-auto max-w-md bg-white/5 rounded-xl p-4 mt-4">
       {/* -------------------- UPI COPY -------------------- */}
       <div className="w-full flex items-center justify-between border border-gray-50/15 rounded-md px-3 py-2 mb-4">
-        <p className="text-white text-sm">{site?.upi_id}</p>
+        <p className="text-white text-sm">{siteData?.upi_id}</p>
 
         <Copy
           size={18}
           className="text-gray-200 cursor-pointer"
           onClick={() => {
-            navigator.clipboard.writeText(site?.upi_id);
+            navigator.clipboard.writeText(siteData?.upi_id);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }}

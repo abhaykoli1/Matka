@@ -49,6 +49,19 @@ export default function WithdrawRequest() {
   const [currentBalance, setCurrentBalance] = useState(null);
   const [minWithdraw, setMinWithdraw] = useState(200);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [siteData, setSiteData] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const res = await axios.get(`${API_URL}/sitedata/get`);
+
+      console.log(res?.data);
+      setSiteData(res.data);
+    };
+
+    load();
+  }, []);
 
   const [settings, setSettings] = useState(null);
 
@@ -56,7 +69,7 @@ export default function WithdrawRequest() {
     async function load() {
       const res = await axios.get(`${API_URL}/settings/get`);
 
-      console.log(res);
+      // console.log(res);
       setSettings(res?.data);
       if (error) {
         console.log("Settings API Error:", error);
@@ -97,7 +110,7 @@ export default function WithdrawRequest() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
-  console.log(user);
+  // console.log(user);
   useEffect(() => {
     async function fetchUser() {
       const { data, error } = await getUserById(userId);
@@ -180,7 +193,7 @@ export default function WithdrawRequest() {
       if (data.message === "Withdrawal request submitted") {
         fetchBalance();
       }
-      console.log(data);
+      // console.log(data);
       setMessage({
         type: "success",
         text:
@@ -400,6 +413,28 @@ export default function WithdrawRequest() {
           )}
         </button>
       </form>
+
+      <div className="mx-3 mt-4">
+        {siteData?.withdraw_terms_html ? (
+          <div
+            className="text-gray-200  text-sm"
+            dangerouslySetInnerHTML={{
+              __html: siteData?.withdraw_terms_html,
+            }}
+          />
+        ) : (
+          <span>
+            <p>
+              <b>Withdrawal Rules:</b>
+            </p>
+            <ul class="list-disc pl-5">
+              <li>Withdrawal time: 9 AM to 6 PM</li>
+              <li>All withdrawals will be processed within 30 minutes</li>
+              <li>UPI ID must be correct and verified</li>
+            </ul>
+          </span>
+        )}
+      </div>
     </div>
   );
 }
