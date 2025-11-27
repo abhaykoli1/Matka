@@ -24,7 +24,7 @@ export default function UserDetails() {
   const [amount, setAmount] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-
+  const [showBalance, setBalance] = useState(0);
   // password modal state
   const [password, setPassword] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -61,6 +61,7 @@ export default function UserDetails() {
       };
 
       setUser(formattedUser);
+      setBalance(data["@wallet"]);
       setTotalDeposit(data["@total_deposit"]);
       setTotalDepositList(data["@total_deposit_tx"]);
       setTotalWithdrawalList(data["@total_withdrawal_tx"]);
@@ -180,7 +181,7 @@ export default function UserDetails() {
                   {user.status ? "Yes" : "No"}
                 </span>
               </p>
-              
+
               <p>
                 Betting:
                 <span
@@ -197,7 +198,7 @@ export default function UserDetails() {
           {/* Balance */}
           <div className="mt-3">
             <p className="text-md font-medium">Available Balance</p>
-            <h3 className="text-xl font-bold">₹ {user?.balance}</h3>
+            <h3 className="text-xl font-bold">₹ {showBalance}</h3>
 
             <div className="mt-3 flex flex-col gap-2">
               <span className="text-md font-medium text-white red-400">

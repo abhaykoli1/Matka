@@ -194,12 +194,12 @@ export default function GGameList() {
                   <td className="p-3">
                     <span
                       className={`px-2 py-1 text-xs rounded ${
-                        g.status !== true
+                        g.status === true
                           ? "bg-blue-200 text-blue-700"
                           : "bg-gray-300 text-gray-700"
                       }`}
                     >
-                      {g.status !== true ? "Open" : "Closed"}
+                      {g.status === true ? "Open" : "Closed"}
                     </span>
                   </td>
 

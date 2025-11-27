@@ -141,10 +141,10 @@ export default function StarlineMarket() {
 
                   <span
                     className={`text-xs font-semibold ${
-                      mkt.status !== true ? "text-green-400" : "text-red-400"
+                      mkt.status === true ? "text-green-400" : "text-red-400"
                     }`}
                   >
-                    {mkt.status !== true ? "Market Running" : "Market Closed"}
+                    {mkt.status === true ? "Market Running" : "Market Closed"}
                   </span>
                 </div>
 
@@ -180,9 +180,9 @@ export default function StarlineMarket() {
 
                   <div className="flex flex-col items-center">
                     <a
-                      href={mkt.status !== true ? `/play/${mkt.id}` : ""}
+                      href={mkt.status === true ? `/play/${mkt.id}` : ""}
                       className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                        mkt.status !== true
+                        mkt.status === true
                           ? "border-white"
                           : "border-red-400 cursor-not-allowed"
                       }`}
@@ -190,7 +190,7 @@ export default function StarlineMarket() {
                       <Play
                         size={18}
                         className={
-                          mkt.status !== true
+                          mkt.status === true
                             ? "text-green-500"
                             : "text-red-400"
                         }
