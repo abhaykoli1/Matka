@@ -95,6 +95,7 @@ const useAuthUser = () => {
 
     const fetchUser = async () => {
       const { data, error } = await getUserById(userId);
+      console.log(data);
       if (error) setUser(null);
       else setUser(data); // backend user object
     };
@@ -142,7 +143,7 @@ const AdminOnly = () => {
   const user = useAuthUser();
 
   if (user === undefined) return <div>Checking...</div>;
-  if (!user) return <Navigate to="/AdminLogin" replace />;
+  if (!user) return <Navigate to="/login" replace />;
 
   // If PLAYER tries to access admin routes → redirect home
   if (user?.role === "player") return <Navigate to="/" replace />;

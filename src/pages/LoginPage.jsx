@@ -25,6 +25,22 @@ export default function Login() {
   const [shake, setShake] = useState(false);
   // const [userId, setUserId] = useState(null);
   // const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await axios.get(`${API_URL}/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("response", response?.data);
+      setUser(response);
+    };
+
+    fetchUser();
+  }, [token]);
 
   // if (token) {
   //   const decoded = jwtDecode(token);
@@ -60,16 +76,15 @@ export default function Login() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      console.log(response);
+      // console.log(response);
       const data = response.data;
       localStorage.setItem("accessToken", data.access_token);
       localStorage.setItem("userId", data.userId);
-      setMessage({ type: "success", text: "Login Successful!" });
 
+      setMessage({ type: "success", text: "Login Successful!" });
       setTimeout(() => {
         window.location.reload();
       }, 1200);
-      
     } catch (err) {
       console.log("LOGIN ERROR: ", err);
 
