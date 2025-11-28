@@ -16,10 +16,12 @@ import {
   LogOut,
   X,
   DollarSign,
-  Star, // Replaced BiMoney with DollarSign from lucide-react
+  Star,
+  Play, // Replaced BiMoney with DollarSign from lucide-react
 } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "../../config";
+import { SiMarketo } from "react-icons/si";
 
 const API_BASE = `${API_URL}/user`;
 
@@ -93,7 +95,11 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
     },
 
     { icon: <Star size={18} />, label: "Starline", link: "/starline" },
-    { icon: <Star size={18} />, label: "King Jackpot", link: "/king-jackpot" },
+    {
+      icon: <SiMarketo size={18} />,
+      label: "King Jackpot",
+      link: "/king-jackpot",
+    },
     {
       icon: <ArrowDownCircle size={18} />,
       label: "Withdrawal Funds",
@@ -109,6 +115,11 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
       icon: <Lock size={18} />,
       label: "Change Password",
       link: "/change-password",
+    },
+    {
+      icon: <Play size={18} />,
+      label: "How To Play",
+      link: "/how-to-play",
     },
     // Only include onClick for the logout action
     {

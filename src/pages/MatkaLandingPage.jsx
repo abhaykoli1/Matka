@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Play, Wallet, WalletCards } from "lucide-react";
+import { Play, Star, Wallet, WalletCards } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 import { API_URL } from "../config";
 import axios from "axios";
 import MarketList from "./Client/MarketList";
 import { fetchSiteData } from "../components/layout/fetchSiteData";
 import NotificationModal from "../components/layout/NotificationModal";
+import { SiMarketo } from "react-icons/si";
 
 export default function Dashboard() {
   const token = localStorage.getItem("accessToken");
@@ -113,7 +114,7 @@ export default function Dashboard() {
               href="/add-points"
               className="flex items-center gap-2 px-2.5 py-2 text-sm rounded-full border border-white hover:bg-gray-700"
             >
-              <Wallet size={18} /> Add Points
+              <Wallet size={18} /> Add Funds
             </a>
 
             <a
@@ -139,20 +140,35 @@ export default function Dashboard() {
           </div>
 
           <div className="flex gap-3 w-full justify-between">
-            <a
+            {/* <a
               href="/how-to-play"
               className="backdrop-blur-md px-3 py-1 mt-3 bg-white/30 flex items-center gap-2 text-sm rounded-full hover:bg-gray-700"
             >
               <Play size={15} /> How to Play
-            </a>
+            </a> */}
 
             <a
+              href={`/starline`}
+              className="flex items-center  mt-3 gap-2 px-2.5 py-2 text-sm rounded-full border border-white hover:bg-gray-700"
+            >
+              <Star size={18} /> Starline
+            </a>
+
+            {/* <a
               href={`https://wa.me/${site?.whatsapp_number}`}
               target="_blank"
               rel="noopener noreferrer"
               className="backdrop-blur-md px-3 py-1 mt-3 bg-white/30 flex items-center gap-2 text-sm rounded-full hover:bg-gray-700"
             >
               <BsWhatsapp /> Whatsapp
+            </a> */}
+            <a
+              href={`https://wa.me/${site?.whatsapp_number}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2  mt-3 px-2.5 py-2 text-sm rounded-full border border-white hover:bg-gray-700"
+            >
+              <BsWhatsapp size={18} /> Whatsapp
             </a>
           </div>
         </div>
