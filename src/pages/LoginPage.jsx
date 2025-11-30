@@ -13,6 +13,7 @@ import { API_URL } from "../config";
 import logo from "../assets/logo.png";
 const API_BASE_URL = API_URL;
 import { jwtDecode } from "jwt-decode";
+import UpiPayment from "../components/layout/upi";
 
 // Spinner
 const LoadingSpinner = () => <Loader2 className="animate-spin h-5 w-5 mr-2" />;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeft, DollarSign, HistoryIcon, Pencil, Save } from "lucide-react";
 import { API_URL } from "../config";
+import UpiPayment from "../components/layout/upi";
 
 const API_BASE = `${API_URL}/user`;
 
@@ -192,6 +193,8 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <UpiPayment />
     </div>
   );
 }

@@ -135,20 +135,31 @@ const AddMoneyQrTab = () => {
         alt="UPI QR"
       />
 
+      {siteData?.withdraw_money_html ? (
+        <div
+          className="text-gray-200 mt-5 text-sm"
+          dangerouslySetInnerHTML={{
+            __html: siteData?.withdraw_money_html,
+          }}
+        />
+      ) : (
+        <div className="mt-4 mx-5  text-center  max-w-md text-sm text-gray-200 leading-6">
+          <p>
+            UPI पर पेमेंट करके एडमिन को
+            <span className="font-bold text-purple-300"></span> पर स्क्रीनशॉट
+            भेजे।
+          </p>
+          <p className="mt-2 text-gray-300">
+            Make payment via UPI and send screenshot to admin on WhatsApp.
+          </p>
+
+          <p className="mt-2 font-semibold text-gray-300">
+            Payment will be added within 2 minutes.
+          </p>
+        </div>
+      )}
       {/* -------------------- INFO -------------------- */}
       <div className="text-gray-200 text-sm leading-6 mb-6 text-center">
-        <p>
-          UPI पर पेमेंट करके एडमिन को WhatsApp{" "}
-          <span className="font-bold text-purple-300">(+919509397414)</span> पर
-          स्क्रीनशॉट भेजे।
-        </p>
-        <p className="mt-2 text-gray-300">
-          Make payment via UPI and send screenshot to admin on WhatsApp.
-        </p>
-
-        <p className="mt-2 font-semibold text-green-300">
-          Payment will be added within 2 minutes.
-        </p>
         <p className="text-red-400 font-bold">
           Minimum Payment: ₹{settings?.min_deposit}
         </p>

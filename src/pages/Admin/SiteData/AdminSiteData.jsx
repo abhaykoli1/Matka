@@ -161,9 +161,9 @@ export default function AdminSiteData() {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Withdraw Money */}
         <div>
-          <label className="font-semibold">Withdraw Money (Optional)</label>
+          <label className="font-semibold">Add By Qr Content</label>
           <Editor
-            value={siteData.withdraw_money_html}
+            value={siteData?.withdraw_money_html}
             onEditorChange={(v) =>
               setSiteData({ ...siteData, withdraw_money_html: v })
             }
