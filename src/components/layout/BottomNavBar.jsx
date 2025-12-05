@@ -17,8 +17,8 @@ export default function BottomNavBar() {
     <div className="fixed -bottom-3 left-0 w-full flex justify-center items-center  z-40">
       <div className="relative overflow-hidden  w-[100%] max-w-md bg-[rgba(19,21,41,1)] backdrop-blur-3xl  rounded-t-xl shadow-lg flex justify-between items-center  text-gray-400">
         {/* Left icons */}
-        <div className="flex p-3 mt-1 rounded-tl-xl mr-18 rounded-tr-3xl bg-[rgba(78,80,94,1)] /60 w-full items-center space-x-8">
-          <a href="/bid-history" className="w-full text-center">
+        <div className="flex p-3  mt-1 rounded-tl-xl mr-18 rounded-tr-3xl bg-[rgba(78,80,94,1)] /60 w-full items-center space-x-8">
+          <a href="/bid-history" className="w-full min-w-11 text-center">
             <IoHammerOutline
               size={22}
               className="cursor-pointer w-full hover:text-white transition"
