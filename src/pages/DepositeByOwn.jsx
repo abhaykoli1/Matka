@@ -642,6 +642,18 @@ export default function DepositeByOwn({ onRequestCreated }) {
       url: upi_link,
     });
   }
+
+  const startUpiPayment = () => {
+    const upiUrl =
+      "upi://pay?pa=hdml61i74205@hdfcbank&pn=Abhay%20Prakash%20Koli&am=200&cu=INR&tn=TestPayment&tr=TXN001";
+
+    if (window.UPI?.postMessage) {
+      window.UPI.postMessage(upiUrl);
+      console.log("UPI Trigger Sent");
+    } else {
+      alert("Flutter bridge not found!");
+    }
+  };
   // PAYMENT BUTTON CLICK
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -674,7 +686,8 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
       // Redirect to backend deep link
       // window.location.href = upi_link;
-      payUPI(upi_link);
+      startUpiPayment();
+      // payUPI(upi_link);
 
       // onRequestCreated();
       setAmount("");
