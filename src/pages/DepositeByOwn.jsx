@@ -623,7 +623,18 @@ export default function DepositeByOwn({ onRequestCreated }) {
   );
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
+  const sendSmsWebhook = async () => {
+    try {
+      const user_id = localStorage.getItem("userId");
+      const res = await axios.post(`http://${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
+        userId: `${user_id}`,
+      });
 
+      console.log("Response:", res.data);
+    } catch (err) {
+      alert("Some Thin went wrong!");
+    }
+  };
   const showPopup = (type, message) => {
     setPopup({ show: true, type, message });
     setTimeout(() => setPopup({ show: false }), 3000);
@@ -636,23 +647,35 @@ export default function DepositeByOwn({ onRequestCreated }) {
   useEffect(() => {
     localStorage.setItem("add_method", method);
   }, [method]);
+  useEffect(() => {
+    // Bridge connect karna zaruri hai
+    window.UPI = {
+      postMessage: (url) => {
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler("UPI", url);
+        } else {
+          alert("Flutter bridge missing!");
+        }
+      },
+    };
 
-  // function payUPI({ upi_link }) {
-  //   window.flutter_inappwebview.callHandler("openUPI", {
-  //     url: upi_link,
-  //   });
-  // }
+    // Callback for Flutter → React
+    window.onUpiResponse = (res) => {
+      if(!res) return;
+      if(res.includes("success")) {
 
-  const startUpiPayment = () => {
+        sendSmsWebhook();
+      }
+      console.log("UPI Response:", res);
+      alert("Payment Status: " + res);
+    };
+  }, []);
+ 
+
+  const startUpiPayment = ({url}) => {
     const upiUrl =
-      "upi://pay?pa=hdml61i74205@hdfcbank&pn=Abhay%20Prakash%20Koli&am=200&cu=INR&tn=TestPayment&tr=TXN001";
-
-    if (window.UPI?.postMessage) {
-      window.UPI.postMessage(upiUrl);
-      console.log("UPI Trigger Sent");
-    } else {
-      alert("Flutter bridge not found!");
-    }
+      "upi://pay?pa=2977654a@bandhan&pn=Abhay%20Prakash%20Koli&am=1&cu=INR&tn=TestPayment&tr=TXN001";
+    window.UPI.postMessage(url);
   };
   // PAYMENT BUTTON CLICK
   const handleSubmit = async (e) => {
@@ -686,7 +709,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
       // Redirect to backend deep link
       // window.location.href = upi_link;
-      startUpiPayment();
+      startUpiPayment(upi_link);
       // payUPI(upi_link);
 
       // onRequestCreated();
@@ -780,10 +803,9 @@ export default function DepositeByOwn({ onRequestCreated }) {
           }
           className={`w-full bg-gradient-to-tl
             from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-lg flex items-center justify-center transition
-            ${
-              loading || amount < settings?.min_deposit
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-purple-800"
+            ${loading || amount < settings?.min_deposit
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-purple-800"
             }`}
         >
           {loading ? <Loader2Icon className="animate-spin" /> : "Proceed"}
