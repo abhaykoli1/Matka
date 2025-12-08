@@ -637,11 +637,11 @@ export default function DepositeByOwn({ onRequestCreated }) {
     localStorage.setItem("add_method", method);
   }, [method]);
 
-  function payUPI({ upi_link }) {
-    window.flutter_inappwebview.callHandler("openUPI", {
-      url: upi_link,
-    });
-  }
+  // function payUPI({ upi_link }) {
+  //   window.flutter_inappwebview.callHandler("openUPI", {
+  //     url: upi_link,
+  //   });
+  // }
 
   const startUpiPayment = () => {
     const upiUrl =
