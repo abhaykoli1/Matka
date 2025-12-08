@@ -10,6 +10,7 @@ export default function AdminHowToPlay() {
 
   const API_BASE = API_URL;
 
+  // new
   // Load saved content
   useEffect(() => {
     const fetchData = async () => {
