@@ -626,7 +626,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
   const sendSmsWebhook = async () => {
     try {
       const user_id = localStorage.getItem("userId");
-      const res = await axios.post(`https://${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
+      const res = await axios.post(`https://api.kalyanratan777.com/user-deposit-deeplink/payment/sms-webhook`, {
         userId: `${user_id}`,
       });
 
@@ -659,6 +659,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
       },
     };
 
+
     // Callback for Flutter → React
     window.onUpiResponse = (res) => {
       if(!res) return;
@@ -677,6 +678,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
       "upi://pay?pa=2977654a@bandhan&pn=Abhay%20Prakash%20Koli&am=1&cu=INR&tn=TestPayment&tr=TXN001";
     window.UPI.postMessage(url);
   };
+ 
   // PAYMENT BUTTON CLICK
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -689,35 +691,38 @@ export default function DepositeByOwn({ onRequestCreated }) {
     setLoading(true);
 
     try {
-      const user_id = localStorage.getItem("userId");
+  const user_id = localStorage.getItem("userId");
 
-      // ⭐ CALL YOUR FASTAPI BACKEND HERE ⭐
-      const res = await axios.post(
-        `${API_URL}/user-deposit-deeplink/payment/create`,
-        {
-          user_id: user_id,
-          amount: parseFloat(amount),
-        }
-      );
-
-      console.log(res);
-      const { txn_id, upi_link } = res.data;
-
-      // Save timestamp before redirect
-      localStorage.setItem("upi_start_time", Date.now());
-      localStorage.setItem("upi_txn", txn_id);
-
-      // Redirect to backend deep link
-      // window.location.href = upi_link;
-      startUpiPayment(upi_link);
-      // payUPI(upi_link);
-
-      // onRequestCreated();
-      setAmount("");
-    } catch (error) {
-      console.log(error);
-      showPopup("error", "Something went wrong!");
+  // 1. API Request
+  const res = await axios.post(
+    `${API_URL}/user-deposit-deeplink/payment/create`,
+    {
+      user_id: user_id,
+      amount: parseFloat(amount),
     }
+  );
+
+  console.log(res);
+
+  // 2. Extract values
+  const { txn_id, upi_link } = res.data;
+
+  // 3. Save timestamp + transaction
+  localStorage.setItem("upi_start_time", Date.now());
+  localStorage.setItem("upi_txn", txn_id);
+
+  // 4. NOW AND ONLY NOW → start UPI payment
+
+  window.UPI.postMessage(res.data.upi_link);
+
+  // 5. Reset UI
+  setAmount("");
+
+} catch (error) {
+  console.log(error);
+  showPopup("error", "Something went wrong!");
+}
+
     setLoading(false);
   };
 
@@ -814,3 +819,4 @@ export default function DepositeByOwn({ onRequestCreated }) {
     </div>
   );
 }
+
