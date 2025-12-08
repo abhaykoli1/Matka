@@ -626,7 +626,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
   const sendSmsWebhook = async () => {
     try {
       const user_id = localStorage.getItem("userId");
-      const res = await axios.post(`http://${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
+      const res = await axios.post(`https://${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
         userId: `${user_id}`,
       });
 
