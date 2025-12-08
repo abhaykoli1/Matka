@@ -637,6 +637,11 @@ export default function DepositeByOwn({ onRequestCreated }) {
     localStorage.setItem("add_method", method);
   }, [method]);
 
+  function payUPI({ upi_link }) {
+    window.flutter_inappwebview.callHandler("openUPI", {
+      url: upi_link,
+    });
+  }
   // PAYMENT BUTTON CLICK
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -668,7 +673,8 @@ export default function DepositeByOwn({ onRequestCreated }) {
       localStorage.setItem("upi_txn", txn_id);
 
       // Redirect to backend deep link
-      window.location.href = upi_link;
+      // window.location.href = upi_link;
+      payUPI(upi_link);
 
       // onRequestCreated();
       setAmount("");
