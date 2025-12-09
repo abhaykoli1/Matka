@@ -182,14 +182,26 @@ export default function AdminDepositRequests() {
                   </td>
 
                   {/* SCREENSHOT */}
-                  <td className="px-4 py-4">
-                    <button
-                      onClick={() => viewScreenshot(p.image_url)}
-                      className="text-blue-400 flex items-center gap-2 hover:text-blue-300"
-                    >
-                      <ImageIcon size={18} /> View
-                    </button>
-                  </td>
+
+                  {p.method === "QR" ? (
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => viewScreenshot(p.image_url)}
+                        className="text-blue-400 flex items-center gap-2 hover:text-blue-300"
+                      >
+                        <ImageIcon size={18} /> View
+                      </button>
+                    </td>
+                  ) : (
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => viewScreenshot(p.image_url)}
+                        className="text-blue-400 flex items-center gap-2 hover:text-blue-300"
+                      >
+                        AUTO
+                      </button>
+                    </td>
+                  )}
 
                   {/* DATE */}
                   <td className="px-4 py-4 text-xs min-w-50 text-gray-400">
@@ -197,27 +209,33 @@ export default function AdminDepositRequests() {
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="px-4 py-4 flex gap-1 text-center space-x-2">
-                    {processingId === p.id ? (
-                      <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => handleApprove(p.id)}
-                          className={` p-2  bg-green-600 hover:bg-green-700 rounded-full`}
-                        >
-                          <CheckCircle size={18} />
-                        </button>
+                  {p.method === "QR" ? (
+                    <td className="px-4 py-4 flex gap-1 text-center space-x-2">
+                      {processingId === p.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleApprove(p.id)}
+                            className={` p-2  bg-green-600 hover:bg-green-700 rounded-full`}
+                          >
+                            <CheckCircle size={18} />
+                          </button>
 
-                        <button
-                          onClick={() => handleReject(p.id)}
-                          className={`p-2 bg-red-600 hover:bg-red-700 rounded-full`}
-                        >
-                          <XCircle size={18} />
-                        </button>
-                      </>
-                    )}
-                  </td>
+                          <button
+                            onClick={() => handleReject(p.id)}
+                            className={`p-2 bg-red-600 hover:bg-red-700 rounded-full`}
+                          >
+                            <XCircle size={18} />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  ) : (
+                    <td className="px-4 py-4 flex text-green-500 text-center gap-1  space-x-2">
+                      Deposited
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

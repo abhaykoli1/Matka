@@ -13,7 +13,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
   );
 
   const [method, setMethod] = useState(
-    () => localStorage.getItem("add_method") || "PhonePe"
+    () => localStorage.getItem("add_method") || ""
   );
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
@@ -33,6 +33,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
       alert("Some Thin went wrong!");
     }
   };
+
   const showPopup = (type, message) => {
     setPopup({ show: true, type, message });
     setTimeout(() => setPopup({ show: false }), 3000);

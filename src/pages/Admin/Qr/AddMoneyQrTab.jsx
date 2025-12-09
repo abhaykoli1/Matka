@@ -13,7 +13,9 @@ const AddMoneyQrTab = () => {
   const [currentQR, setCurrentQR] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-
+  const [amount, setAmount] = useState(
+    () => localStorage.getItem("add_amount") || ""
+  );
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [siteData, setSiteData] = useState(null);
@@ -73,35 +75,37 @@ const AddMoneyQrTab = () => {
     setPreviewImage(URL.createObjectURL(f));
   };
 
-  // ------------------------------------------------------------
-  // UPLOAD SCREENSHOT
-  // ------------------------------------------------------------
   const uploadNow = async () => {
-    if (!selectedFile) return;
+    const amount = localStorage.getItem("add_amount") || "";
+
+    if (!amount || Number(amount) < settings?.min_deposit) {
+      alert(`Please enter minimum amount: ₹${settings?.min_deposit}`);
+      return;
+    }
+
+    if (!selectedFile) {
+      alert("Please upload a screenshot");
+      return;
+    }
 
     const fd = new FormData();
-
-    const amount = localStorage.getItem("add_amount") || "";
-    const method = localStorage.getItem("add_method") || "";
-
     fd.append("image", selectedFile);
     fd.append("amount", amount);
-    fd.append("method", method);
+    fd.append("method", localStorage.getItem("add_method") || "");
 
     try {
       const res = await axios.post(`${API_BASE}/upload`, fd, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      console.log("UPLOAD RESPONSE:", res.data);
+      console.log("UPLOAD SUCCESS:", res.data);
 
-      // Clear values
+      // CLEAR LOCAL STORAGE
       localStorage.removeItem("add_amount");
       localStorage.removeItem("add_method");
 
       setPreviewImage(null);
       setSelectedFile(null);
-
       setShowSuccess(true);
       fetchCurrentQR();
 
@@ -134,6 +138,34 @@ const AddMoneyQrTab = () => {
         className="w-48 h-48 mx-auto my-4 rounded-lg shadow-lg"
         alt="UPI QR"
       />
+
+      <input
+        type="number"
+        placeholder={`Add amount (Min Rs ${settings?.min_deposit})`}
+        value={amount}
+        onChange={(e) => {
+          setAmount(e.target.value);
+          localStorage.setItem("add_amount", e.target.value);
+        }}
+        className="w-full bg-transparent text-gray-200 py-2 px-4 rounded-md border
+     border-gray-50/15 focus:ring focus:ring-[#b00fdc] outline-none mb-3"
+      />
+
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[300, 500, 1000, 2000, 5000].map((amt) => (
+          <button
+            key={amt}
+            type="button"
+            onClick={() => {
+              setAmount(amt);
+              localStorage.setItem("add_amount", amt);
+            }}
+            className="border border-gray-50/15 text-white py-2 rounded-lg font-semibold hover:bg-purple-800 transition"
+          >
+            {amt}
+          </button>
+        ))}
+      </div>
 
       {siteData?.withdraw_money_html ? (
         <div
@@ -175,8 +207,14 @@ const AddMoneyQrTab = () => {
 
       <button
         onClick={openPicker}
-        className="w-full bg-gradient-to-tl from-[#212b61] to-[#79049a] 
-               text-white font-semibold py-2 rounded-lg shadow-md"
+        disabled={!amount || Number(amount) < (settings?.min_deposit || 0)}
+        className={`w-full bg-gradient-to-tl from-[#212b61] to-[#79049a] 
+    text-white font-semibold py-2 rounded-lg shadow-md
+    ${
+      !amount || Number(amount) < (settings?.min_deposit || 0)
+        ? "opacity-40 cursor-not-allowed"
+        : ""
+    }`}
       >
         Upload Payment Screenshot
       </button>
