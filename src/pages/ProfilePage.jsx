@@ -9,7 +9,7 @@ const API_BASE = `${API_URL}/user`;
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
+  console.log(user);
   const [username, setUsername] = useState("");
   const [mobile, setMobile] = useState("");
 
@@ -188,13 +188,19 @@ export default function ProfilePage() {
               Joined On
             </label>
             <p className="text-gray-200 font-semibold border-b pb-1">
-              {new Date(user.created_at).toLocaleDateString()}
+              {new Date(user.created_at?.$date ?? user.created_at)
+                .toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+                .replace(",", "")}
             </p>
           </div>
         </div>
       </div>
 
-      <UpiPayment />
+      {/* <UpiPayment /> */}
     </div>
   );
 }

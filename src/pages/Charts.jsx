@@ -5,6 +5,7 @@ import axios from "axios";
 import { API_URL } from "../config";
 import dayjs from "dayjs";
 import { ArrowLeft } from "lucide-react";
+import { useMediaQuery } from "react-responsive";
 
 export default function Chats() {
   const [marketName, setMarketName] = useState("");
@@ -13,6 +14,10 @@ export default function Chats() {
   const [noData, setNoData] = useState(false);
   const { marketId } = useParams();
 
+  const smallest = useMediaQuery({ maxWidth: 374 });
+  const small = useMediaQuery({ minWidth: 375 });
+  const mid = useMediaQuery({ minWidth: 424 });
+  const large = useMediaQuery({ minWidth: 454 });
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
@@ -73,7 +78,7 @@ export default function Chats() {
     );
 
   return (
-    <div className="max-w-[960px] mx-auto">
+    <div className="mx-auto">
       {/* Header */}
 
       <div className="w-full max-w-md mx-auto relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
@@ -83,8 +88,9 @@ export default function Chats() {
         >
           <ArrowLeft size={22} />
         </button>
+
         <h2 className="text-md z-0 w-full absolute   justify-between font-bold bg-gradient-to-b from-black to-black/0 px-4 py-2  flex justify-center items-center gap-2">
-          <span className="flex gap-2 text-md items-center">
+          <span className="flex flex-wrap gap-2 text-md items-center">
             {marketName.toUpperCase()} - RESULT CHART
           </span>
         </h2>
@@ -92,60 +98,69 @@ export default function Chats() {
       </div>
 
       {/* Calendar Grid */}
-      <div className=" max-w-md mx-auto px-4 mt-4">
-        {rows.map((week, idx) => (
-          <div key={idx} className="w-full overflow-x-auto">
-            <div className="grid grid-cols-7 gap-2">
-              {week.map((item, i) => (
-                <div
-                  key={i}
-                  className="borde bg-white/5 border border-gray-50/5  p-1 text-white"
-                  style={{ minWidth: 110 }}
-                >
-                  {/* Top Date */}
-                  <div className="text-center mb-1">
-                    <div className="text-[11px] font-semibold text-sky-400">
-                      {getDayLabel(item.date)}
+      <div>
+        <div className=" max-w-md mx-auto  px-4 mt-4">
+          {rows.map((week, idx) => (
+            <div key={idx} className="w-full overflow-x-auto">
+              <div
+                className={`grid ${smallest ? "grid-cols-2" : ""} ${
+                  small ? "grid-cols-3" : ""
+                } 
+                ${mid ? "grid-cols-3" : ""}
+                ${large ? "grid-cols-3" : ""}
+                `}
+              >
+                {week.map((item, i) => (
+                  <div
+                    key={i}
+                    className="borde bg-white/5 border border-gray-50/5  p- text-white"
+                    style={{ minWidth: 110 }}
+                  >
+                    {/* Top Date */}
+                    <div className="text-center mb-1">
+                      <div className="text-[11px] font-semibold text-sky-400">
+                        {getDayLabel(item.date)}
+                      </div>
+                      <div className="text-[11px] text-slate-300">
+                        {formatDate(item.date)}
+                      </div>
                     </div>
-                    <div className="text-[11px] text-slate-300">
-                      {formatDate(item.date)}
+
+                    {/* Open Panna */}
+                    <div className="grid grid-cols-3 text-[12px] mb-1">
+                      <span className="text-center">{item.open_panna[0]}</span>
+                      <span className="text-center font-bold text-lime-400">
+                        {item.open_panna}
+                      </span>
+                      <span className="text-center">{item.open_panna[2]}</span>
+                    </div>
+
+                    {/* Open Digit */}
+                    <div className="text-center text-[18px] font-extrabold text-yellow-300">
+                      {item.open_digit}
+                    </div>
+
+                    <div className="h-px bg-slate-600 my-1" />
+
+                    {/* Close Panna */}
+                    <div className="grid grid-cols-3 text-[12px] mt-1">
+                      <span className="text-center">{item.close_panna[0]}</span>
+                      <span className="text-center font-bold text-red-400">
+                        {item.close_panna}
+                      </span>
+                      <span className="text-center">{item.close_panna[2]}</span>
+                    </div>
+
+                    {/* Close Digit */}
+                    <div className="text-center text-[18px] font-extrabold text-yellow-300 mt-1">
+                      {item.close_digit}
                     </div>
                   </div>
-
-                  {/* Open Panna */}
-                  <div className="grid grid-cols-3 text-[12px] mb-1">
-                    <span className="text-center">{item.open_panna[0]}</span>
-                    <span className="text-center font-bold text-lime-400">
-                      {item.open_panna}
-                    </span>
-                    <span className="text-center">{item.open_panna[2]}</span>
-                  </div>
-
-                  {/* Open Digit */}
-                  <div className="text-center text-[18px] font-extrabold text-yellow-300">
-                    {item.open_digit}
-                  </div>
-
-                  <div className="h-px bg-slate-600 my-1" />
-
-                  {/* Close Panna */}
-                  <div className="grid grid-cols-3 text-[12px] mt-1">
-                    <span className="text-center">{item.close_panna[0]}</span>
-                    <span className="text-center font-bold text-red-400">
-                      {item.close_panna}
-                    </span>
-                    <span className="text-center">{item.close_panna[2]}</span>
-                  </div>
-
-                  {/* Close Digit */}
-                  <div className="text-center text-[18px] font-extrabold text-yellow-300 mt-1">
-                    {item.close_digit}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Footer */}

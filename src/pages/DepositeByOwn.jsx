@@ -1,9 +1,8 @@
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader2Icon, X } from "lucide-react";
-const API_URL = "https://api.kalyanratan777.com";
+import { API_URL } from "../config";
+// const API_URL = "https://api.kalyanratan777.com";
 
 export default function DepositeByOwn({ onRequestCreated }) {
   const [loading, setLoading] = useState(false);
@@ -21,10 +20,13 @@ export default function DepositeByOwn({ onRequestCreated }) {
   const sendSmsWebhook = async ({ status }) => {
     try {
       const user_id = localStorage.getItem("userId");
-      const res = await axios.post(`${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
-        userId: user_id,
-        status: status
-      });
+      const res = await axios.post(
+        `${API_URL}/user-deposit-deeplink/payment/sms-webhook`,
+        {
+          userId: user_id,
+          status: status,
+        }
+      );
 
       console.log("Response:", res.data);
     } catch (err) {
@@ -55,7 +57,6 @@ export default function DepositeByOwn({ onRequestCreated }) {
       },
     };
 
-
     // Callback for Flutter → React
     window.onUpiResponse = (res) => {
       if (!res) return;
@@ -69,26 +70,19 @@ export default function DepositeByOwn({ onRequestCreated }) {
       if (status === "success") {
         sendSmsWebhook({ status: "success" });
         alert("✅ Payment Success");
-      }
-      else if (["submitted", "processing", "pending"].includes(status)) {
+      } else if (["submitted", "processing", "pending"].includes(status)) {
         sendSmsWebhook({ status: "processing" });
         alert("⏳ Payment Processing");
-      }
-      else if (status === "failed" || status === "failure") {
+      } else if (status === "failed" || status === "failure") {
         sendSmsWebhook({ status: "failed" });
         alert("❌ Payment Failed");
-      }
-      else {
+      } else {
         alert("ℹ️ Payment Status: " + res);
       }
 
       console.log("UPI Full Response:", res);
     };
-
-
-
   }, []);
-
 
   // const startUpiPayment = ({ url }) => {
   //   const upiUrl =
@@ -134,7 +128,6 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
       // 5. Reset UI
       setAmount("");
-
     } catch (error) {
       console.log(error);
       showPopup("error", "Something went wrong!");
@@ -225,9 +218,10 @@ export default function DepositeByOwn({ onRequestCreated }) {
           }
           className={`w-full bg-gradient-to-tl
             from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-lg flex items-center justify-center transition
-            ${loading || amount < settings?.min_deposit
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-purple-800"
+            ${
+              loading || amount < settings?.min_deposit
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-purple-800"
             }`}
         >
           {loading ? <Loader2Icon className="animate-spin" /> : "Proceed"}
