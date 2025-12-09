@@ -18,11 +18,11 @@ export default function DepositeByOwn({ onRequestCreated }) {
   );
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
-  const sendSmsWebhook = async ({status}) => {
+  const sendSmsWebhook = async ({ status }) => {
     try {
       const user_id = localStorage.getItem("userId");
       const res = await axios.post(`${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
-        userId: `${user_id}`,
+        userId: user_id,
         status: status
       });
 
@@ -60,35 +60,31 @@ export default function DepositeByOwn({ onRequestCreated }) {
     window.onUpiResponse = (res) => {
       if (!res) return;
 
-      // Convert full response to lowercase for comparison
       const r = res.toLowerCase();
-
-      // Extract status from the string: "&status=success" OR "status=failed"
       const statusMatch = r.match(/status=([^&]+)/);
-
       let status = statusMatch ? statusMatch[1].trim() : "";
 
       console.log("Extracted Status:", status);
 
       if (status === "success") {
-        sendSmsWebhook("success");
+        sendSmsWebhook({ status: "success" });
         alert("✅ Payment Success");
-        
       }
-      else if (status === "submitted" || status === "processing" || status === "pending") {
-        sendSmsWebhook("processing");
+      else if (["submitted", "processing", "pending"].includes(status)) {
+        sendSmsWebhook({ status: "processing" });
         alert("⏳ Payment Processing");
       }
       else if (status === "failed" || status === "failure") {
-        sendSmsWebhook("failed");
+        sendSmsWebhook({ status: "failed" });
         alert("❌ Payment Failed");
       }
       else {
-        alert("ℹ️ Payment Status: " + res); // fallback
+        alert("ℹ️ Payment Status: " + res);
       }
 
       console.log("UPI Full Response:", res);
     };
+
 
 
   }, []);
