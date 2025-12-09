@@ -623,11 +623,12 @@ export default function DepositeByOwn({ onRequestCreated }) {
   );
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
-  const sendSmsWebhook = async () => {
+  const sendSmsWebhook = async ({status}) => {
     try {
       const user_id = localStorage.getItem("userId");
-      const res = await axios.post(`https://api.kalyanratan777.com/user-deposit-deeplink/payment/sms-webhook`, {
+      const res = await axios.post(`${API_URL}/user-deposit-deeplink/payment/sms-webhook`, {
         userId: `${user_id}`,
+        status: status
       });
 
       console.log("Response:", res.data);
@@ -662,23 +663,48 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
     // Callback for Flutter → React
     window.onUpiResponse = (res) => {
-      if(!res) return;
-      if(res.includes("success")) {
+      if (!res) return;
 
-        sendSmsWebhook();
+      // Convert full response to lowercase for comparison
+      const r = res.toLowerCase();
+
+      // Extract status from the string: "&status=success" OR "status=failed"
+      const statusMatch = r.match(/status=([^&]+)/);
+
+      let status = statusMatch ? statusMatch[1].trim() : "";
+
+      console.log("Extracted Status:", status);
+
+      if (status === "success") {
+        sendSmsWebhook("success");
+        alert("✅ Payment Success");
+        
       }
-      console.log("UPI Response:", res);
-      alert("Payment Status: " + res);
-    };
-  }, []);
- 
+      else if (status === "submitted" || status === "processing" || status === "pending") {
+        sendSmsWebhook("processing");
+        alert("⏳ Payment Processing");
+      }
+      else if (status === "failed" || status === "failure") {
+        sendSmsWebhook("failed");
+        alert("❌ Payment Failed");
+      }
+      else {
+        alert("ℹ️ Payment Status: " + res); // fallback
+      }
 
-  const startUpiPayment = ({url}) => {
+      console.log("UPI Full Response:", res);
+    };
+
+
+  }, []);
+
+
+  const startUpiPayment = ({ url }) => {
     const upiUrl =
       "upi://pay?pa=2977654a@bandhan&pn=Abhay%20Prakash%20Koli&am=1&cu=INR&tn=TestPayment&tr=TXN001";
     window.UPI.postMessage(url);
   };
- 
+
   // PAYMENT BUTTON CLICK
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -691,37 +717,37 @@ export default function DepositeByOwn({ onRequestCreated }) {
     setLoading(true);
 
     try {
-  const user_id = localStorage.getItem("userId");
+      const user_id = localStorage.getItem("userId");
 
-  // 1. API Request
-  const res = await axios.post(
-    `${API_URL}/user-deposit-deeplink/payment/create`,
-    {
-      user_id: user_id,
-      amount: parseFloat(amount),
+      // 1. API Request
+      const res = await axios.post(
+        `${API_URL}/user-deposit-deeplink/payment/create`,
+        {
+          user_id: user_id,
+          amount: parseFloat(amount),
+        }
+      );
+
+      console.log(res);
+
+      // 2. Extract values
+      const { txn_id, upi_link } = res.data;
+
+      // 3. Save timestamp + transaction
+      localStorage.setItem("upi_start_time", Date.now());
+      localStorage.setItem("upi_txn", txn_id);
+
+      // 4. NOW AND ONLY NOW → start UPI payment
+
+      window.UPI.postMessage(res.body.upi_link);
+
+      // 5. Reset UI
+      setAmount("");
+
+    } catch (error) {
+      console.log(error);
+      showPopup("error", "Something went wrong!");
     }
-  );
-
-  console.log(res);
-
-  // 2. Extract values
-  const { txn_id, upi_link } = res.data;
-
-  // 3. Save timestamp + transaction
-  localStorage.setItem("upi_start_time", Date.now());
-  localStorage.setItem("upi_txn", txn_id);
-
-  // 4. NOW AND ONLY NOW → start UPI payment
-
-  window.UPI.postMessage(res.data.upi_link);
-
-  // 5. Reset UI
-  setAmount("");
-
-} catch (error) {
-  console.log(error);
-  showPopup("error", "Something went wrong!");
-}
 
     setLoading(false);
   };
@@ -819,4 +845,3 @@ export default function DepositeByOwn({ onRequestCreated }) {
     </div>
   );
 }
-
