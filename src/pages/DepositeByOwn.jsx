@@ -12,9 +12,15 @@ export default function DepositeByOwn({ onRequestCreated }) {
     () => localStorage.getItem("add_amount") || ""
   );
 
-  const [method, setMethod] = useState(
-    () => localStorage.getItem("add_method") || ""
-  );
+  const [method, setMethod] = useState(() => {
+    const stored = localStorage.getItem("add_method");
+
+    // ensure only valid values are accepted
+    const validValues = ["paytm", "googlepay", "phonepay"];
+
+    return validValues.includes(stored) ? stored : "";
+  });
+  console.log(method);
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
   const sendSmsWebhook = async ({ status }) => {
@@ -106,11 +112,19 @@ export default function DepositeByOwn({ onRequestCreated }) {
       const user_id = localStorage.getItem("userId");
 
       // 1. API Request
+      // const res = await axios.post(
+      //   `${API_URL}/user-deposit-deeplink/payment/create`,
+      //   {
+      //     user_id: user_id,
+      //     amount: parseFloat(amount),
+      //   }
+      // );
       const res = await axios.post(
         `${API_URL}/user-deposit-deeplink/payment/create`,
         {
           user_id: user_id,
           amount: parseFloat(amount),
+          method: method,
         }
       );
 
@@ -213,14 +227,44 @@ export default function DepositeByOwn({ onRequestCreated }) {
           ))}
         </div>
 
+        {/* PAYMENT METHODS */}
+        <div className="space-y-2 mb-4">
+          {[
+            { label: "Paytm", value: "paytm" },
+            { label: "Google Pay", value: "googlepay" },
+            { label: "PhonePe", value: "phonepay" },
+          ].map((option) => (
+            <label
+              key={option.value}
+              className="flex items-center gap-2 text-sm text-gray-200"
+            >
+              <input
+                type="radio"
+                name="method"
+                value={option.value}
+                checked={method === option.value}
+                onChange={(e) => {
+                  setMethod(e.target.value);
+                  localStorage.setItem("add_method", e.target.value);
+                }}
+                className="accent-[#79049a]"
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+
         <button
           disabled={
-            loading || !settings?.min_deposit || amount < settings?.min_deposit
+            loading ||
+            !settings?.min_deposit ||
+            !method ||
+            amount < settings?.min_deposit
           }
           className={`w-full bg-gradient-to-tl
             from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-lg flex items-center justify-center transition
             ${
-              loading || amount < settings?.min_deposit
+              loading || !method || amount < settings?.min_deposit
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-purple-800"
             }`}
