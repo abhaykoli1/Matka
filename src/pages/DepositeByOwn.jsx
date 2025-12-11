@@ -12,14 +12,18 @@ export default function DepositeByOwn({ onRequestCreated }) {
     () => localStorage.getItem("add_amount") || ""
   );
 
-  const [method, setMethod] = useState(() => {
-    const stored = localStorage.getItem("add_method");
+  console.log(siteData);
 
-    // ensure only valid values are accepted
-    const validValues = ["paytm", "googlepay", "phonepay"];
+  const [method, setMethod] = useState("phonepay");
+  // const [method, setMethod] = useState(() => {
+  //   const stored = localStorage.getItem("add_method" || "phonepay");
 
-    return validValues.includes(stored) ? stored : "";
-  });
+  //   // ensure only valid values are accepted
+  //   const validValues = ["paytm", "googlepay", "phonepay"];
+
+  //   return validValues.includes(stored) ? stored : "";
+  // });
+
   console.log(method);
 
   const [popup, setPopup] = useState({ show: false, type: "", message: "" });
@@ -230,8 +234,8 @@ export default function DepositeByOwn({ onRequestCreated }) {
         {/* PAYMENT METHODS */}
         <div className="space-y-2 mb-4">
           {[
-            { label: "Paytm", value: "paytm" },
-            { label: "Google Pay", value: "googlepay" },
+            // { label: "Paytm", value: "paytm" },
+            // { label: "Google Pay", value: "googlepay" },
             { label: "PhonePe", value: "phonepay" },
           ].map((option) => (
             <label
@@ -272,6 +276,25 @@ export default function DepositeByOwn({ onRequestCreated }) {
           {loading ? <Loader2Icon className="animate-spin" /> : "Proceed"}
         </button>
       </form>
+
+      {siteData?.add_money_html ? (
+        <div
+          className="text-gray-200 mt-5 text-sm mx-5"
+          dangerouslySetInnerHTML={{
+            __html: siteData?.add_money_html,
+          }}
+        />
+      ) : (
+        <div className="mt-4 mx-5 text max-w-md text-sm text-gray-200 leading-6">
+          <p className="mt-1 font-semibold text-white">
+            ⚠️ सिर्फ PhonePe पेमेंट ही स्वीकार है।
+          </p>
+
+          <p className="mt-1 font-semibold text-white">
+            ⚠️ Only PhonePe payments are accepted.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
