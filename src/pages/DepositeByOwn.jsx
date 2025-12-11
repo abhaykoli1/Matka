@@ -12,8 +12,6 @@ export default function DepositeByOwn({ onRequestCreated }) {
     () => localStorage.getItem("add_amount") || ""
   );
 
-  console.log(siteData);
-
   const [method, setMethod] = useState("phonepay");
   // const [method, setMethod] = useState(() => {
   //   const stored = localStorage.getItem("add_method" || "phonepay");
