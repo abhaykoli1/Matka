@@ -7,8 +7,11 @@ export default function TodayResultMarketHistory({ refreshFlag }) {
   const headers = { Authorization: `Bearer ${token}` };
 
   const [date, setDate] = useState(() => {
-    // default to today in YYYY-MM-DD (suitable for <input type="date">)
-    return new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")}`;
   });
 
   const [results, setResults] = useState([]);
@@ -23,6 +26,7 @@ export default function TodayResultMarketHistory({ refreshFlag }) {
   useEffect(() => {
     fetchResults(date);
   }, [date]);
+
   const normalizeResult = (r) => {
     const rawId =
       r._id?.$oid ?? r._id ?? r.id ?? r.result_id ?? r._id_str ?? null;
