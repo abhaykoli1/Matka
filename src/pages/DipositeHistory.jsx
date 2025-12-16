@@ -161,12 +161,12 @@ export default function DepositHistory() {
                   <td className="px-4 py-3">
                     {item.image_url ? (
                       <a
-                        href={`${API_BASE_URL}/${item.image_url}`}
+                        href={`${API_URL}${item.image_url}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <img
-                          src={`${API_BASE_URL}/${item.image_url}`}
+                          src={`${API_URL}${item.image_url}`}
                           alt="Screenshot"
                           className="w-12 h-12 rounded-md object-cover border border-gray-600"
                         />

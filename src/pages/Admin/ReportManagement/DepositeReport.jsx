@@ -41,23 +41,29 @@ export default function AutoDepositHistory() {
         { headers, params }
       );
 
+      console.log("diposite", res);
+
       let pending = res?.data?.pending || [];
 
       // Fetch mobile for each user
       const updated = await Promise.all(
         pending.map(async (item) => {
-          const { data } = await getUserById(item.user_id);
+          const date = new Date(item.uploaded_at);
+
+          // ➕ add 1 day
+          date.setDate(date.getDate() + 1);
 
           return {
             ...item,
-            mobile: data?.data?.mobile || "N/A",
+            uploaded_at: date.toISOString(),
           };
         })
       );
+      // console.log("pending", pending);
 
       setList(updated);
     } catch (err) {
-      console.error(err);
+      console.log(err);
       setError(err.response?.data?.detail || "Failed to load data");
     } finally {
       setLoading(false);

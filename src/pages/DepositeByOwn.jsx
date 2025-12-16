@@ -12,7 +12,11 @@ export default function DepositeByOwn({ onRequestCreated }) {
     () => localStorage.getItem("add_amount") || ""
   );
 
-  const [method, setMethod] = useState("phonepay");
+  // const [method, setMethod] = useState("");
+  const [method, setMethod] = useState(
+    () => localStorage.getItem("add_method") || ""
+  );
+
   // const [method, setMethod] = useState(() => {
   //   const stored = localStorage.getItem("add_method" || "phonepay");
 
@@ -145,6 +149,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
       // 5. Reset UI
       setAmount("");
+      onRequestCreated();
     } catch (error) {
       console.log(error);
       showPopup("error", "Something went wrong!");
@@ -232,8 +237,8 @@ export default function DepositeByOwn({ onRequestCreated }) {
         {/* PAYMENT METHODS */}
         <div className="space-y-2 mb-4">
           {[
-            // { label: "Paytm", value: "paytm" },
-            // { label: "Google Pay", value: "googlepay" },
+            { label: "Paytm", value: "paytm" },
+            { label: "Google Pay", value: "googlepay" },
             { label: "PhonePe", value: "phonepay" },
           ].map((option) => (
             <label
@@ -284,13 +289,13 @@ export default function DepositeByOwn({ onRequestCreated }) {
         />
       ) : (
         <div className="mt-4 mx-5 text max-w-md text-sm text-gray-200 leading-6">
-          <p className="mt-1 font-semibold text-white">
+          {/* <p className="mt-1 font-semibold text-white">
             ⚠️ सिर्फ PhonePe पेमेंट ही स्वीकार है।
           </p>
 
           <p className="mt-1 font-semibold text-white">
             ⚠️ Only PhonePe payments are accepted.
-          </p>
+          </p> */}
         </div>
       )}
     </div>

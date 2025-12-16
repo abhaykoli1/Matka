@@ -53,6 +53,8 @@ export default function AdminDepositRequests() {
 
     setProcessingId(request_id);
 
+    console.log(request_id);
+
     const fd = new FormData();
     fd.append("request_id", request_id);
     fd.append("amount", amount);
@@ -183,7 +185,7 @@ export default function AdminDepositRequests() {
 
                   {/* SCREENSHOT */}
 
-                  {p.method === "QR" ? (
+                  {p.method === "googlepay" || "paytm" || "phonepay" ? (
                     <td className="px-4 py-4">
                       <button
                         onClick={() => viewScreenshot(p.image_url)}
@@ -209,30 +211,34 @@ export default function AdminDepositRequests() {
                   </td>
 
                   {/* ACTIONS */}
-                  {p.method === "QR" ? (
-                    <td className="px-4 py-4 flex gap-1 text-center space-x-2">
+                  {p.status === "PENDING" ? (
+                    <td className="px-4 py-4 flex gap-1 text-center">
                       {processingId === p.id ? (
                         <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
                       ) : (
                         <>
                           <button
                             onClick={() => handleApprove(p.id)}
-                            className={` p-2  bg-green-600 hover:bg-green-700 rounded-full`}
+                            className="p-2 bg-green-600 hover:bg-green-700 rounded-full"
                           >
                             <CheckCircle size={18} />
                           </button>
 
                           <button
                             onClick={() => handleReject(p.id)}
-                            className={`p-2 bg-red-600 hover:bg-red-700 rounded-full`}
+                            className="p-2 bg-red-600 hover:bg-red-700 rounded-full"
                           >
                             <XCircle size={18} />
                           </button>
                         </>
                       )}
                     </td>
+                  ) : p.status === "FAILED" ? (
+                    <td className="px-4 py-4 text-red-500 text-center">
+                      Rejected
+                    </td>
                   ) : (
-                    <td className="px-4 py-4 flex text-green-500 text-center gap-1  space-x-2">
+                    <td className="px-4 py-4 text-green-500 text-center">
                       Deposited
                     </td>
                   )}

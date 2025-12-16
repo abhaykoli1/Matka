@@ -89,14 +89,14 @@ export default function AdminDashboard() {
       );
       const withdrawalList = withdrawalDeposite?.data || [];
 
-      console.log("With", withdrawalList);
+      // console.log("With", withdrawalList);
       const todayw = new Date().toISOString().split("T")[0];
 
       const todaysWithdrawals = withdrawalList.filter((item) =>
         item.created_at?.startsWith(todayw)
       );
 
-      console.log("todaysWithdrawals", todaysWithdrawals);
+      // console.log("todaysWithdrawals", todaysWithdrawals);
       setTodayWithdrawal(todaysWithdrawals?.length);
       setWithdrawal(withdrawalDeposite?.data?.length);
 
