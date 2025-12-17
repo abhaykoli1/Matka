@@ -120,9 +120,14 @@ export default function AdminDashboard() {
 
       // Total count
       const todaysDepositCount = todaysDeposits.length;
+      console.log("Total Deposits Data:", todaysDeposits);
+      var rawAmount = 0;
+      for (let i = 0; i < todaysDeposits.length; i++) {
+        rawAmount += parseFloat(todaysDeposits[i].amount);
+      }
 
       // console.log("Today's Deposit Count:", todaysDepositCount);
-      setTodayDeposit(todaysDepositCount);
+      setTodayDeposit(rawAmount);
       setDeposit(totalDeposite?.data?.pending?.length || []);
 
       // Unapproved Users
