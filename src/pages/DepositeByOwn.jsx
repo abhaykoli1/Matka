@@ -72,29 +72,33 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
     // Callback for Flutter → React
     window.onUpiResponse = (res) => {
-      if (!res) return;
+  if (!res) return;
 
-      const r = res.toLowerCase();
-      const statusMatch = r.match(/status=([^&]+)/);
-      let status = statusMatch ? statusMatch[1].trim() : "";
+  console.log("UPI Full Response:", res);
 
-      console.log("Extracted Status:", status);
+  // txnRef ke baad wala Status extract karo
+  const match = res.match(/txnRef=[^&]+.*?Status=([^&]+)/i);
 
-      if (status === "success") {
-        sendSmsWebhook({ status: "success" });
-        alert("✅ Payment Success");
-      } else if (["submitted", "processing", "pending"].includes(status)) {
-        sendSmsWebhook({ status: "processing" });
-        alert("⏳ Payment Processing");
-      } else if (status === "failed" || status === "failure") {
-        sendSmsWebhook({ status: "failed" });
-        alert("❌ Payment Failed");
-      } else {
-        alert("ℹ️ Payment Status: " + res);
-      }
+  let status = match ? match[1].toLowerCase().trim() : "";
 
-      console.log("UPI Full Response:", res);
-    };
+  alert("Extracted Txn Status: " + status);
+
+  if (status === "success") {
+    sendSmsWebhook({ status: "success" });
+    alert("✅ Payment Success");
+  } 
+  else if (["submitted", "processing", "pending"].includes(status)) {
+    sendSmsWebhook({ status: "processing" });
+    alert("⏳ Payment Processing");
+  } 
+  else if (["failed", "failure"].includes(status)) {
+    sendSmsWebhook({ status: "failed" });
+    alert("❌ Payment Failed");
+  } 
+  else {
+    alert("ℹ️ Unknown Payment Status: " + status);
+  }
+};
   }, []);
 
   // const startUpiPayment = ({ url }) => {
