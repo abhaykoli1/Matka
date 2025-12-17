@@ -76,29 +76,42 @@ export default function DepositeByOwn({ onRequestCreated }) {
 
   console.log("UPI Full Response:", res);
 
-  // txnRef ke baad wala Status extract karo
-  const match = res.match(/txnRef=[^&]+.*?Status=([^&]+)/i);
+  // normalize response
+  const cleanRes = res.replace(/\n/g, "").trim();
 
-  let status = match ? match[1].toLowerCase().trim() : "";
+  // convert to key-value object
+  const params = {};
+  cleanRes.split("&").forEach(part => {
+    const [key, value] = part.split("=");
+    if (key && value) {
+      params[key.toLowerCase()] = value.toLowerCase();
+    }
+  });
 
-  alert("Extracted Txn Status: " + status);
+  console.log("Parsed Params:", params);
+
+  // txnRef ke baad wala Status
+  const status = params["status"] || "";
+
+  alert("Extracted Status: " + status);
 
   if (status === "success") {
     sendSmsWebhook({ status: "success" });
     alert("✅ Payment Success");
-  } 
+  }
   else if (["submitted", "processing", "pending"].includes(status)) {
     sendSmsWebhook({ status: "processing" });
     alert("⏳ Payment Processing");
-  } 
+  }
   else if (["failed", "failure"].includes(status)) {
     sendSmsWebhook({ status: "failed" });
     alert("❌ Payment Failed");
-  } 
+  }
   else {
-    alert("ℹ️ Unknown Payment Status: " + status);
+    alert("ℹ️ Unknown Payment Status");
   }
 };
+
   }, []);
 
   // const startUpiPayment = ({ url }) => {
@@ -274,10 +287,9 @@ export default function DepositeByOwn({ onRequestCreated }) {
           }
           className={`w-full bg-gradient-to-tl
             from-[#212b61] to-[#79049a] text-white font-semibold py-2 rounded-lg flex items-center justify-center transition
-            ${
-              loading || !method || amount < settings?.min_deposit
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-purple-800"
+            ${loading || !method || amount < settings?.min_deposit
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-purple-800"
             }`}
         >
           {loading ? <Loader2Icon className="animate-spin" /> : "Proceed"}
