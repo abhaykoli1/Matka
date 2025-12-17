@@ -93,7 +93,7 @@ export default function DepositeByOwn({ onRequestCreated }) {
   // txnRef ke baad wala Status
   const status = params["status"] || "";
 
-  alert("Extracted Status: " + status);
+ 
 
   if (status === "success") {
     sendSmsWebhook({ status: "success" });
