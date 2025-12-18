@@ -236,11 +236,15 @@ export default function MatkaGame() {
         <span className="flex flex-col">
           <strong>Open Time :</strong> <span>{market.open_time}</span>
         </span>
-        <span className="flex flex-col">
-          <strong>Close Time :</strong>
+        {market.marketType !== "Starline" ? (
+          <span className="flex flex-col">
+            <strong>Close Time :</strong>
 
-          <span>{market.close_time}</span>
-        </span>
+            <span>{market.close_time}</span>
+          </span>
+        ) : (
+          ""
+        )}
         <span className="flex flex-col">
           <strong>Status:</strong>
           <span
@@ -271,16 +275,21 @@ export default function MatkaGame() {
             />
             Open
           </label>
-          <label className="ml-3">
-            <input
-              type="radio"
-              value="close"
-              checked={session === "close"}
-              onChange={() => setSession("close")}
-              className="accent-purple-600 mr-1"
-            />
-            Close
-          </label>
+
+          {market.marketType !== "Starline" ? (
+            <label className="ml-3">
+              <input
+                type="radio"
+                value="close"
+                checked={session === "close"}
+                onChange={() => setSession("close")}
+                className="accent-purple-600 mr-1"
+              />
+              Close
+            </label>
+          ) : (
+            ""
+          )}
         </div>
 
         {/* DIGIT INPUTS */}
@@ -353,6 +362,7 @@ export default function MatkaGame() {
                   }
                   className="p-2 bg-black/30 rounded border text-white"
                 />
+
                 <input
                   placeholder="Close Panna (456)"
                   value={closePanna}

@@ -120,7 +120,6 @@ export default function StarlineMarket() {
       <div className="px-3">
         {markets.map((mkt) => {
           const r = mkt.today_result;
-
           return (
             <div
               key={mkt.id}
@@ -155,7 +154,7 @@ export default function StarlineMarket() {
                   <div>
                     <h3 className="text-2xl mb-1 font-semibold text-[#c21af0] tracking-wider">
                       {r.open_panna}-{r.open_digit}
-                      {r.close_digit}-{r.close_panna}
+                      {/* {r.close_digit}-{r.close_panna} */}
                     </h3>
 
                     <div className="flex gap-7 text-gray-400">
@@ -165,12 +164,12 @@ export default function StarlineMarket() {
                           {mkt.openTime}
                         </span>
                       </p>
-                      <p>
+                      {/* <p>
                         Close Time:
                         <span className="block text-white font-medium">
                           {mkt.closeTime}
                         </span>
-                      </p>
+                      </p> */}
                     </div>
                   </div>
 

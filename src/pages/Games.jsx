@@ -35,6 +35,8 @@ export default function Games() {
         headers,
       });
 
+      console.log(res);
+
       const m = res?.data?.data;
 
       console.log(m);
@@ -159,11 +161,15 @@ export default function Games() {
         <span className="flex flex-col">
           <strong>Open Time :</strong> <span>{market.open_time}</span>
         </span>
-        <span className="flex flex-col">
-          <strong>Close Time :</strong>
+        {market.marketType !== "Starline" ? (
+          <span className="flex flex-col">
+            <strong>Close Time :</strong>
 
-          <span>{market.close_time}</span>
-        </span>
+            <span>{market.close_time}</span>
+          </span>
+        ) : (
+          ""
+        )}
         <span className="flex flex-col">
           <strong>Status:</strong>
           <span
