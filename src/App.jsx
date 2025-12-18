@@ -81,6 +81,7 @@ import AdminLoginPage from "./components/Admin/AdminLogin";
 import { useEffect, useState } from "react";
 import { getUserById } from "./components/layout/fetchUser";
 import ReferralPage from "./pages/reffer";
+import TodayBidHistory from "./components/Admin/TodayBidHistory";
 
 const useAuthUser = () => {
   const [user, setUser] = useState(undefined);
@@ -180,6 +181,7 @@ const App = () => {
             <Route path="qr-manager" element={<AdminQRManager />} />
             <Route path="add-game" element={<GameList />} />
             <Route path="game-rates" element={<GameRates />} />
+            <Route path="today-play" element={<TodayBidHistory />} />
 
             <Route
               path="declare-result-market"

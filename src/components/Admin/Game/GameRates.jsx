@@ -62,7 +62,7 @@ export default function GameRates() {
   // Submit handler
   const handleSubmit = async () => {
     try {
-      await axios.post(`${API_URL}/api/admin/rate/`, form, { headers });
+      await axios.post(`${API_URL}/api/admin/rate`, form, { headers });
 
       alert("Rate Chart Updated Successfully!");
     } catch (err) {

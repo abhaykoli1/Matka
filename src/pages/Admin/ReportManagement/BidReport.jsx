@@ -6,11 +6,11 @@ import { API_URL } from "../../../config";
 
 export default function BidReport() {
   const [loading, setLoading] = useState(false);
-  const [bids, setBids] = useState([]); // All bids from backend
+  const [bids, setBids] = useState([]);
   const [error, setError] = useState(null);
-
+  console.log(bids);
   // Filters (frontend)
-  const [date, setDate] = useState(""); // yyyy-mm-dd
+  const [date, setDate] = useState("");
   const [marketId, setMarketId] = useState("all");
   const [gameType, setGameType] = useState("all");
   const [session, setSession] = useState("all");
@@ -18,6 +18,34 @@ export default function BidReport() {
 
   const token = localStorage.getItem("accessToken") || "";
   const headers = { Authorization: `Bearer ${token}` };
+
+  const toInputDate = (bidDate) => {
+    if (!bidDate) return "";
+
+    // "17 Dec 2025"
+    const [day, monthStr, year] = bidDate.trim().split(" ");
+
+    const monthMap = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+
+    const month = monthMap[monthStr];
+    if (!month) return "";
+
+    // YYYY-MM-DD (HTML date input format)
+    return `${year}-${month}-${day.padStart(2, "0")}`;
+  };
 
   // ============================
   // 🔥 FETCH ALL BIDS (NO FILTER)
@@ -66,25 +94,22 @@ export default function BidReport() {
   // =====================================
   const filteredBids = useMemo(() => {
     return bids.filter((b) => {
-      // 1️⃣ Search filter (name OR mobile)
       const s = search.toLowerCase();
+
       const matchesSearch =
         b.name?.toLowerCase().includes(s) ||
         b.mobile?.toLowerCase().includes(s);
 
-      // 2️⃣ Date filter
-      const formattedBidDate = b.bid_date?.split("/").reverse().join("-");
-      const matchesDate = date ? formattedBidDate === date : true;
+      const bidDateFormatted = toInputDate(b.bid_date);
+      const matchesDate = date ? bidDateFormatted === date : true;
+      console.log(b.bid_date, "=>", toInputDate(b.bid_date), "filter:", date);
 
-      // 3️⃣ Market filter
       const matchesMarket = marketId === "all" || b.market_name === marketId;
 
-      // 4️⃣ Game Type filter
       const matchesGameType = gameType === "all" || b.game_type === gameType;
 
-      // 5️⃣ Session filter
       const matchesSession =
-        session === "all" || b.session.toLowerCase() === session.toLowerCase();
+        session === "all" || b.session?.toLowerCase() === session.toLowerCase();
 
       return (
         matchesSearch &&
@@ -123,7 +148,7 @@ export default function BidReport() {
             <input
               type="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(e) => setDate(e.target.value || "")}
               className="w-full bg-transparent border border-white/10 px-3 py-1.5 rounded text-white"
             />
           </div>

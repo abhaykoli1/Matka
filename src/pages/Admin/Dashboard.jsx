@@ -142,15 +142,24 @@ export default function AdminDashboard() {
         `${API_URL}/api/v1/admin/users/today-created`,
         { headers }
       );
+
       setTodayCreated(createdRes.data.count);
 
-      setTodayPlayers(createdRes.data.count);
+      const todayPlay = await axios.get(
+        `${API_URL}/api/v1/admin/users/today-bid-users`,
+        { headers }
+      );
+
+      console.log("todayPlay", todayPlay);
+      setTodayPlayers(todayPlay.data.count);
 
       // Today Logins
       const loginRes = await axios.get(
         `${API_URL}/api/v1/admin/users/today-logins`,
         { headers }
       );
+
+      console.log(loginRes);
       setTodayLogins(loginRes.data.count);
     } catch (error) {
       console.log("Dashboard Error:", error);
@@ -207,7 +216,7 @@ export default function AdminDashboard() {
             {/* Admin Users */}
             <DashboardCard
               title="Login (Today)"
-              value={users.filter((u) => u.role === "admin").length}
+              value={todayLogins}
               // subtext="Total Login Accounts"
               color={colors[1]}
               icon={<User size={18} />}
@@ -223,11 +232,13 @@ export default function AdminDashboard() {
 
             {/* Today Logged-In Players */}
             <DashboardCard
+              link={"/admin/today-play"}
               title="Players (Today)"
-              value={todayLogins}
+              value={todayPlayers}
               color={colors[3]}
               icon={<Tag size={18} />}
             />
+
             <DashboardCard
               link="/admin/deposite-requests"
               title="Total Deposits"
@@ -248,6 +259,7 @@ export default function AdminDashboard() {
               color={colors[6]}
               icon={<Wallet2 size={18} />}
             />
+
             <DashboardCard
               title="Withdrawals (Today)"
               value={todaysWithdrawal}
