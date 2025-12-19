@@ -28,7 +28,7 @@ export default function Chats() {
           : `${API_URL}/api/admin/market-chart`;
 
         const res = await axios.get(url);
-        console.log(res);
+        console.log("res", res);
         const data = Array.isArray(res.data)
           ? res.data
           : res.data.chart || res.data.results || [];

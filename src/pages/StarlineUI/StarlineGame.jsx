@@ -86,16 +86,20 @@ export default function StarlineMarket() {
       <div className="px-3">
         <div className="w-full bg-white/5 p-4 border border-gray-50/5 rounded-xl space-y-2">
           <div className="flex justify-between text-[13px] text-gray-100">
-            <span className="font-semibold">Left Digit</span>
+            <span className="font-semibold">Single Digit</span>
             <span className="font-semibold">10–100</span>
           </div>
           <div className="flex justify-between text-[13px] text-gray-100">
-            <span className="font-semibold">Right Digit</span>
-            <span className="font-semibold">10–100</span>
+            <span className="font-semibold">Single Pana</span>
+            <span className="font-semibold">10–1500</span>
           </div>
           <div className="flex justify-between text-[13px] text-gray-100">
-            <span className="font-semibold">Jodi Digit</span>
-            <span className="font-semibold">10–1000</span>
+            <span className="font-semibold">Double Pana</span>
+            <span className="font-semibold">10–3000</span>
+          </div>
+          <div className="flex justify-between text-[13px] text-gray-100">
+            <span className="font-semibold">Triple Pana</span>
+            <span className="font-semibold">10–7000</span>
           </div>
         </div>
       </div>
