@@ -97,8 +97,8 @@ export default function SidebarMenu({ sidebar, setSidebar }) {
     { icon: <Star size={18} />, label: "Starline", link: "/starline" },
     {
       icon: <SiMarketo size={18} />,
-      label: "King Jackpot",
-      link: "/king-jackpot",
+      label: "Golidesawar",
+      link: "/golidesawar",
     },
     {
       icon: <ArrowDownCircle size={18} />,

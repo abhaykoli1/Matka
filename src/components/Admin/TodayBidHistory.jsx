@@ -22,6 +22,7 @@ export default function TodayBidHistory() {
         { headers }
       );
 
+      console.log(res);
       setBids(res.data?.bids || []);
       setTotalPoints(res.data?.total_points || 0);
     } catch (err) {
@@ -107,7 +108,9 @@ export default function TodayBidHistory() {
 
                       <td className="py-1.5 px-2 capitalize">{b.session}</td>
 
-                      <td className="py-1.5 px-2 font-semibold">{b.digit}</td>
+                      <td className="py-1.5 px-2 font-semibold">
+                        {b.digit || b.open_digit || b.close_digit}
+                      </td>
 
                       <td className="py-1.5 px-2 font-bold text-green-400">
                         {b.points}

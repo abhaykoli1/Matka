@@ -274,7 +274,7 @@ const App = () => {
             <Route path="jackpot-bid-history" element={<JackpotBidHistory />} />
             <Route path="jackpot-win-history" element={<JackpotWinHistory />} />
 
-            <Route path="king-jackpot" element={<JackpotGame />} />
+            <Route path="golidesawar" element={<JackpotGame />} />
             <Route path="/king/:marketId" element={<JackpotDigitSelect />} />
             <Route path="/king-win-history" element={<GWinHistory />} />
             <Route path="/king-bids-history" element={<AllUserBids />} />

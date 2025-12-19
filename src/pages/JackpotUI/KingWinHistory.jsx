@@ -82,7 +82,7 @@ export default function GWinHistory() {
         </button>
 
         <h2 className="text-md z-0 w-full absolute font-bold px-4 py-2 flex justify-center items-center gap-2">
-          <span className="uppercase">Jackpot Win History</span>
+          <span className="uppercase">Golidesawar Win History</span>
         </h2>
 
         <div className="pr-4 z-10"></div>
