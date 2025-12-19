@@ -28,7 +28,8 @@ export default function Chats() {
           : `${API_URL}/api/admin/market-chart`;
 
         const res = await axios.get(url);
-        console.log("res", res);
+
+        console.log("charts", res);
         const data = Array.isArray(res.data)
           ? res.data
           : res.data.chart || res.data.results || [];
@@ -52,6 +53,7 @@ export default function Chats() {
           setMarketName(normalized[0]?.market_name || "Market");
         }
       } catch (err) {
+        console.log(err);
         setNoData(true);
       } finally {
         setLoading(false);

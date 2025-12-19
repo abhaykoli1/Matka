@@ -141,6 +141,20 @@ export default function MatkaGame() {
     return digit;
   };
 
+  function getISTISOString() {
+    const now = new Date();
+
+    // IST offset = +5:30 in minutes
+    const istOffset = 5.5 * 60 * 60 * 1000;
+
+    const istTime = new Date(now.getTime() + istOffset);
+
+    return istTime.toISOString().replace("Z", "+05:30");
+  }
+
+  const bid_time = getISTISOString();
+  // console.log(bid_time);
+
   // ======================= PLACE BID =======================
   const placeBid = async (e) => {
     e.preventDefault();
@@ -158,6 +172,7 @@ export default function MatkaGame() {
         game_type: gameType,
         session,
         points: Number(points),
+        // bid_time: getISTISOString(),
       };
 
       if (gameType === "full_sangam") {
@@ -178,7 +193,7 @@ export default function MatkaGame() {
         payload.digit = finalDigit;
       }
 
-      await axios.post(
+      const res = await axios.post(
         `${API_BASE}/user/bid/place`,
         {},
         {
@@ -187,11 +202,13 @@ export default function MatkaGame() {
         }
       );
 
+      console.log(res);
+
       setMsg({ type: "success", text: "Bid placed successfully!" });
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 2000);
 
       setDigit("");
       setOpenPanna("");

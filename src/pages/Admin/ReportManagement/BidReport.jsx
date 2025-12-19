@@ -267,7 +267,17 @@ export default function BidReport() {
                       <td className="py-1.5 px-2 text-sky-300">{b.name}</td>
                       <td className="py-1.5 px-2">{b.mobile}</td>
                       <td className="py-1.5 px-2 min-w-30">{b.bid_date}</td>
-                      <td className="py-1.5 px-2 min-w-30">{b.bid_time}</td>
+                      {/* <td className="py-1.5 px-2 min-w-30">{b.bid_time}</td> */}
+                      <td className="py-1.5 px-2 min-w-30">
+                        {new Date(
+                          new Date(b.created_at).getTime() +
+                            (5 * 60 + 30) * 60 * 1000
+                        ).toLocaleTimeString("en-IN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </td>
                       <td className="py-1.5 px-2 uppercase min-w-40">
                         {b.market_name}
                       </td>

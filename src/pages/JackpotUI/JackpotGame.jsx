@@ -193,7 +193,7 @@ export default function JackpotGame() {
                   </div>
 
                   {/* Chart */}
-                  <a href={`/charts/golidesawar/${mkt.id}`}>
+                  <a href={`/GCharts/${mkt.id}`}>
                     <FaChartLine size={26} />
                   </a>
 

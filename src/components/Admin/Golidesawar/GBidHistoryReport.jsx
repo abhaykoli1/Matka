@@ -24,7 +24,7 @@ export default function GBidHistoryReport() {
   const loadMarkets = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/admin/Golidesawar/market`);
-      console.log(res);
+
       setMarkets(res.data.data || []);
     } catch (e) {
       console.log("Market Fetch Error:", e);
@@ -51,6 +51,8 @@ export default function GBidHistoryReport() {
       const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      console.log("res", res);
 
       setList(res.data.data || []);
     } catch (e) {
@@ -180,10 +182,11 @@ export default function GBidHistoryReport() {
                 <th className="p-2">Name</th>
                 <th className="p-2">Mobile</th>
                 <th className="p-2">Date</th>
-                <th className="p-2">Time</th>
+                <th className="p-2 !min-w-24">Time</th>
                 <th className="p-2">Market</th>
                 <th className="p-2">Type</th>
                 <th className="p-2">Session</th>
+                <th className="p-2">Digit</th>
                 <th className="p-2">Points</th>
               </tr>
             </thead>
@@ -204,12 +207,25 @@ export default function GBidHistoryReport() {
                     <td className="p-2 min-w-25">
                       {item.created_at?.split("T")[0]}
                     </td>
-                    <td className="p-2 min-w-10">
-                      {item.created_at?.split("T")[1]?.slice(0, 5)}
+                    <td className="p-2 !min-w-25">
+                      {new Date(
+                        new Date(item.created_at).getTime() +
+                          (5 * 60 + 30) * 60 * 1000
+                      ).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                      {/* {item.created_at?.split("T")[1]?.slice(0, 5)} */}
                     </td>
-                    <td className="p-2 min-w-45">{item.market_name}</td>
+                    <td className="p-2 min-w-45 text-center">
+                      {item.market_name}
+                    </td>
                     <td className="p-2">{item.game_type}</td>
                     <td className="p-2">{item.session}</td>
+                    <td className="p-2">
+                      {item?.open_digit || item?.close_digit}
+                    </td>
                     <td className="p-2">{item.points}</td>
                   </tr>
                 ))

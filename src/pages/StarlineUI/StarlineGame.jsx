@@ -163,7 +163,7 @@ export default function StarlineMarket() {
 
                     <div className="flex gap-7 text-gray-400">
                       <p>
-                        Open Time:
+                        {/* Open Time: */}
                         <span className="block text-white font-medium">
                           {mkt.openTime}
                         </span>

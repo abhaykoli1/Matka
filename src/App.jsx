@@ -82,6 +82,7 @@ import { useEffect, useState } from "react";
 import { getUserById } from "./components/layout/fetchUser";
 import ReferralPage from "./pages/reffer";
 import TodayBidHistory from "./components/Admin/TodayBidHistory";
+import GMarketChart from "./pages/JackpotUI/GMarketChart";
 
 const useAuthUser = () => {
   const [user, setUser] = useState(undefined);
@@ -251,6 +252,7 @@ const App = () => {
             <Route path="add-points" element={<AddMoney />} />
             <Route path="/referrals" element={<ReferralPage />} />
             <Route path="charts/:marketId" element={<Charts />} />
+            <Route path="gcharts/:marketId" element={<GMarketChart />} />
             <Route path="starline" element={<StarlineMarket />} />
             <Route
               path="starline-bid-history"

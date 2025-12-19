@@ -117,7 +117,10 @@ export default function TodayBidHistory() {
                       </td>
 
                       <td className="py-1.5 px-2 min-w-40">
-                        {new Date(b.created_at).toLocaleTimeString("en-IN", {
+                        {new Date(
+                          new Date(b.created_at).getTime() +
+                            (5 * 60 + 30) * 60 * 1000
+                        ).toLocaleTimeString("en-IN", {
                           hour: "2-digit",
                           minute: "2-digit",
                           second: "2-digit",
