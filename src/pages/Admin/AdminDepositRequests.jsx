@@ -42,8 +42,22 @@ export default function AdminDepositRequests() {
   }, []);
 
   // VIEW SCREENSHOT
-  const viewScreenshot = (path) => {
-    window.open(API_URL + path, "_blank");
+  // const viewScreenshot = (path) => {
+  //   window.open(API_URL + path, "_blank");
+  // };
+
+  const [openImage, setOpenImage] = useState(null);
+  const [zoom, setZoom] = useState(1);
+
+  const viewScreenshot = (url) => {
+    console.log(API_URL + url);
+    setZoom(1);
+    setOpenImage(url);
+  };
+
+  const closeModal = () => {
+    setOpenImage(null);
+    setZoom(1);
   };
 
   // APPROVE
@@ -186,6 +200,14 @@ export default function AdminDepositRequests() {
                   {/* SCREENSHOT */}
 
                   {p.method === "googlepay" || "paytm" || "phonepay" ? (
+                    // <td className="px-4 py-4">
+                    //   <button
+                    //     onClick={() => viewScreenshot(p.image_url)}
+                    //     className="text-blue-400 flex items-center gap-2 hover:text-blue-300"
+                    //   >
+                    //     <ImageIcon size={18} /> View
+                    //   </button>a
+                    // </td>ççç
                     <td className="px-4 py-4">
                       <button
                         onClick={() => viewScreenshot(p.image_url)}
@@ -246,6 +268,51 @@ export default function AdminDepositRequests() {
               ))}
             </tbody>
           </table>
+          {openImage && (
+            <div
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+              onClick={closeModal}
+            >
+              <div
+                className="relative bg-black rounded-lg p-3 max-w-4xl w-full mx-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close */}
+                <button
+                  onClick={closeModal}
+                  className="absolute top-2 right-2 text-white bg-black/60 rounded-full px-3 py-1"
+                >
+                  ✕
+                </button>
+
+                {/* Zoom Controls */}
+                <div className="flex justify-center gap-3 mb-3">
+                  <button
+                    onClick={() => setZoom((z) => Math.min(z + 0.2, 3))}
+                    className="px-3 py-1 bg-gray-700 text-white rounded"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => setZoom((z) => Math.max(z - 0.2, 1))}
+                    className="px-3 py-1 bg-gray-700 text-white rounded"
+                  >
+                    −
+                  </button>
+                </div>
+
+                {/* Image */}
+                <div className="overflow-auto max-h-[75vh] flex justify-center">
+                  <img
+                    src={API_URL + openImage}
+                    alt="Screenshot"
+                    style={{ transform: `scale(${zoom})` }}
+                    className="transition-transform duration-200 origin-center"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

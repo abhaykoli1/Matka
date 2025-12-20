@@ -138,12 +138,15 @@ export default function AllUserBids() {
 
             {/* TIME FORMAT IMPROVED */}
             <p className="text-xs text-gray-400 mt-1">
-              {new Date(b.created_at).toLocaleString("en-IN", {
+              {new Date(
+                new Date(b.created_at).getTime() + 5.5 * 60 * 60 * 1000
+              ).toLocaleString("en-IN", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
+                second: "2-digit",
                 hour12: true,
               })}
             </p>

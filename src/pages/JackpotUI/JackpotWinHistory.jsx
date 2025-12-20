@@ -88,7 +88,17 @@ const JackpotWinHistory = () => {
               </p>
 
               <p className="text-xs text-gray-300 mt-2">
-                {new Date(w.date).toLocaleString()}
+                {new Date(
+                  new Date(w.date).getTime() + 5.5 * 60 * 60 * 1000
+                ).toLocaleString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: true,
+                })}
               </p>
             </div>
           ))}

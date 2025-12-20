@@ -158,7 +158,17 @@ export default function BidHistoryPage() {
               <p className="text-gray-300">Points: {h.points}</p>
 
               <p className="text-xs text-gray-500 mt-1">
-                {new Date(h.created_at).toLocaleString()}
+                {new Date(
+                  new Date(h.created_at).getTime() + 5.5 * 60 * 60 * 1000
+                ).toLocaleString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: true,
+                })}
               </p>
             </div>
           ))}
