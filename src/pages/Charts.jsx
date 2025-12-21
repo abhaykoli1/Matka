@@ -18,6 +18,7 @@ export default function Chats() {
   const small = useMediaQuery({ minWidth: 375 });
   const mid = useMediaQuery({ minWidth: 424 });
   const large = useMediaQuery({ minWidth: 454 });
+
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
@@ -102,7 +103,7 @@ export default function Chats() {
       {/* Calendar Grid */}
       <div>
         <div className=" max-w-md mx-auto  px-4 mt-4">
-          {rows.map((week, idx) => (
+          {[...rows].reverse().map((week, idx) => (
             <div key={idx} className="w-full overflow-x-auto">
               <div
                 className={`grid ${smallest ? "grid-cols-2" : ""} ${
@@ -112,7 +113,7 @@ export default function Chats() {
                 ${large ? "grid-cols-3" : ""}
                 `}
               >
-                {week.map((item, i) => (
+                {[...week].reverse().map((item, i) => (
                   <div
                     key={i}
                     className="borde bg-white/5 border border-gray-50/5  p- text-white"

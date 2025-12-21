@@ -63,7 +63,7 @@ export default function GMarketChart() {
   return (
     <div className="mx-auto">
       {/* Header */}
-      <div className="w-full max-w-md mx-auto relative bg-black py-2 flex items-center justify-between">
+      <div className="w-full max-w-md mx-auto relative bg-gradient-to-b from-black to-black/0 py-2 flex items-center justify-between">
         <button onClick={() => window.history.back()} className="p-2 pl-4 z-10">
           <ArrowLeft size={22} />
         </button>
@@ -75,7 +75,7 @@ export default function GMarketChart() {
 
       {/* Market Wise Charts */}
       <div className="max-w-md mx-auto px-4 mt-4 space-y-6">
-        {markets.map((market) => {
+        {/* {markets.map((market) => {
           const rows = [];
           for (let i = 0; i < market.results.length; i += 7) {
             rows.push(market.results.slice(i, i + 7));
@@ -94,6 +94,73 @@ export default function GMarketChart() {
                       ${smallest ? "grid-cols-2" : ""}
                       ${small || mid || large ? "grid-cols-3" : ""}
                     `}
+                  >
+                    {week.map((item, i) => (
+                      <div
+                        key={`${item.date}-${i}`}
+                        className="bg-white/5 border border-gray-50/5 text-white p-2"
+                        style={{ minWidth: 110 }}
+                      >
+                        <div className="text-center mb-1">
+                          <div className="text-[11px] font-semibold text-sky-400">
+                            {getDayLabel(item.date)}
+                          </div>
+                          <div className="text-[11px] text-slate-300">
+                            {formatDate(item.date)}
+                          </div>
+                        </div>
+
+                        <div className="text-center text-[18px] font-extrabold text-lime-400">
+                          {item.open_digit}
+                        </div>
+
+                        <div className="h-px bg-slate-600 my-1" />
+
+                        <div className="text-center text-[18px] font-extrabold text-yellow-300">
+                          {item.close_digit}
+                        </div>
+
+                        <div
+                          className={`text-center text-[11px] mt-1 font-semibold ${
+                            item.status === "closed"
+                              ? "text-green-400"
+                              : "text-red-400"
+                          }`}
+                        >
+                          {item.status.toUpperCase()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })} */}
+        {markets.map((market) => {
+          // 1️⃣ reverse results safely (latest first)
+          const reversedResults = [...market.results].reverse();
+
+          // 2️⃣ chunk into weeks
+          const rows = [];
+          for (let i = 0; i < reversedResults.length; i += 7) {
+            rows.push(reversedResults.slice(i, i + 7));
+          }
+
+          return (
+            <div key={market.market_id}>
+              <h3 className="text-center text-sky-400 font-bold mb-2">
+                {market.market_name.trim().toUpperCase()}
+              </h3>
+
+              {/* 3️⃣ render weeks (already newest first) */}
+              {rows.map((week, idx) => (
+                <div key={idx} className="w-full overflow-x-auto mb-3">
+                  <div
+                    className={`grid 
+              ${smallest ? "grid-cols-2" : ""}
+              ${small || mid || large ? "grid-cols-3" : ""}
+            `}
                   >
                     {week.map((item, i) => (
                       <div
