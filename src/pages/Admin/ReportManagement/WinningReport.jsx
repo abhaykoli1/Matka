@@ -45,6 +45,7 @@ export default function WinningReport() {
         setLoading(false);
         return;
       }
+      
       params.date = apiDate;
 
       if (marketId !== "all") params.market_id = marketId;

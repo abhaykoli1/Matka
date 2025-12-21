@@ -40,6 +40,8 @@ export default function GWinHistory() {
         { headers }
       );
 
+      console.log(res);
+
       const list = res.data?.data || [];
 
       // Attach market names
@@ -147,6 +149,16 @@ export default function GWinHistory() {
             {/* TIME */}
             <p className="text-xs text-gray-400 mt-1">
               {new Date(
+                new Date(w.created_at).getTime() + 5.5 * 60 * 60 * 1000
+              ).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+              {/* {new Date(
                 new Date(w.date).getTime() + 5.5 * 60 * 60 * 1000
               ).toLocaleString("en-IN", {
                 day: "2-digit",
@@ -156,7 +168,7 @@ export default function GWinHistory() {
                 minute: "2-digit",
                 second: "2-digit",
                 hour12: true,
-              })}
+              })} */}
             </p>
           </div>
         ))}

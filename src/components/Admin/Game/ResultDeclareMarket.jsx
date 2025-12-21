@@ -15,6 +15,7 @@ export default function ResultDeclareMarket() {
       "0"
     )}-${String(d.getDate()).padStart(2, "0")}`;
   });
+
   const [games, setGames] = useState([]);
   const [history, setHistory] = useState([]);
 

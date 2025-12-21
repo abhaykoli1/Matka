@@ -155,10 +155,12 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
 import { Trophy, ArrowLeft } from "lucide-react";
 import { API_URL } from "../config";
 
-const WIN_API = `${API_URL}/admin/result/winning`;
+// const WIN_API = `${API_URL}/admin/result/winning`;
+const WIN_API = `${API_URL}/api/admin/win-history`;
 
 export default function WinningHistory() {
   const [history, setHistory] = useState([]);
@@ -171,7 +173,6 @@ export default function WinningHistory() {
     headers: { Authorization: `Bearer ${token}` },
   };
 
-  // Format game type: single_panna → Single Panna
   const formatGameName = (str = "") =>
     str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -179,8 +180,10 @@ export default function WinningHistory() {
     try {
       const res = await axios.get(WIN_API, authHeader);
 
-      setTotalWins(res.data.total_wins || 0);
-      setHistory(Array.isArray(res.data.history) ? res.data.history : []);
+      console.log(res.data);
+
+      setHistory(Array.isArray(res.data.wins) ? res.data.wins : []);
+      setTotalWins(res.data.wins?.length || 0);
     } catch (err) {
       console.log("Error fetching history:", err);
     } finally {
@@ -249,8 +252,13 @@ export default function WinningHistory() {
               </p>
 
               {/* DIGIT */}
-              <p className="text-sm">
+              {/* <p className="text-sm">
                 <span className="text-gray-300">Digit:</span> {item.digit}
+              </p> */}
+
+              <p className="text-sm">
+                <span className="text-gray-300">Digit:</span>{" "}
+                {item.digit_or_panna}
               </p>
 
               {/* SESSION */}
@@ -269,17 +277,49 @@ export default function WinningHistory() {
               </p>
 
               {/* RESULT BOX */}
-              <div className="mt-3 bg-black/40 border border-gray-600 rounded-lg p-2 text-xs text-gray-300">
+              {/* <div className="mt-3 bg-black/40 border border-gray-600 rounded-lg p-2 text-xs text-gray-300">
                 <p className="font-semibold text-white">Result:</p>
                 <p>Open Digit: {item.result.open_digit}</p>
                 <p>Close Digit: {item.result.close_digit}</p>
                 <p>Open Panna: {item.result.open_panna}</p>
                 <p>Close Panna: {item.result.close_panna}</p>
+              </div> */}
+
+              <div className="mt-3 bg-black/40 border border-gray-600 rounded-lg p-2 text-xs text-gray-300">
+                <p className="font-semibold text-white">Result:</p>
+                <p>Open Digit: {item.declared_result?.open_digit}</p>
+                <p>Close Digit: {item.declared_result?.close_digit}</p>
+                <p>Open Panna: {item.declared_result?.open_panna}</p>
+                <p>Close Panna: {item.declared_result?.close_panna}</p>
               </div>
 
               {/* DATE */}
-              <p className="text-[11px] text-gray-400 mt-2">
+              {/* <p className="text-[11px] text-gray-400 mt-2">
+                {new Date(
+                  new Date(item.created_at).getTime() + 5.5 * 60 * 60 * 1000
+                ).toLocaleString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: true,
+                })}
                 {new Date(item.date).toLocaleString()}
+              </p> */}
+
+              <p className="text-[11px] text-gray-400 mt-2">
+                {new Date(
+                  new Date(item.created_at).getTime() + 5.5 * 60 * 60 * 1000
+                ).toLocaleString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
               </p>
             </div>
           ))}

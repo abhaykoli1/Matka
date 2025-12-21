@@ -10,9 +10,24 @@ export default function StarlineMarket() {
 
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [gameRates, setGameRates] = useState({});
   const displayDigit = (v) => (!v || v === "-" ? "X" : v);
   const displayPanna = (v) => (!v || v === "-" ? "XXX" : v);
+
+  const fetchRates = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/admin/rate/`, { headers });
+      const data = res.data;
+      console.log("data", data);
+      setGameRates(data);
+    } catch (err) {
+      console.log("Rate fetch error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRates();
+  }, []);
 
   const fetchMarkets = async () => {
     try {
@@ -87,19 +102,28 @@ export default function StarlineMarket() {
         <div className="w-full bg-white/5 p-4 border border-gray-50/5 rounded-xl space-y-2">
           <div className="flex justify-between text-[13px] text-gray-100">
             <span className="font-semibold">Single Digit</span>
-            <span className="font-semibold">10–100</span>
+            <span className="font-semibold">
+              {gameRates?.single_digit_1}–{gameRates?.single_digit_2}
+            </span>
           </div>
           <div className="flex justify-between text-[13px] text-gray-100">
             <span className="font-semibold">Single Pana</span>
-            <span className="font-semibold">10–1500</span>
+            <span className="font-semibold">
+              {" "}
+              {gameRates?.single_pana_1}–{gameRates?.single_pana_2}
+            </span>
           </div>
           <div className="flex justify-between text-[13px] text-gray-100">
             <span className="font-semibold">Double Pana</span>
-            <span className="font-semibold">10–3000</span>
+            <span className="font-semibold">
+              {gameRates?.double_pana_1}–{gameRates?.double_pana_2}
+            </span>
           </div>
           <div className="flex justify-between text-[13px] text-gray-100">
             <span className="font-semibold">Triple Pana</span>
-            <span className="font-semibold">10–7000</span>
+            <span className="font-semibold">
+              {gameRates?.tripple_pana_1}–{gameRates?.tripple_pana_2}
+            </span>
           </div>
         </div>
       </div>

@@ -236,7 +236,16 @@ export default function TodayResultMarketHistory({ refreshFlag }) {
                   >
                     <td className="p-1.5">{idx + 1}</td>
                     <td className="p-1.5 font-medium">{r.gameName}</td>
-                    <td className="p-1.5">{r.date ?? date}</td>
+                    {/* <td className="p-1.5">{r.date ?? date}</td> */}
+                    <td className="p-1.5">
+                      {new Date(
+                        new Date(r.date).getTime() + (5 * 60 + 30) * 60 * 1000
+                      ).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                    </td>
                     <td className="p-1.5">
                       {formatDateTime(r.open_declared_at)}
                     </td>
