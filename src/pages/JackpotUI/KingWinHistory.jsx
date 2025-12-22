@@ -36,13 +36,13 @@ export default function GWinHistory() {
   const loadWinHistory = async () => {
     try {
       const res = await axios.get(
-        `${API_URL}/api/admin/Golidesawar/win-history`,
+        `${API_URL}/api/admin/Golidesawar/gali/win-history`,
         { headers }
       );
 
       console.log(res);
 
-      const list = res.data?.data || [];
+      const list = res.data?.wins || [];
 
       // Attach market names
       const finalList = await Promise.all(
@@ -54,7 +54,7 @@ export default function GWinHistory() {
 
       setWins(finalList);
     } catch (err) {
-      console.error("Error fetching win history:", err);
+      console.log("Error fetching win history:", err);
       setWins([]);
     }
 
@@ -96,82 +96,85 @@ export default function GWinHistory() {
           <p className="text-gray-400 text-sm">No wins found yet.</p>
         )}
 
-        {wins.map((w, i) => (
-          <div
-            key={i}
-            className="p-3 bg-black/20 border border-gray-50/5 rounded-lg mb-3"
-          >
-            {/* MARKET NAME */}
-            <p className="text-sm">
-              <span className="text-gray-200 uppercase">Market:</span>{" "}
-              {w.market_name}
-            </p>
+        {wins.map((w, i) => {
+          const gameType = w.game_type || "-";
+          const session = w.session || "";
+          const openDigit = w.open_digit ?? "-";
+          const closeDigit = w.close_digit ?? "-";
 
-            {/* GAME TYPE */}
-            <p className="text-sm">
-              <span className="text-gray-200">Game: </span>
-              {w.game_type}
-            </p>
+          const displayDigit =
+            gameType === "jodi"
+              ? `${openDigit}${closeDigit}`
+              : session === "open"
+              ? openDigit
+              : closeDigit;
 
-            {/* DIGIT DISPLAY */}
-            <p className="text-sm">
-              <span className="text-gray-200">
-                {w.game_type === "jodi"
-                  ? "Jodi"
-                  : w.session === "open"
-                  ? "Open Digit"
-                  : "Close Digit"}
-                :{" "}
-              </span>
+          const createdTime = w.created_at || w.date;
 
-              {w.game_type === "jodi"
-                ? `${w.open_digit}${w.close_digit}`
-                : w.session === "open"
-                ? w.open_digit
-                : w.close_digit}
-            </p>
+          return (
+            <div
+              key={w._id || i}
+              className="p-3 bg-black/20 border border-gray-50/5 rounded-lg mb-3"
+            >
+              {/* MARKET */}
+              <p className="text-sm">
+                <span className="text-gray-200 uppercase">Market:</span>{" "}
+                {w.market_name || "Unknown"}
+              </p>
 
-            {/* POINTS */}
-            <p className="text-sm">
-              <span className="text-gray-200">Points Played:</span> {w.points}
-            </p>
+              {/* GAME */}
+              <p className="text-sm">
+                <span className="text-gray-200">Game:</span> {gameType}
+              </p>
 
-            {/* WIN AMOUNT */}
-            <p className="text-sm text-green-400 font-semibold">
-              <span className="text-gray-200">Win Amount:</span> ₹{w.win_amount}
-            </p>
+              {/* DIGIT */}
+              <p className="text-sm">
+                <span className="text-gray-200">
+                  {gameType === "jodi"
+                    ? "Jodi"
+                    : session === "open"
+                    ? "Open Digit"
+                    : "Close Digit"}
+                  :
+                </span>{" "}
+                {displayDigit}
+              </p>
 
-            {/* RESULT DIGITS */}
-            <p className="text-xs mt-1 text-gray-400">
-              Result: {w.result_open} - {w.result_close}
-            </p>
+              {/* POINTS */}
+              <p className="text-sm">
+                <span className="text-gray-200">Points Played:</span>{" "}
+                {w.points ?? 0}
+              </p>
 
-            {/* TIME */}
-            <p className="text-xs text-gray-400 mt-1">
-              {new Date(
-                new Date(w.created_at).getTime() + 5.5 * 60 * 60 * 1000
-              ).toLocaleString("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              })}
-              {/* {new Date(
-                new Date(w.date).getTime() + 5.5 * 60 * 60 * 1000
-              ).toLocaleString("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: true,
-              })} */}
-            </p>
-          </div>
-        ))}
+              {/* WIN */}
+              <p className="text-sm text-green-400 font-semibold">
+                <span className="text-gray-200">Win Amount:</span> ₹
+                {w.win_amount ?? 0}
+              </p>
+
+              {/* RESULT */}
+              <p className="text-xs mt-1 text-gray-400">
+                Result: {w.open_digit ?? "-"} - {w.close_digit ?? "-"}
+              </p>
+
+              {/* TIME */}
+              {createdTime && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(
+                    new Date(createdTime).getTime() + 5.5 * 60 * 60 * 1000
+                  ).toLocaleString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
