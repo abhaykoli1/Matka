@@ -171,8 +171,7 @@ export default function JackpotGame() {
                   <div>
                     {/* RESULT */}
                     <h3 className="text-xl mb-1 font-semibold text-[#c21af0]">
-                      {openDigit}
-                      {closeDigit}
+                      {openDigit}-{closeDigit}
                     </h3>
 
                     <div className="flex gap-7">

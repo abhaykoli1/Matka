@@ -164,7 +164,6 @@ export default function Games() {
         {market.marketType !== "Starline" ? (
           <span className="flex flex-col">
             <strong>Close Time :</strong>
-
             <span>{market.close_time}</span>
           </span>
         ) : (
