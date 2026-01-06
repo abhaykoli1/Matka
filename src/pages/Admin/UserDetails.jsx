@@ -44,7 +44,7 @@ export default function UserDetails() {
 
       const data = res.data.data;
 
-      console.log(data);
+      console.log("first", data);
 
       const u = data["@user"];
 
@@ -68,6 +68,7 @@ export default function UserDetails() {
       setTotalWithdrawal(data["@total_withdrawal"]);
       setBids(data["@user_bids"]);
       setWins(data["@wins"]);
+      console.log("first", data["@wins"]);
     } catch (err) {
       console.log("Fetch error:", err);
     } finally {

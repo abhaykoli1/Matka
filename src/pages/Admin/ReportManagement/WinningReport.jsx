@@ -1,316 +1,240 @@
-// src/pages/WinningReport.jsx
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import { Loader, Search as SearchIcon } from "lucide-react";
 import { API_URL } from "../../../config";
 
-// Use the screenshot you uploaded
-const previewImage = "/mnt/data/Screenshot 2025-11-23 at 11.38.22 PM.png";
+// const API_URL = "https://api.kalyanratan777.com";
 
-// Convert yyyy-mm-dd → dd/mm/yyyy for API
-function formatDateForApi(yyyyMmDd) {
-  if (!yyyyMmDd) return "";
-  const [y, m, d] = yyyyMmDd.split("-");
-  return `${d}/${m}/${y}`;
-}
+export default function WinHistory() {
+  const token = localStorage.getItem("token");
 
-export default function WinningReport() {
-  const [loading, setLoading] = useState(false);
-  const [winningData, setWinningData] = useState([]);
-  const [error, setError] = useState(null);
+  /* ================= STATES ================= */
+  const [date, setDate] = useState(() => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+    return local.toISOString().split("T")[0];
+  });
 
-  // filters
-  const [date, setDate] = useState("");
   const [marketId, setMarketId] = useState("all");
   const [gameType, setGameType] = useState("all");
   const [session, setSession] = useState("all");
   const [search, setSearch] = useState("");
 
-  const token = localStorage.getItem("accessToken") || "";
-  const headers = { Authorization: `Bearer ${token}` };
+  const [markets, setMarkets] = useState([]);
+  const [winningData, setWinningData] = useState([]);
 
-  // fetch report
-  const fetchWinning = async () => {
-    setLoading(true);
-    setError(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  /* ================= HELPERS ================= */
+  const formatDateForAPI = (dateStr) => {
+    if (!dateStr) return "";
+    const [y, m, d] = dateStr.split("-");
+    return `${d}/${m}/${y}`;
+  };
+
+  /* ================= FETCH MARKETS ================= */
+  const fetchMarkets = async () => {
     try {
-      const params = {};
-
-      // date (required)
-      const apiDate = formatDateForApi(date);
-      if (!apiDate) {
-        setError("Please select date");
-        setWinningData([]);
-        setLoading(false);
-        return;
-      }
-      
-      params.date = apiDate;
-
-      if (marketId !== "all") params.market_id = marketId;
-      if (gameType !== "all") params.game_type = gameType;
-      if (session !== "all") params.session = session.toLowerCase();
-      if (search) params.search = search;
-
-      const res = await axios.get(`${API_URL}/admin/win/history`, {
+      const res = await axios.get(`${API_URL}/api/admin/market`, {
         headers,
-        params,
       });
-
-      const list = Array.isArray(res.data?.data) ? res.data.data : [];
-
-      setWinningData(list);
+      setMarkets(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || "Failed to load report");
-    } finally {
-      setLoading(false);
+      console.error("Market fetch error", err);
     }
   };
 
-  const handleSubmitFilters = (e) => {
-    e.preventDefault();
-    fetchWinning();
-  };
+  /* ================= FETCH WINNING ================= */
+  const fetchWinning = useCallback(async () => {
+    if (!date) return;
 
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await axios.get(`${API_URL}/admin/win/history`, {
+        headers,
+        params: {
+          date: formatDateForAPI(date),
+          market_id: marketId,
+          game_type: gameType,
+          session,
+          search: search.trim(),
+        },
+      });
+
+      setWinningData(Array.isArray(res.data?.data) ? res.data.data : []);
+    } catch (err) {
+      setError("Failed to load winning data");
+    } finally {
+      setLoading(false);
+    }
+  }, [date, marketId, gameType, session, search]);
+
+  /* ================= EFFECTS ================= */
+
+  // Load markets once
+  useEffect(() => {
+    fetchMarkets();
+  }, []);
+
+  // SINGLE debounced effect for ALL filters
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchWinning();
+    }, 400);
+
+    return () => clearTimeout(delay);
+  }, [fetchWinning]);
+
+  /* ================= RESET ================= */
   const handleReset = () => {
-    setDate("");
+    const today = new Date().toISOString().split("T")[0];
+
+    setDate(today);
     setMarketId("all");
     setGameType("all");
     setSession("all");
     setSearch("");
-    setWinningData([]);
-    setError(null);
+    setError("");
   };
 
-  // Markets dropdown (derive from result names)
-  const markets = useMemo(() => {
-    const set = new Set();
-    winningData.forEach((w) => w.market && set.add(w.market));
-    return ["all", ...Array.from(set)];
+  const marketss = useMemo(() => {
+    const s = new Set();
+    winningData.forEach((b) => b.market && s.add(b.market));
+    return ["all", ...Array.from(s)];
   }, [winningData]);
 
+  console.log(markets);
+
+  // console.log("marketss", marketss);
   const gameTypes = useMemo(() => {
-    const set = new Set();
-    winningData.forEach((w) => w.game_type && set.add(w.game_type));
-    return ["all", ...Array.from(set)];
+    const s = new Set();
+    winningData.forEach((b) => b.game_type && s.add(b.game_type));
+    return ["all", ...Array.from(s)];
   }, [winningData]);
 
-  const totalWinning = useMemo(() => {
-    return winningData.reduce((sum, w) => sum + Number(w.win_amount || 0), 0);
-  }, [winningData]);
-
+  /* ================= UI ================= */
   return (
-    <div className="lg:p-6 md:p-5 p-3 text-white">
-      {/* Top Filter Card */}
-      <div className="bg-white/5 border border-[rgba(255,255,255,0.04)] rounded-xl p-4 mb-5 backdrop-blur-sm">
-        <div>
-          {/* Filters */}
-          <div className="flex-1">
-            <h1 className="text-xl font-bold">Winning History Report</h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Filter and view all winning bids.
-            </p>
+    <div className="p-6 text-white">
+      <h2 className="text-xl font-semibold mb-4">Winning History</h2>
 
-            <form
-              onSubmit={handleSubmitFilters}
-              className="mt-6 flex flex-wrap gap-4 items-end"
+      {/* ================= FILTERS ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 xl:grid-cols-6 gap-3 mb-6">
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="bg-transparent border border-white/20 px-3 py-2 rounded"
+        />
+
+        <select
+          value={marketId}
+          onChange={(e) => setMarketId(e.target.value)}
+          className=" text-white border border-white/20 px-3 py-2 rounded"
+        >
+          <option value="all" className="">
+            All Markets
+          </option>
+
+          {markets.map((m) => (
+            <option
+              key={m._id?.$oid || m._id}
+              value={m._id?.$oid || m._id}
+              className=""
             >
-              {/* Date */}
-              <div className="flex-1">
-                <label className="text-sm text-slate-300 mb-2 block">
-                  Result Date
-                </label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
-                />
-              </div>
+              {m.name}
+            </option>
+          ))}
+        </select>
 
-              {/* Game Name */}
-              <div className="flex-1">
-                <label className="text-sm text-slate-300 mb-2 block">
-                  Game Name
-                </label>
-                <select
-                  value={marketId}
-                  onChange={(e) => setMarketId(e.target.value)}
-                  className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
-                >
-                  {markets.map((m) => (
-                    <option value={m} key={m}>
-                      {m === "all" ? "All Games" : m}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        <select
+          value={gameType}
+          onChange={(e) => setGameType(e.target.value)}
+          className=" text-white border border-white/20 px-3 py-2 rounded"
+        >
+          {gameTypes.map((g) => (
+            <option key={g} value={g}>
+              {g === "all" ? "All Types" : g}
+            </option>
+          ))}
+        </select>
 
-              {/* Game Type */}
-              <div className="flex-1">
-                <label className="text-sm text-slate-300 mb-2 block">
-                  Game Type
-                </label>
-                <select
-                  value={gameType}
-                  onChange={(e) => setGameType(e.target.value)}
-                  className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
-                >
-                  {gameTypes.map((g) => (
-                    <option key={g} value={g}>
-                      {g === "all" ? "All Types" : g}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        <select
+          value={session}
+          onChange={(e) => setSession(e.target.value)}
+          className=" text-white border border-white/20 px-3 py-2 rounded"
+        >
+          <option value="all">All Sessions</option>
+          <option value="open">Open</option>
+          <option value="close">Close</option>
+        </select>
 
-              {/* Session */}
-              <div className="flex-1">
-                <label className="text-sm text-slate-300 mb-2 block">
-                  Session
-                </label>
-                <select
-                  value={session}
-                  onChange={(e) => setSession(e.target.value)}
-                  className="w-full bg-transparent border border-white/10 px-3 py-2 rounded text-white"
-                >
-                  <option value="all">All</option>
-                  <option value="open">Open</option>
-                  <option value="close">Close</option>
-                </select>
-              </div>
+        <input
+          type="text"
+          placeholder="Search name / mobile"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="bg-transparent border border-white/20 px-3 py-2 rounded"
+        />
 
-              {/* Submit */}
-              <div className="flex-1">
-                <button
-                  type="submit"
-                  className="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded text-white"
-                >
-                  Get Report
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <button
+          onClick={handleReset}
+          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded px-4 py-2"
+        >
+          Remove Filters
+        </button>
       </div>
 
-      {/* Table Wrapper */}
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-        {/* Header Row */}
-        <div className="px-4 py-3 border-b border-white/5 flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Winning History List</h2>
+      {/* ================= TABLE ================= */}
+      {loading && <p className="text-gray-400">Loading...</p>}
+      {error && <p className="text-red-400">{error}</p>}
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name / mobile"
-                className="pl-10 pr-4 py-2 w-72 bg-white/10 border border-white/10 rounded text-white"
-              />
-              <SearchIcon
-                className="absolute left-3 top-2.5 text-slate-400"
-                size={16}
-              />
-            </div>
+      {!loading && winningData.length === 0 && (
+        <p className="text-gray-400">No data found</p>
+      )}
 
-            <button
-              onClick={() => fetchWinning()}
-              className="px-3 py-2 bg-white/10 rounded border border-white/10"
-            >
-              Apply
-            </button>
-
-            <button
-              onClick={handleReset}
-              className="px-3 py-2 bg-white/10 rounded border border-white/10"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-
-        {/* Table */}
-        {loading ? (
-          <div className="p-8 flex justify-center">
-            <Loader className="animate-spin" />
-          </div>
-        ) : error ? (
-          <div className="p-5 text-red-400">{error}</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left">
-              <thead>
-                <tr className="text-slate-200 bg-white/10 border-b border-white/10">
-                  <th className="py-3 px-3">#</th>
-                  <th className="py-3 px-3">Date</th>
-                  <th className="py-3 px-3">User</th>
-                  <th className="py-3 px-3">Mobile</th>
-                  <th className="py-3 px-3">Game</th>
-                  <th className="py-3 px-3">Game Type</th>
-                  <th className="py-3 px-3">Session</th>
-                  <th className="py-3 px-3">Digit</th>
-                  <th className="py-3 px-3">Points</th>
-                  <th className="py-3 px-3">Won</th>
+      {winningData.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full border border-white/10">
+            <thead className="bg-white/5">
+              <tr>
+                <th className="p-2">Name</th>
+                <th className="p-2">Mobile</th>
+                <th className="p-2">Market</th>
+                <th className="p-2">Game</th>
+                <th className="p-2">Digit</th>
+                <th className="p-2">Session</th>
+                <th className="p-2">Points</th>
+                <th className="p-2">Win Amount</th>
+                <th className="p-2">Status</th>
+                <th className="p-2">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {winningData.map((w) => (
+                <tr key={w.bid_id} className="border-t border-white/10">
+                  <td className="p-2">{w.name}</td>
+                  <td className="p-2">{w.mobile}</td>
+                  <td className="p-2">{w.market}</td>
+                  <td className="p-2">{w.game_type}</td>
+                  <td className="p-2">{w.digit}</td>
+                  <td className="p-2">{w.session}</td>
+                  <td className="p-2">{w.points}</td>
+                  <td className="p-2 text-green-400">₹{w.win_amount}</td>
+                  <td className="p-2">{w.status}</td>
+                  <td className="p-2">{w.bid_time}</td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {winningData.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={10}
-                      className="py-8 text-center text-slate-400"
-                    >
-                      No winning records found.
-                    </td>
-                  </tr>
-                ) : (
-                  winningData.map((w, idx) => (
-                    <tr
-                      key={idx}
-                      className={
-                        idx % 2 === 0 ? "bg-transparent" : "bg-white/5"
-                      }
-                    >
-                      <td className="py-3 px-3">{idx + 1}</td>
-                      <td className="py-3 px-3">{w.bid_date}</td>
-                      <td className="py-3 px-3 text-sky-300">{w.name}</td>
-                      <td className="py-3 px-3">{w.mobile}</td>
-                      <td className="py-3 px-3">{w.market}</td>
-                      <td className="py-3 px-3">{w.game_type}</td>
-                      <td className="py-3 px-3">{w.session}</td>
-                      <td className="py-3 px-3">{w.digit}</td>
-                      <td className="py-3 px-3 font-semibold text-slate-100">
-                        {w.points}
-                      </td>
-                      <td className="py-3 px-3 font-semibold text-sky-400">
-                        {w.win_amount}
-                      </td>
-                    </tr>
-                  ))
-                )}
-
-                {winningData.length > 0 && (
-                  <tr className="border-t border-white/10">
-                    <td
-                      colSpan={9}
-                      className="py-4 px-3 text-right font-semibold"
-                    >
-                      Total Winning:
-                    </td>
-                    <td className="py-4 px-3 text-sky-400 font-semibold">
-                      {totalWinning}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
