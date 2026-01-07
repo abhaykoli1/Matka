@@ -70,7 +70,7 @@ export default function AdminWinHistory({ wins }) {
               <th className="p-2">Status</th>
               <th className="p-2">Created Date</th>
               <th className="p-2">Created Time</th>
-              <th className="p-2">Confirmed At</th>
+              {/* <th className="p-2">Confirmed At</th> */}
             </tr>
           </thead>
 
@@ -121,11 +121,11 @@ export default function AdminWinHistory({ wins }) {
                       {created ? created.toLocaleTimeString("en-IN") : "-"}
                     </td>
 
-                    <td className="px-3 py-2">
+                    {/* <td className="px-3 py-2">
                       {confirmed
                         ? confirmed.toLocaleString("en-IN")
                         : "Not Confirmed"}
-                    </td>
+                    </td> */}
                   </tr>
                 );
               })

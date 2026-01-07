@@ -76,6 +76,7 @@ const Message = ({ type, text }) => {
 export default function MatkaGame() {
   const { marketId, gameId } = useParams();
   const gameType = useMemo(() => slugToGameType(gameId), [gameId]);
+  console.log(gameType);
   const displayGame = prettyName(gameId);
 
   // Market info

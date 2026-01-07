@@ -68,6 +68,8 @@ export default function WinHistory() {
         },
       });
 
+      console.log(res);
+
       setWinningData(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (err) {
       setError("Failed to load winning data");
@@ -119,6 +121,10 @@ export default function WinHistory() {
     return ["all", ...Array.from(s)];
   }, [winningData]);
 
+  const formatWinAmount = (amount) => {
+    if (!amount) return 0;
+    return Number(amount) / 10;
+  };
   /* ================= UI ================= */
   return (
     <div className="p-6 text-white">
@@ -211,7 +217,7 @@ export default function WinHistory() {
                 <th className="p-2">Digit</th>
                 <th className="p-2">Session</th>
                 <th className="p-2">Points</th>
-                <th className="p-2">Win Amount</th>
+                <th className="p-2 min-w-30">Win Amount</th>
                 <th className="p-2">Status</th>
                 <th className="p-2">Time</th>
               </tr>
@@ -221,14 +227,26 @@ export default function WinHistory() {
                 <tr key={w.bid_id} className="border-t border-white/10">
                   <td className="p-2">{w.name}</td>
                   <td className="p-2">{w.mobile}</td>
-                  <td className="p-2">{w.market}</td>
+                  <td className="p-2 min-w-60">{w.market}</td>
                   <td className="p-2">{w.game_type}</td>
                   <td className="p-2">{w.digit}</td>
                   <td className="p-2">{w.session}</td>
                   <td className="p-2">{w.points}</td>
-                  <td className="p-2 text-green-400">₹{w.win_amount}</td>
+                  <td className="p-2 text-green-400">
+                    ₹{formatWinAmount(w.win_amount)}
+                  </td>
                   <td className="p-2">{w.status}</td>
-                  <td className="p-2">{w.bid_time}</td>
+                  {/* <td className="p-2">{w.created_at}</td> */}
+                  <td className="p-2 min-w-30">
+                    {new Date(
+                      new Date(w.created_at).getTime() +
+                        (5 * 60 + 30) * 60 * 1000
+                    ).toLocaleTimeString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
+                  </td>
                 </tr>
               ))}
             </tbody>

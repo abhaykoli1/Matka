@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 
-export default function DynamicBidHistory({ bids }) {
+export default function DynamicBidHistory({ bids, marketMap }) {
+  console.log("Bids", bids);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
@@ -98,7 +99,10 @@ export default function DynamicBidHistory({ bids }) {
                     <td className="px-3 py-2 ">{b.digit || "-"}</td>
                     <td className="px-3 py-2 capitalize ">{b.session}</td>
                     <td className="px-3 py-2 ">{b.points}</td>
-                    <td className="px-3 py-2 min-w-70">{b.market_id}</td>
+                    <td className="px-3 py-2 min-w-40">
+                      {" "}
+                      {marketMap[b.market_id] || "-"}
+                    </td>
 
                     <td className="px-3 py-2 min-w-26">
                       {b.created_at ? dateObj.toLocaleDateString("en-IN") : "-"}

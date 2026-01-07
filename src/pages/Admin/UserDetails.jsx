@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";
@@ -22,9 +22,11 @@ export default function UserDetails() {
   const [loading, setLoading] = useState(true);
 
   const [amount, setAmount] = useState("");
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showBalance, setBalance] = useState(0);
+  console.log("showBalance", showBalance);
   // password modal state
   const [password, setPassword] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -103,10 +105,12 @@ export default function UserDetails() {
   // ================================
   const withdrawMoney = async () => {
     try {
-      await axios.get(
+      const res = await axios.get(
         `${API_URL}/api/v1/admin/user/witdrawal-money?amount=${amount}&user_id=${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log("with response", res);
+
       alert("Money Withdrawn!");
       setShowWithdrawModal(false);
       setAmount("");
@@ -147,6 +151,29 @@ export default function UserDetails() {
       setUpdatingPassword(false);
     }
   };
+
+  const [markets, setMarkets] = useState([]);
+
+  const fetchMarkets = async () => {
+    const res = await axios.get(`${API_URL}/api/admin/market`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setMarkets(res.data?.data || []);
+  };
+
+  useEffect(() => {
+    fetchMarkets();
+  }, []);
+
+  const marketMap = useMemo(() => {
+    const map = {};
+    markets.forEach((m) => {
+      const id = m._id?.$oid || m._id;
+      map[id] = m.name;
+    });
+    return map;
+  }, [markets]);
 
   // ==============================================================================
 
@@ -289,7 +316,9 @@ export default function UserDetails() {
 
       <AdminDepositeHistory transactions={totalDepositList} />
       <AdminWithdrawHistory withdrawals={totalWithdrawalList} />
-      <AdminBidHistory bids={bids} />
+      {/* <AdminBidHistory bids={bids} /> */}
+      <AdminBidHistory bids={bids} marketMap={marketMap} />
+
       <AdminWinHistory wins={wins} />
 
       {/* ======================== */}

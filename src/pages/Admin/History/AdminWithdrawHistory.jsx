@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 
 export default function AdminWithdrawHistory({ withdrawals }) {
+  console.log("withdrawals", withdrawals);
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(1);
